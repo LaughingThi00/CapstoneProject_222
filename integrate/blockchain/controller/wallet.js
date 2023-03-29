@@ -16,25 +16,24 @@ router.get('/health-check', async (req, res) => {
     console.log(error)
     res.status(500).json({ success: false, message: 'Internal server error' })
   }
-})
-
-router.post('/create-wallet', async (req, res) => {
-  try {
-    const { userId } = req.body
-    console.log('userId:', userId)
-    const users = await Wallet.find({ userId })
-    if (users.length == 0) {
-      const data = await createWallet(userId)
-      console.log('data:', data)
-
-      res.json({ success: true, data })
-    } else {
-      res.json({ success: true, data: [], message: 'user has been created wallet!' })
+});     
+router.post("/create-wallet",  async (req, res) => {
+    try {
+        const { userId } = req.body;
+        console.log('userId:', userId)
+        const users = await Wallet.find({userId: userId});
+        if (users.length ==0){
+            const data = await createWallet(userId);
+            console.log('data:', data)
+            
+            res.json({ success: true, data });
+        }
+        else{
+            res.json({success: true, data: [], message: "user has been created wallet!"})
+        }
+        
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ success: false, message: "Internal server error" });
     }
-  } catch (error) {
-    console.log(error)
-    res.status(500).json({ success: false, message: 'Internal server error' })
-  }
-})
-
-module.exports = router
+  });

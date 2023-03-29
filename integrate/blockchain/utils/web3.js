@@ -1,11 +1,17 @@
 const web3 = require('web3')
 const RPC = require('../constants/rpc')
 class Web3 {
+<<<<<<< HEAD
   static httpProvider (chainId) {
     return new web3(
       new web3.providers.HttpProvider(RPC[chainId])
     )
   }
+=======
+    static httpProvider(chainId) {
+        return new web3(new web3.providers.HttpProvider(RPC[chainId]));
+    }
+>>>>>>> 33e38c1561b00aef39056918d7f521ee13ff6509
 
   static async getTransactionReceipt (txHash, chainId) {
     const web3 = Web3.httpProvider(chainId)
@@ -18,6 +24,7 @@ class Web3 {
     }
   }
 
+<<<<<<< HEAD
   static async getTransaction (txHash, chainId) {
     try {
       const web3 = Web3.httpProvider(chainId)
@@ -65,3 +72,8 @@ class Web3 {
     return web3.eth.abi.decodeParameters(typesArray, hexString)
   }
 }
+=======
+}
+
+module.exports = Web3
+>>>>>>> 33e38c1561b00aef39056918d7f521ee13ff6509
