@@ -1,15 +1,14 @@
 const express = require("express");
 const router = express.Router();
-const verifyToken = require("../middleware/auth");
-const argon2 = require("argon2");
-const jwt = require("jsonwebtoken");
-const User = require("../models/User");
 
+// const verifyToken = require('../middleware/auth')
+
+const User = require("../models/User");
 
 // @route GET api/user
 // @desc Get all user
 // @access Private
-router.get("/",  async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const users = await User.find();
     res.json({ success: true, users });
@@ -20,30 +19,42 @@ router.get("/",  async (req, res) => {
 });
 
 // @route POST api/user
-// @desc create one user
+// @desc create user and his wallet
 // @access Public
 router.post("/", async (req, res) => {
-  const { username, password, recovery_mail, active_day } = req.body;
+  const { id } = req.body;
 
   // Simple validation
-  if (!username || !password)
+  if (!username) {
     return res
       .status(400)
-      .json({ success: false, message: "Missing username and/or password" });
-
-  
+      .json({ success: false, message: "Missing id of this user" });
+  }
 
   try {
-    // Check for existing user
-    const user = await User.findOne({ username });
+    // Check if user exists
+    const user = await User.findOne({ id });
 
-    if (user)
+    if (user) {
       return res
         .status(400)
-        .json({ success: false, message: "Username already taken" });
+        .json({ success: false, message: "This user has a storage already!" });
+    }
 
-    // All good
-    const hashedPassword = await argon2.hash(password);
+    // All good, let's create wallet for this user
+    try {
+      // Call API from Blockchain to create a new wallet for this user
+
+      if (1) {
+        return res
+          .status(400)
+          .json({ success: false, message: "Can not create wallet!" });
+      }
+    } catch (err) {
+      
+    }
+
+
     const newUser = new User({
       username,
       password: hashedPassword,
@@ -73,10 +84,10 @@ router.post("/", async (req, res) => {
 // @route PUT api/user/:id
 // @desc Update one user
 // @access Private
-router.put("/:id",  async (req, res) => {
+router.put("/:id", async (req, res) => {
   const { username, password, recovery_mail, active_day } = req.body;
-  let hashedPassword=null
-   if(password) hashedPassword = await argon2.hash(password);
+  let hashedPassword = null;
+  if (password) hashedPassword = await argon2.hash(password);
 
   // Simple validation
   const UpdateCondition = { _id: req.params.id };
@@ -84,20 +95,21 @@ router.put("/:id",  async (req, res) => {
 
   if (username !== originOne.username) {
     const precheck = await User.findOne({ username });
-    if (precheck)
+    if (precheck) {
       return res.status(401).json({
         success: false,
         message:
           "New user name has been taken already. Please choose another one.",
       });
+    }
   }
 
   try {
     let UpdatedUser = {
-      username: username ? username : originOne.username,
+      username: username || originOne.username,
       password: password ? hashedPassword : originOne.password,
-      recovery_mail: recovery_mail ? recovery_mail : originOne.recovery_mail,
-      active_day: active_day ? active_day : originOne.active_day,
+      recovery_mail: recovery_mail || originOne.recovery_mail,
+      active_day: active_day || originOne.active_day,
     };
 
     UpdatedUser = await User.findOneAndUpdate(UpdateCondition, UpdatedUser, {
@@ -105,11 +117,12 @@ router.put("/:id",  async (req, res) => {
     });
 
     // User not authorised to update post or post not found
-    if (!UpdatedUser)
+    if (!UpdatedUser) {
       return res.status(401).json({
         success: false,
         message: "User not found or user not authorised",
       });
+    }
 
     res.json({
       success: true,
@@ -125,20 +138,20 @@ router.put("/:id",  async (req, res) => {
 // @route DELETE api/user/:id
 // @desc Delete one user
 // @access Private
-router.delete("/:id",  async (req, res) => {
+router.delete("/:id", async (req, res) => {
   try {
     const DeleteCondition = { _id: req.params.id };
     const DeletedUser = await User.findOneAndDelete(DeleteCondition);
 
     // User not authorised or post not found
-    if (!DeletedUser)
+    if (!DeletedUser) {
       return res.status(401).json({
         success: false,
         message: "User not found",
       });
-      else{
-        return res.json({ success: true, DeletedUser });
-      }
+    } else {
+      return res.json({ success: true, DeletedUser });
+    }
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
