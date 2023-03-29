@@ -1,19 +1,19 @@
-import React from 'react';
-import '../css/detail.css';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
-import CartScreen from '../components/CartScreen';
+import React from 'react'
+import '../css/detail.css'
+import Header from '../components/Header'
+import Footer from '../components/Footer'
+import CartScreen from '../components/CartScreen'
 
-function Cart() {
-    return (
-      <>
+function Cart () {
+  return (
+    <>
       <Header />
-      <div className="content">
-          <CartScreen/>
+      <div className='content'>
+        <CartScreen />
       </div>
       <Footer />
-      </>
-    )
-  }
-  
-  export default Cart;
+    </>
+  )
+}
+
+export default Cart

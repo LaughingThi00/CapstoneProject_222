@@ -1,9 +1,9 @@
 import React from 'react'
-import Header from '../components/Header';
-import Service from '../components/Service';
-import Footer from '../components/Footer';
+import Header from '../components/Header'
+import Service from '../components/Service'
+import Footer from '../components/Footer'
 
-function Warranty() {
+function Warranty () {
   return (
     <>
       <Header />

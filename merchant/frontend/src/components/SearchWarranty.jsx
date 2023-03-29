@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import styled from "styled-components";
-import InfoWarranty from './InfoWarranty';
+import React, { useState } from 'react'
+import styled from 'styled-components'
+import InfoWarranty from './InfoWarranty'
 
 const Content = styled.div`
   position: relative;
@@ -10,7 +10,7 @@ const Content = styled.div`
   display: flex;
   z-index: 2;
   background-color: blue;
-`;
+`
 
 const WarrantyForm = styled.div`
   position: relative;
@@ -19,7 +19,7 @@ const WarrantyForm = styled.div`
   line-height: 20px;
   margin: 0 auto;
   width: 30%;
-`;
+`
 
 const FormInner = styled.div`
   display: flex;
@@ -32,13 +32,13 @@ const FormInner = styled.div`
   background-color: #ffffff;
   border-radius: 15px;
   border: 2px solid black;
-`;
+`
 
 const Title = styled.div`
   text-align: center;
   flex: none;
   align-self: stretch;
-`;
+`
 
 const InputForm = styled.div`
   display: flex;
@@ -57,7 +57,7 @@ const InputForm = styled.div`
       outline: none;
     }
   }
-`;
+`
 
 const Label = styled.label`
   align-items: center;
@@ -65,11 +65,11 @@ const Label = styled.label`
   gap: 4.85px;
   width: 402.32px;
   height: 21px;
-`;
+`
 
 const Span = styled.span`
   color: red;
-`;
+`
 
 const Button = styled.button`
   display: flex;
@@ -91,7 +91,7 @@ const Button = styled.button`
   color: rgba(255, 255, 255, 1);
   margin: 0 auto;
   cursor: pointer;
-`;
+`
 
 const CloseButton = styled.button`
   margin-left: auto;
@@ -102,43 +102,43 @@ const CloseButton = styled.button`
   border-radius: 4px;
   color: rgba(255, 255, 255, 1);
   cursor: pointer;
-`;
+`
 
-
-
-function SearchWarranty({ open, onClose }) {
-  const [InfoModal, setInfoModal] = useState(false);
+function SearchWarranty ({ open, onClose }) {
+  const [InfoModal, setInfoModal] = useState(false)
   // const toggleInfoModal = () => {
   //   setInfoModal(!InfoModal);
   // };
 
-const handleSearch=()=>{
-  onClose();
-setInfoModal(true);
+  const handleSearch = () => {
+    onClose()
+    setInfoModal(true)
+  }
+
+  if (!open) return InfoModal && <InfoWarranty open={InfoModal} onClose={() => setInfoModal(false)} />
+
+  else {
+    return (
+      <>
+
+        <Content shouldCloseOnOverlayClick={false}>
+          <WarrantyForm>
+            <FormInner>
+              <CloseButton onClick={onClose}>X</CloseButton>
+              <Title>TRA CỨU THÔNG TIN BẢO HÀNH</Title>
+              <InputForm>
+                <Label>
+               Nhập số Serial sản phẩm<Span> *</Span>
+             </Label>
+                <input type='text' name='phone' placeholder='TX-270266' />
+              </InputForm>
+              <Button onClick={handleSearch}>Tra cứu</Button>
+            </FormInner>
+          </WarrantyForm>
+        </Content>
+      </>
+    )
+  }
 }
 
-  if (!open) return InfoModal&&<InfoWarranty open={InfoModal} onClose={() => setInfoModal(false)} />;
-
- else return (
-    <>
-        
-      <Content shouldCloseOnOverlayClick={false}>
-        <WarrantyForm>
-          <FormInner>
-            <CloseButton onClick={onClose}>X</CloseButton>
-            <Title>TRA CỨU THÔNG TIN BẢO HÀNH</Title>
-            <InputForm>
-              <Label>
-                Nhập số Serial sản phẩm<Span> *</Span>
-              </Label>
-              <input type="text" name="phone" placeholder="TX-270266" />
-            </InputForm>
-            <Button onClick={handleSearch}>Tra cứu</Button>
-          </FormInner>
-        </WarrantyForm>
-      </Content>
-    </>
-  );
-}
-
-export default SearchWarranty;
+export default SearchWarranty

@@ -1,36 +1,35 @@
-import React, { useState } from "react";
-import axios from "axios";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import "../css/needwarranty.css";
+import React, { useState } from 'react'
+import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import '../css/needwarranty.css'
 
-function NeedWarranty({ open, onClose }) {
-  const [Phone,setPhone] = useState('')
+function NeedWarranty ({ open, onClose }) {
+  const [Phone, setPhone] = useState('')
 
-  if (!open) return null;
+  if (!open) return null
 
-
-const handleChangePhone=(e)=>{
-  setPhone(e.target.value)
-}
+  const handleChangePhone = (e) => {
+    setPhone(e.target.value)
+  }
 
   const handleSend = async (e) => {
-    e.preventDefault();
+    e.preventDefault()
     toast(
-      "Bạn đã gửi yêu cầu thành công. Nhân viên của chúng tôi sẽ sớm liên hệ!"
-    );
+      'Bạn đã gửi yêu cầu thành công. Nhân viên của chúng tôi sẽ sớm liên hệ!'
+    )
 
-    await axios.post("http://localhost:8000/user/message-send", {
+    await axios.post('http://localhost:8000/user/message-send', {
       phoneTo: `+84${Phone.slice(1)}`,
-      bodyMessage: `Trung tâm chăm sóc khách hàng đã nhận được yêu câu của quý khách. Chúng tôi sẽ liên hệ trong giây lát!`,
-    });
-  };
+      bodyMessage: 'Trung tâm chăm sóc khách hàng đã nhận được yêu câu của quý khách. Chúng tôi sẽ liên hệ trong giây lát!'
+    })
+  }
   return (
     <>
       <ToastContainer />
-      <div className="overlay">
-        <div className="form-warranty">
-          <button className="close-btn" onClick={onClose}>
+      <div className='overlay'>
+        <div className='form-warranty'>
+          <button className='close-btn' onClick={onClose}>
             X
           </button>
 
@@ -41,32 +40,32 @@ const handleChangePhone=(e)=>{
               Họ và Tên <span>*</span>
             </label>
             <input
-              type="text"
-              id="fullname"
-              name="fullname"
-              placeholder="Nguyễn Văn A"
+              type='text'
+              id='fullname'
+              name='fullname'
+              placeholder='Nguyễn Văn A'
             />
-            <div className="flex-row">
-              <div className="flex-col-2">
+            <div className='flex-row'>
+              <div className='flex-col-2'>
                 <label>
                   Email
                 </label>
                 <input
-                  type="text"
-                  id="email"
-                  name="email"
-                  placeholder="abc@hcmut.edu.vn"
+                  type='text'
+                  id='email'
+                  name='email'
+                  placeholder='abc@hcmut.edu.vn'
                 />
               </div>
-              <div className="flex-col-2">
+              <div className='flex-col-2'>
                 <label>Số điện thoại <span> *</span></label>
                 <input
-                  type="text"
-                  id="phone"
-                  name="phone"
+                  type='text'
+                  id='phone'
+                  name='phone'
                   value={Phone}
                   onChange={handleChangePhone}
-                  placeholder="0948566534"
+                  placeholder='0948566534'
                 />
               </div>
             </div>
@@ -75,53 +74,53 @@ const handleChangePhone=(e)=>{
               Địa chỉ
             </label>
             <input
-              type="text"
-              id="adr"
-              name="address"
-              placeholder="Đại học Bách Khoa"
+              type='text'
+              id='adr'
+              name='address'
+              placeholder='Đại học Bách Khoa'
             />
-            <div className="separate"></div>
+            <div className='separate' />
 
             <label>
               Số Serial sản phẩm
             </label>
             <input
-              type="text"
-              id="sr"
-              name="serial"
-              placeholder="Đại học Bách Khoa"
+              type='text'
+              id='sr'
+              name='serial'
+              placeholder='Đại học Bách Khoa'
             />
             <label>Tên sản phẩm</label>
             <input
-              type="text"
-              id="name-product"
-              name="product"
-              placeholder="Đại học Bách Khoa"
+              type='text'
+              id='name-product'
+              name='product'
+              placeholder='Đại học Bách Khoa'
             />
             <label>Thương hiệu</label>
             <input
-              type="text"
-              id="trademark"
-              name="trademark"
-              placeholder="Ecovacs Robotic..."
+              type='text'
+              id='trademark'
+              name='trademark'
+              placeholder='Ecovacs Robotic...'
             />
             <label>Vấn đề với sản phẩm</label>
-            <input 
-              type="text"
-              id="description"
-              name="description"
-              placeholder="Lỗi không hoạt động..."
+            <input
+              type='text'
+              id='description'
+              name='description'
+              placeholder='Lỗi không hoạt động...'
               as='textarea'
             />
-            <div className="separate"></div>
-            <button className="submit-warranty" onClick={handleSend}>
+            <div className='separate' />
+            <button className='submit-warranty' onClick={handleSend}>
               Gửi yêu cầu
             </button>
           </form>
         </div>
       </div>
     </>
-  );
+  )
 }
 
-export default NeedWarranty;
+export default NeedWarranty

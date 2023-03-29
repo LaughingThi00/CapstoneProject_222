@@ -10,21 +10,21 @@ const userRouter = require('./routes/user')
 require('dotenv').config()
 
 const connectDB = async () => {
-	try {
-		await mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_USERNAME}@${process.env.CLUSTER}.hnrd99b.mongodb.net/${process.env.DATABASE}?retryWrites=true&w=majority`,	
-		{
-			useCreateIndex: true,
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useFindAndModify: false
-		}
-	)
+  try {
+    await mongoose.connect(`mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_USERNAME}@${process.env.CLUSTER}.hnrd99b.mongodb.net/${process.env.DATABASE}?retryWrites=true&w=majority`,
+      {
+        useCreateIndex: true,
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        useFindAndModify: false
+      }
+    )
 
-		console.log('MongoDB connected')
-	} catch (error) {
-		console.log(error.message)
-		process.exit(1)
-	}
+    console.log('MongoDB connected')
+  } catch (error) {
+    console.log(error.message)
+    process.exit(1)
+  }
 }
 
 connectDB()
@@ -32,11 +32,11 @@ connectDB()
 const app = express()
 app.use(express.json())
 app.use(cors())
-if(process.env.NODE_ENV === 'production') 
+if (process.env.NODE_ENV === 'production')
 // app.get('/*',(req, res) => {
 // 	res.sendFile(path.join(__dirname + '/client/build/public/index.html'))
 //   })
-app.use('/api/auth', authRouter)
+{ app.use('/api/auth', authRouter) }
 app.use('/api/user', userRouter)
 
 const PORT = process.env.PORT || 5000

@@ -1,31 +1,31 @@
-import React from "react";
-import { list } from "./../data";
-import { useState } from "react";
-import styled from "styled-components";
-import { Link } from "react-router-dom";
-import { homeUrl } from "../constants/Constant";
-function Banner() {
-  const [wordEntered, setWordEntered] = useState("");
-  const [Search, setSearch] = useState("");
-  const [filteredData, setFilteredData] = useState([]);
+import React, { useState } from 'react'
+import { list } from './../data'
+
+import styled from 'styled-components'
+import { Link } from 'react-router-dom'
+import { homeUrl } from '../constants/Constant'
+function Banner () {
+  const [wordEntered, setWordEntered] = useState('')
+  const [Search, setSearch] = useState('')
+  const [filteredData, setFilteredData] = useState([])
 
   const handleRedirect = () => {
-    window.location.replace(`${homeUrl}/detail/${Search}`);
-  };
+    window.location.replace(`${homeUrl}/detail/${Search}`)
+  }
 
   const handleFilter = (event) => {
-    const searchWord = event.target.value;
-    setWordEntered(searchWord);
+    const searchWord = event.target.value
+    setWordEntered(searchWord)
     const newFilter = list.filter((value) => {
-      return value.name.toLowerCase().includes(searchWord.toLowerCase());
-    });
+      return value.name.toLowerCase().includes(searchWord.toLowerCase())
+    })
 
-    if (searchWord === "") {
-      setFilteredData([]);
+    if (searchWord === '') {
+      setFilteredData([])
     } else {
-      setFilteredData(newFilter);
+      setFilteredData(newFilter)
     }
-  };
+  }
 
   const SearchResults = styled.div`
     position: absolute;
@@ -38,7 +38,7 @@ function Banner() {
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     overflow: hidden;
     overflow-y: auto;
-  `;
+  `
 
   const ProductItem = styled(Link)`
     width: 100%;
@@ -56,15 +56,15 @@ function Banner() {
       max-width: 100%;
       max-height: 100%;
     }
-  `;
+  `
 
   return (
-    <div className="banner">
-      <div className="banner-search-container" style={{ position: "relative" }}>
+    <div className='banner'>
+      <div className='banner-search-container' style={{ position: 'relative' }}>
         <input
-          className="banner-search-input"
-          placeholder="Bạn thích sản phẩm robot nào?"
-          type="text"
+          className='banner-search-input'
+          placeholder='Bạn thích sản phẩm robot nào?'
+          type='text'
           value={wordEntered}
           onChange={handleFilter}
         />
@@ -75,32 +75,32 @@ function Banner() {
                 <ProductItem
                   key={index}
                   onClick={() => {
-                    setWordEntered(item.name);
-                    setSearch(item.id);
-                    setFilteredData([]);
+                    setWordEntered(item.name)
+                    setSearch(item.id)
+                    setFilteredData([])
                   }}
                 >
                   <p>{item.name}</p>
                 </ProductItem>
-              );
+              )
             })}
           </SearchResults>
         )}
 
         <button
-          className="banner-search-icon button-hover"
+          className='banner-search-icon button-hover'
           onClick={handleRedirect}
         >
-          <ion-icon className="" name="search-outline" />
+          <ion-icon className='' name='search-outline' />
         </button>
       </div>
 
-      <div className="banner-text">
+      <div className='banner-text'>
         Chúng tôi cung cấp sản phẩm Robot hút bụi uy tín, chất lượng số 1 thị
         trường
       </div>
     </div>
-  );
+  )
 }
 
-export default Banner;
+export default Banner
