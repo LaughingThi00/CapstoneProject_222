@@ -2,9 +2,7 @@ const web3 = require('web3');
 const RPC = require('../constants/rpc')
 class Web3 {
     static httpProvider(chainId) {
-        return new web3(
-        new web3.providers.HttpProvider(RPC[chainId])
-        );
+        return new web3(new web3.providers.HttpProvider(RPC[chainId]));
     }
 
     static async getTransactionReceipt(txHash, chainId) {
@@ -63,3 +61,5 @@ class Web3 {
       }
 
 }
+
+module.exports = Web3

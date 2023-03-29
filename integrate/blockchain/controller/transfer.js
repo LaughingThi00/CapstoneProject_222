@@ -4,7 +4,7 @@ const verifyToken = require("../middleware/auth");
 const argon2 = require("argon2");
 const jwt = require("jsonwebtoken");
 const Wallet = require("../models/wallet");
-const {createWallet} = require("../service/wallet")
+const { transfer } = require("../service/transfer")
 
 
 // @route GET api/user
@@ -18,18 +18,18 @@ router.get("/health-check",  async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });     
-router.post("/create-wallet",  async (req, res) => {
+router.post("/transfer",  async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, chainId, toAddress, amount, tokenAddress } = req.body;
         const users = await Wallet.find({userId: userId});
-        if (users.length ==0){
-            const data = await createWallet(userId);
-            res.json({ success: true, data });
+        if (users.length==0){
+            res.json({success: true, data: [], message: "user is not found"})
         }
-        else{
-            res.json({success: true, data: [], message: "user has been created wallet!"})
-        }
-        
+        else{{
+            const data = await transfer({userId, chainId, toAddress, amount, tokenAddress});
+            res.json({success: true, data})
+        }}
+
     } catch (error) {
       console.log(error);
       res.status(500).json({ success: false, message: "Internal server error" });

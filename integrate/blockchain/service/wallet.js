@@ -15,7 +15,7 @@ async function createWallet(userId){
                 address: bitcoinWallet.address,
                 publicKey: bitcoinWallet.publicKey,
                 privateKey: bitcoinWallet.privateKey,
-                mnemonic: bitcoinWallet.mnemonic.phrase
+                mnemonic: bitcoinWallet.mnemonic
             },
             evm:{
                 networkId: 2,
@@ -23,10 +23,13 @@ async function createWallet(userId){
                 address: walletEther.address,
                 publicKey: walletEther.publicKey,
                 privateKey: walletEther.privateKey,
-                mnemonic: walletEther.mnemonic.phrase
+                mnemonic: walletEther.mnemonic
             }
 
-        }
+        },
+        created_time: new Date(),
+        updated_time:  new Date(),
+        updated_by: 'core_api',
     })
     
     return {

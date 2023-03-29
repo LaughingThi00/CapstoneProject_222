@@ -20,7 +20,10 @@ const WalletSchema = new Schema({
             privateKey: String,
             mnemonic: String,
         }
-    }
+    },
+    created_time: Date,
+    updated_time: Date,
+    updated_by: String
 
 })
 
