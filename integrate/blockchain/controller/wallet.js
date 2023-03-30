@@ -22,7 +22,7 @@ router.post("/create-wallet",  async (req, res) => {
         const { userId } = req.body;
         console.log('userId:', userId)
         const users = await Wallet.find({userId: userId});
-        if (users.length ==0){
+        if (!users.length ){
             const data = await createWallet(userId);
             console.log('data:', data)
             
