@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 
+import { apiBlockChainUrl } from "../constant";
+
 // const verifyToken = require('../middleware/auth')
 
 const User = require("../models/User");
@@ -22,10 +24,10 @@ router.get("/", async (req, res) => {
 // @desc create user and his wallet
 // @access Public
 router.post("/", async (req, res) => {
-  const { id } = req.body;
+  const { userId } = req.body;
 
   // Simple validation
-  if (!username) {
+  if (!userId) {
     return res
       .status(400)
       .json({ success: false, message: "Missing id of this user" });
@@ -33,50 +35,51 @@ router.post("/", async (req, res) => {
 
   try {
     // Check if user exists
-    const user = await User.findOne({ id });
+    const user = await User.findOne({ userId });
 
     if (user) {
       return res
         .status(400)
-        .json({ success: false, message: "This user has a storage already!" });
+        .json({ success: false, message: "This user has existed already!" });
     }
 
     // All good, let's create wallet for this user
-    try {
-      // Call API from Blockchain to create a new wallet for this user
 
-      if (1) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Can not create wallet!" });
+    // Call API from Blockchain to create a new wallet for this user
+    const asset = await axios.post(`${apiBlockChainUrl}/wallet/create-wallet`, {
+      userId,
+    });
+
+    if (!asset.data.success) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Can not create wallet!" });
+    } else {
+      try {
+        const newUser = new User({
+          id: userId,
+          asset: [
+            { token: "BTC", addess: asset.data.data.addressBitcoin, amount: 0 },
+            { token: "EVM", addess: asset.data.data.addressEther, amount: 0 },
+          ],
+        });
+
+        await newUser.save();
+
+        res.json({
+          success: true,
+          message: "One User has just been added!",
+          user: newUser,
+        });
+      } catch (error) {
+        console.log(error);
+        res
+          .status(500)
+          .json({ success: false, message: "Internal server error" });
       }
-    } catch (err) {
-      
     }
-
-
-    const newUser = new User({
-      username,
-      password: hashedPassword,
-      recovery_mail,
-      active_day,
-    });
-    await newUser.save();
-
-    // Return token
-    const accessToken = jwt.sign(
-      { userId: newUser._id },
-      process.env.ACCESS_TOKEN_SECRET
-    );
-
-    res.json({
-      success: true,
-      message: "User created successfully",
-      newUser,
-      accessToken,
-    });
-  } catch (error) {
-    console.log(error);
+  } catch (err) {
+    console.log(err);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
@@ -85,34 +88,50 @@ router.post("/", async (req, res) => {
 // @desc Update one user
 // @access Private
 router.put("/:id", async (req, res) => {
-  const { username, password, recovery_mail, active_day } = req.body;
-  let hashedPassword = null;
-  if (password) hashedPassword = await argon2.hash(password);
+  const { token, type, amount } = req.body;
 
   // Simple validation
   const UpdateCondition = { _id: req.params.id };
-  const originOne = await User.findOne(UpdateCondition);
+  let originOne = await User.findOne(UpdateCondition);
 
-  if (username !== originOne.username) {
-    const precheck = await User.findOne({ username });
-    if (precheck) {
-      return res.status(401).json({
-        success: false,
-        message:
-          "New user name has been taken already. Please choose another one.",
-      });
+  if (originOne) {
+
+    switch (type) {
+      
+      case "+":
+        originOne.asset.forEach((item) => {
+          if (item.token === token) {
+            item.token += amount;
+          }
+        });
+        break;
+
+      case "-":
+        originOne.asset.forEach((item) => {
+          if (item.token === token) {
+            if (item.amount < amount)
+              return res.status(401).json({
+                success: false,
+                message: "User doesn't haave enough token!",
+              });
+            else item.amount -= amount;
+          }
+        });
+        break;
+
+      default:
+        break;
+
     }
+  } else {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid user!",
+    });
   }
 
   try {
-    let UpdatedUser = {
-      username: username || originOne.username,
-      password: password ? hashedPassword : originOne.password,
-      recovery_mail: recovery_mail || originOne.recovery_mail,
-      active_day: active_day || originOne.active_day,
-    };
-
-    UpdatedUser = await User.findOneAndUpdate(UpdateCondition, UpdatedUser, {
+    UpdatedUser = await User.findOneAndUpdate(UpdateCondition, originOne, {
       new: true,
     });
 
@@ -129,6 +148,7 @@ router.put("/:id", async (req, res) => {
       message: "Excellent progress!",
       UpdatedUser,
     });
+    
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal server error" });
