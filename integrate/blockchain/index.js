@@ -3,6 +3,7 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 
 const walletRouter = require('./controller/wallet')
+const transferRouter = require('./controller/transfer')
 const getMongoUrl = require('./utils/get-mongo-url')
 // const path = require('path')
 
@@ -31,12 +32,10 @@ connectDB()
 const app = express()
 app.use(express.json())
 app.use(cors())
-if (process.env.NODE_ENV === 'production')
-// app.get('/*',(req, res) => {
-// 	res.sendFile(path.join(__dirname + '/client/build/public/index.html'))
-//   })
+// if (process.env.NODE_ENV === 'production')
 
-{ app.use('/api/wallet', walletRouter) }
+app.use('/api/wallet', walletRouter)
+app.use('/api/transaction', transferRouter)
 
 const PORT = process.env.API_PORT || 5000
 
