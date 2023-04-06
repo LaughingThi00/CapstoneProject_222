@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
-const ListenDepositSchema = new Schema({
+const CrawlDepositSchema = new Schema({
 	chainId: Number, 
     value: Number,
     key: 'lastBlockFetchDeposit',
@@ -10,4 +10,4 @@ const ListenDepositSchema = new Schema({
     updated_by: String
 })
 
-module.exports = mongoose.model('ListenDeposit', ListenDepositSchema)
+module.exports = mongoose.model('CrawlDeposit', CrawlDepositSchema)
