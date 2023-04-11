@@ -8,11 +8,11 @@ const API_KEY_SCAN = {
         url: "",
     } ,
     56: {
-        key: "HE874I19I9K18V4NJ7TFZKFIVYE44NMMPZ",
+        key: "84QSIJWX1BV4P9B9BFFTUG46MRPIUY2U2B",
         url: "https://api.bscscan.com/api",
     } ,
     97: {
-        key: "HE874I19I9K18V4NJ7TFZKFIVYE44NMMPZ",
+        key: "84QSIJWX1BV4P9B9BFFTUG46MRPIUY2U2B",
         url: "https://api-testnet.bscscan.com/api",
     } ,
 }

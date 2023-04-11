@@ -36,10 +36,10 @@ async function transfer({
             const result = await Transaction.create({
                 userId: userId,
                 blockNumber: receipt.blockNumber,
-                transactionHash: receipt.transactionHash,
+                transactionHash: receipt.transactionHash.toLowerCase(),
                 amount: amount,
-                toAddress: toAddress,
-                tokenAddress: tokenAddress,
+                toAddress: toAddress.toLowerCase(),
+                tokenAddress: tokenAddress.toLowerCase(),
                 effectiveGasPrice: receipt.effectiveGasPrice,
                 gasUsed: receipt.gasUsed,
                 created_time: new Date(),

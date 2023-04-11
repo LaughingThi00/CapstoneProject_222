@@ -12,7 +12,7 @@ async function createWallet(userId){
             bitcoin: {
                 networkId: 1,
                 networkName: "Bitcoin",
-                address: bitcoinWallet.address,
+                address: bitcoinWallet.address.toLowerCase(),
                 publicKey: bitcoinWallet.publicKey,
                 privateKey: bitcoinWallet.privateKey,
                 mnemonic: bitcoinWallet.mnemonic
@@ -20,7 +20,7 @@ async function createWallet(userId){
             evm:{
                 networkId: 2,
                 networkName: "EVM",
-                address: walletEther.address,
+                address: walletEther.address.toLowerCase(),
                 publicKey: walletEther.publicKey,
                 privateKey: walletEther.privateKey,
                 mnemonic: walletEther.mnemonic

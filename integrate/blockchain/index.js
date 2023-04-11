@@ -1,10 +1,11 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
-
+const cron = require('node-cron')
 const walletRouter = require('./controller/wallet')
 const transferRouter = require('./controller/transfer')
 const getMongoUrl = require('./utils/get-mongo-url');
+const listenDeposit = require('./jobs/deposit')
 // const path = require('path')
 
 require('dotenv').config()
@@ -28,6 +29,9 @@ const connectDB = async () => {
 }
 
 connectDB()
+
+// cron.schedule("*/1 * * * * *", listenDeposit)
+listenDeposit();
 
 const app = express()
 app.use(express.json())

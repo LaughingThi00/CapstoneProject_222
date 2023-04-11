@@ -7,7 +7,6 @@ class Web3 {
 
     static async getTransactionReceipt(txHash, chainId) {
         const web3 = Web3.httpProvider(chainId);
-    
         try {
           return await web3.eth.getTransactionReceipt(txHash);
         } catch (error) {
