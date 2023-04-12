@@ -12,15 +12,15 @@ require('dotenv').config()
 
 const connectDB = async () => {
 	try {
-		await mongoose.connect(getMongoUrl(),	
-		{
-			useCreateIndex: true,
-			useNewUrlParser: true,
-			useUnifiedTopology: true,
-			useFindAndModify: false
-		}
-	)
-
+		await mongoose.connect(
+			`mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.r2ufcpu.mongodb.net/?retryWrites=true&w=majority`
+			,{
+				useCreateIndex: true,
+				useNewUrlParser: true,
+				useUnifiedTopology: true,
+				useFindAndModify: false
+			}
+		)
 		console.log('MongoDB connected')
 	} catch (error) {
 		console.log(error.message)
@@ -31,7 +31,7 @@ const connectDB = async () => {
 connectDB()
 
 // cron.schedule("*/1 * * * * *", listenDeposit)
-listenDeposit();
+// listenDeposit();
 
 const app = express()
 app.use(express.json())
