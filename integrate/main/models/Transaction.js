@@ -15,7 +15,7 @@ const TransactionSchema = new Schema({
     type: String,
     required: true,
   },
-  to_adress: {
+  to_address: {
     type: String,
     required: true,
   },

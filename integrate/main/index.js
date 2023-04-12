@@ -3,8 +3,9 @@ const mongoose = require('mongoose')
 const cors = require('cors')
 
 // const authRouter = require('./controller/auth')
-// const userRouter = require('./controller/user')
-
+const userRouter = require('./controller/user')
+const transactionRouter = require('./controller/transaction')
+const systemWalletRouter = require('./controller/systemwallet')
 // const path = require('path')
 
 require('dotenv').config()
@@ -41,6 +42,9 @@ app.use(cors())
 // app.use('/api/auth', authRouter)
  
 app.use('/api/user', userRouter)
+app.use('/api/transaction', transactionRouter)
+app.use('/api/systemwallet', systemWalletRouter)
+
 
 const PORT = process.env.PORT || 5000
 

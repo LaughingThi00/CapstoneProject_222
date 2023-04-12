@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
-import { apiBlockChainUrl } from "../constant";
+const Url= require("./../constants/constant");
 
 // const verifyToken = require('../middleware/auth')
 
@@ -46,7 +45,7 @@ router.post("/", async (req, res) => {
     // All good, let's create wallet for this user
 
     // Call API from Blockchain to create a new wallet for this user
-    const asset = await axios.post(`${apiBlockChainUrl}/wallet/create-wallet`, {
+    const asset = await axios.post(`${Url.apiBlockChainUrl}/wallet/create-wallet`, {
       userId,
     });
 
@@ -177,5 +176,6 @@ router.delete("/:id", async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 });
+
 
 module.exports = router;

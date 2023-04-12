@@ -1,11 +1,11 @@
 const express = require("express");
 const router = express.Router();
+const SystemWallet = require("../models/SystemWallet");
+// const  apiBlockChainUrl =require ("../constants/constant");
 
-import { apiBlockChainUrl } from "../constant";
 
 // const verifyToken = require('../middleware/auth')
 
-const SystemWallet = require("../models/SystemWallet");
 
 // @route GET api/systemwallet
 // @desc Get all systemwallet
@@ -24,16 +24,16 @@ router.get("/", async (req, res) => {
 // @desc create new storing systemwallet
 // @access Public
 router.post("/", async (req, res) => {
-  const { data } = req.body;
-
-  const {
+  const   {
     address,
     token,
     amount,
-  } = data;
+  } = req.body;
+
+
 
   // Simple validation
-  if (!address||token||amount) {
+  if (!address||!token||!amount) {
     return res
       .status(400)
       .json({ success: false, message: "Missing information of this systemwallet" });
@@ -87,16 +87,15 @@ router.post("/", async (req, res) => {
 // @desc Update one systemwallet
 // @access Private
 router.put("/:address", async (req, res) => {
-  const {  address,
+  const { 
     token,
     amount, } = req.body;
-
   // Simple validation
-  const UpdateCondition = { hash: req.params.address };
+  const UpdateCondition = { address: req.params.address };
   let originOne = await SystemWallet.findOne(UpdateCondition);
 
   if (originOne) {
-    originOne.address = address? address : originOne.address;
+    originOne.address = req.params.address? req.params.address : originOne.address;
 
     originOne.token = token? token:originOne.token;
     originOne.amount = amount? amount:originOne.amount;
