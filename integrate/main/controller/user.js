@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Url= require("./../constants/constant");
-
+const axios=require("axios");
 // const verifyToken = require('../middleware/auth')
 
 const User = require("../models/User");
@@ -45,11 +45,12 @@ router.post("/", async (req, res) => {
     // All good, let's create wallet for this user
 
     // Call API from Blockchain to create a new wallet for this user
-    const asset = await axios.post(`${Url.apiBlockChainUrl}/wallet/create-wallet`, {
+    const assetRes = await axios.post(`${Url.apiBlockChainUrl}/wallet/create-wallet`, 
+    {
       userId,
     });
-
-    if (!asset.data.success) {
+console.log("assetRes.data.data~~~~~~~~~~",assetRes.data.data)
+    if (!assetRes.data.success) {
       return res
         .status(400)
         .json({ success: false, message: "Can not create wallet!" });
@@ -58,8 +59,8 @@ router.post("/", async (req, res) => {
         const newUser = new User({
           id: userId,
           asset: [
-            { token: "BTC", addess: asset.data.data.addressBitcoin, amount: 0 },
-            { token: "EVM", addess: asset.data.data.addressEther, amount: 0 },
+            { token: "BTC", address: assetRes.data.data.addressBitcoin, amount: 0 },
+            { token: "EVM", address: assetRes.data.data.addressEther, amount: 0 },
           ],
         });
 
@@ -90,9 +91,11 @@ router.put("/:id", async (req, res) => {
   const { token, type, amount } = req.body;
 
   // Simple validation
-  const UpdateCondition = { _id: req.params.id };
+  const UpdateCondition = { id: req.params.id };
   let originOne = await User.findOne(UpdateCondition);
 
+
+  
   if (originOne) {
 
     switch (type) {
@@ -111,7 +114,7 @@ router.put("/:id", async (req, res) => {
             if (item.amount < amount)
               return res.status(401).json({
                 success: false,
-                message: "User doesn't haave enough token!",
+                message: "User doesn't have enough token!",
               });
             else item.amount -= amount;
           }
@@ -159,7 +162,7 @@ router.put("/:id", async (req, res) => {
 // @access Private
 router.delete("/:id", async (req, res) => {
   try {
-    const DeleteCondition = { _id: req.params.id };
+    const DeleteCondition = { id: req.params.id };
     const DeletedUser = await User.findOneAndDelete(DeleteCondition);
 
     // User not authorised or post not found

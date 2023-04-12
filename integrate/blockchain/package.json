@@ -12,6 +12,7 @@
 	"license": "ISC",
 	"dependencies": {
 		"argon2": "^0.27.1",
+		"axios": "^1.3.5",
 		"bip32": "^4.0.0",
 		"bip39": "^3.1.0",
 		"bitcoinjs-lib": "^6.1.0",

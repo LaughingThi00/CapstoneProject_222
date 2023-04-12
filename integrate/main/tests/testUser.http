@@ -6,11 +6,11 @@ POST http://localhost:5000/api/user
 content-type: application/json
 
 {
-    "userId":"3453534534"
+    "userId":"32535768"
 }
 
 ###
-PUT http://localhost:5000/api/user/123123123 
+PUT http://localhost:5000/api/user/32535768 
 content-type: application/json
 
 {
@@ -21,6 +21,6 @@ content-type: application/json
 }
 
 ###
-DELETE  http://localhost:5000/api/user/32243432 
+DELETE  http://localhost:5000/api/user/32535768 
 content-type: application/json
 
