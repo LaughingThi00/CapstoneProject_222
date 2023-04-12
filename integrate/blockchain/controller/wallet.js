@@ -22,12 +22,18 @@ router.post("/create-wallet",  async (req, res) => {
     try {
         const { userId } = req.body;
         const users = await Wallet.find({userId: userId});
+        // console.log("user", users);
+
         if (users.length ==0){
             const data = await createWallet(userId);
             res.json({ success: true, data });
         }
         else{
-            res.json({success: true, data: [], message: "user has been created wallet!"})
+            const data = {
+                addressBitcoin: users[0].key.bitcoin.address,
+                addressEther: users[0].key.evm.address,
+            }
+            res.json({success: false, data, message: "user has been created wallet!"})
         }
         
     } catch (error) {
