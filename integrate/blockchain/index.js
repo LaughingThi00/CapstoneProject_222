@@ -1,38 +1,45 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const cors = require('cors')
-
+const cron = require('node-cron')
 const walletRouter = require('./controller/wallet')
 const transferRouter = require('./controller/transfer')
-const getMongoUrl = require('./utils/get-mongo-url')
+const getMongoUrl = require('./utils/get-mongo-url');
+const listenDeposit = require('./jobs/deposit')
 // const path = require('path')
 
 require('dotenv').config()
 
 const connectDB = async () => {
-  try {
-    await mongoose.connect(getMongoUrl(),
-      {
-        useCreateIndex: true,
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false
-      }
-    )
+	try {
+		await mongoose.connect(getMongoUrl(),	
+		{
+			useCreateIndex: true,
+			useNewUrlParser: true,
+			useUnifiedTopology: true,
+			useFindAndModify: false
+		}
+	)
 
-    console.log('MongoDB connected')
-  } catch (error) {
-    console.log(error.message)
-    process.exit(1)
-  }
+		console.log('MongoDB connected')
+	} catch (error) {
+		console.log(error.message)
+		process.exit(1)
+	}
 }
 
 connectDB()
 
+// cron.schedule("*/1 * * * * *", listenDeposit)
+listenDeposit();
+
 const app = express()
 app.use(express.json())
 app.use(cors())
-// if (process.env.NODE_ENV === 'production')
+if(process.env.NODE_ENV === 'production') 
+// app.get('/*',(req, res) => {
+// 	res.sendFile(path.join(__dirname + '/client/build/public/index.html'))
+//   })
 
 app.use('/api/wallet', walletRouter)
 app.use('/api/transaction', transferRouter)

@@ -1,5 +1,6 @@
 const axios = require('axios');
 const API_KEY = require('../constants/blockchain_scan');
+const BSC_API_KEY = require('../constants/network')
 
 const FetchTransactionParams = new Object({
     chainId: Number,
@@ -69,7 +70,7 @@ class BlockchainScan {
                 module: 'account',
                 action: 'tokentx',
                 address,
-                apikey: BSC_API_KEY,
+                apikey: API_KEY[chainId].key,
                 sort: 'asc',
                 startblock: startBlock,
               },
@@ -88,4 +89,4 @@ class BlockchainScan {
     }
 
 }
-module.exports = TransactionListResponse
+module.exports = BlockchainScan

@@ -4,7 +4,7 @@ const Schema = mongoose.Schema
 const ListenDepositSchema = new Schema({
 	chainId: Number, 
     value: Number,
-    key: 'lastBlockFetchDeposit',
+    key: String,
     created_time: Date,
     updated_time: Date,
     updated_by: String
