@@ -101,22 +101,22 @@ router.put("/:id", async (req, res) => {
     switch (type) {
       
       case "+":
-        originOne.asset.forEach((item) => {
+        originOne.asset.forEach((item,index) => {
           if (item.token === token) {
-            item.token += amount;
+            originOne.asset[index].amount += amount;
           }
         });
         break;
 
       case "-":
-        originOne.asset.forEach((item) => {
+        originOne.asset.forEach((item,index) => {
           if (item.token === token) {
             if (item.amount < amount)
               return res.status(401).json({
                 success: false,
                 message: "User doesn't have enough token!",
               });
-            else item.amount -= amount;
+            else  originOne.asset[index].amount -= amount;
           }
         });
         break;
