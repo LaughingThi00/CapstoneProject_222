@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Url= require("./../constants/constant");
+const Url= require("../../constants/constant");
 const axios=require("axios");
 // const verifyToken = require('../middleware/auth')
 

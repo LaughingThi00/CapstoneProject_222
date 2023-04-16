@@ -107,7 +107,7 @@ router.put("/:hash", async (req, res) => {
   } = req.body;
 
   // Simple validation
-  const UpdateCondition = { hash: req.params.hash };
+  const UpdateCondition = { hash: req.params.hash }; user.asset.network.find() 
   let originOne = await Transaction.findOne(UpdateCondition);
 
   if (originOne) {

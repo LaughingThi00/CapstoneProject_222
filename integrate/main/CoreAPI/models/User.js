@@ -11,12 +11,25 @@ const UserSchema = new Schema({
     required: true,
     unique: true,
   },
+  network:[
+{
+  name:'',
+  address:'',
+}
+  ],
+
 
   asset: [
+    
       {
-        token: { type: String, required: true },
-        address: { type: String, required: true },
+        token: { type: String, required: true }, 
         amount: { type: Number, required: true },
+        network:[  
+          {
+          name: { type: String, required: true },  
+          address: { type: String, required: true }, 
+        }
+      ]
       }
     ]
 });

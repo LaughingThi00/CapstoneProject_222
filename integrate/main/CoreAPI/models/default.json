@@ -1,0 +1,73 @@
+{
+  "network": [
+    {
+      "name": "BTC",
+      "address": "0x345345345345",
+      "child": []
+    },
+    {
+      "name": "EVM",
+      "address": "hrhrthregrgafgaeg",
+      "child": [
+        {
+          "name": "EVM1",
+          "chainID": "123254545",
+          "address": "0x457585675858657457"
+        },
+        {
+          "name": "EVM2",
+          "chainID": "245468534",
+          "address": "0x384736569685748930"
+        },
+        {
+          "name": "EVM3",
+          "chainID": "364456568",
+          "address": "0x598704587095860345"
+        }
+      ]
+    }
+  ],
+
+  "token": [
+    {
+      "name": "Bitcoin",
+      "option-network": [
+        {
+          "name": "BTC",
+          "address": "0x345345345345",
+          "chainID": ""
+        },
+        {
+          "name": "EVM1",
+          "chainID": "123254545",
+          "address": "0x457585675858657457"
+        },
+        {
+          "name": "EVM3",
+          "chainID": "364456568",
+          "address": "0x598704587095860345"
+        }
+      ]
+    },
+    {
+      "name": "Ethereum",
+      "option-network": [
+        {
+          "name": "BTC",
+          "chainID": "",
+          "address": "0x345345345345"
+        },
+        {
+          "name": "EVM1",
+          "chainID": "123254545",
+          "address": "0x457585675858657457"
+        },
+        {
+          "name": "EVM2",
+          "chainID": "245468534",
+          "address": "0x384736569685748930"
+        }
+      ]
+    }
+  ]
+}
