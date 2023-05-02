@@ -6,6 +6,8 @@ const cors = require('cors')
 const userRouter = require('./controller/user')
 const transactionRouter = require('./controller/transaction')
 const systemWalletRouter = require('./controller/systemwallet')
+const merchantRouter = require('./controller/merchant')
+const endpointRouter = require('./controller/endpoint')
 // const path = require('path')
 
 require('dotenv').config()
@@ -44,8 +46,12 @@ app.use(cors())
 app.use('/api/user', userRouter)
 app.use('/api/transaction', transactionRouter)
 app.use('/api/systemwallet', systemWalletRouter)
+app.use('/api/merchant', merchantRouter)
+app.use('/endpoint', endpointRouter)
+
 
 
 const PORT = process.env.PORT || 5000
+
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`))

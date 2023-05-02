@@ -7,7 +7,9 @@ POST http://localhost:5000/api/user
 content-type: application/json
 
 {
-    "userId":"656853645"
+    "merchant":"111111",
+    "userId":"89658463"
+
 }
 
 ###
@@ -22,6 +24,6 @@ content-type: application/json
 }
 
 ###
-DELETE  http://localhost:5000/api/user/656853645 
+DELETE  http://localhost:5000/api/user/thanh1 
 content-type: application/json
 

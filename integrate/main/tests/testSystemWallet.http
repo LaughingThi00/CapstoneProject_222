@@ -8,19 +8,30 @@ POST http://localhost:5000/api/systemwallet
 content-type: application/json
 
 {
-    "address" : "0x453464353" ,
-    "token": "VND",
+    "address" : "PAYPAL" ,
+    "name":"PAYPAL",
+    "token": "USD",
     "amount":"0"
 }
 
 ###
-PUT http://localhost:5000/api/systemwallet/0x453464353 
+PUT http://localhost:5000/api/systemwallet
 content-type: application/json
 
 {
+    "address":"MOMO",
+    "amount":10000000
+}
 
-    "token": "VND",
-    "amount":"1000000"
+###
+PUT http://localhost:5000/api/systemwallet/update-balance 
+content-type: application/json
+
+{
+    "type":"-",
+    "address":"MOMO",
+    "token":"VND",
+    "amount":11000
 }
 
 ###

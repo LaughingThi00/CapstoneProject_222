@@ -7,6 +7,11 @@ const SystemWalletSchema = new Schema({
     required: true,
     unique: true,
   },
+  name:{
+    type: String,
+    required: true,
+    unique: true,
+  },
   token: {
     type: String,
     required: true,

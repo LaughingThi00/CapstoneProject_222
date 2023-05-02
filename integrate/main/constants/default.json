@@ -69,5 +69,27 @@
         }
       ]
     }
+  ],
+  "third-partner":[
+    {
+      "name":"MOMO",
+      "account":"0978342341"
+    },
+    {
+      "name":"AGRIBANK",
+      "account":"7106205244872"
+    },
+    {
+      "name":"DONGABANK",
+      "account":"0912309218309"
+    },
+    {
+      "name":"VNPAY",
+      "account":"234239402348"
+    },
+    {
+      "name":"PAYPAL",
+      "account":"00013230464976"
+    }
   ]
 }

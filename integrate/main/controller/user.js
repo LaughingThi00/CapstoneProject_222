@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const Url= require("../../constants/constant");
+const Url= require("./../constants/constant");
 const axios=require("axios");
 // const verifyToken = require('../middleware/auth')
 
@@ -19,11 +19,28 @@ router.get("/", async (req, res) => {
   }
 });
 
+// @route GET api/user
+// @desc Get all user
+// @access Private
+// router.get("/by-merchant", async (req, res) => {
+//   const { merchant } = req.body;
+
+//   try {
+//     const users = await User.findOne({merchant});
+//     res.json({ success: true, users });
+//   } catch (error) {
+//     console.log(error);
+//     res.status(500).json({ success: false, message: "Internal server error" });
+//   }
+// });
+
 // @route POST api/user
 // @desc create user and his wallet
 // @access Public
 router.post("/", async (req, res) => {
-  const { userId } = req.body;
+  const { 
+    merchant,
+    userId } = req.body;
 
   // Simple validation
   if (!userId) {
@@ -34,7 +51,7 @@ router.post("/", async (req, res) => {
 
   try {
     // Check if user exists
-    const user = await User.findOne({ userId });
+    const user = await User.findOne({ id:userId });
 
     if (user) {
       return res
@@ -49,7 +66,6 @@ router.post("/", async (req, res) => {
     {
       userId,
     });
-console.log("assetRes.data.data~~~~~~~~~~",assetRes.data.data)
     if (!assetRes.data.success) {
       return res
         .status(400)
@@ -58,6 +74,7 @@ console.log("assetRes.data.data~~~~~~~~~~",assetRes.data.data)
       try {
         const newUser = new User({
           id: userId,
+          merchant,
           asset: [
             { token: "BTC", address: assetRes.data.data.addressBitcoin, amount: 0 },
             { token: "EVM", address: assetRes.data.data.addressEther, amount: 0 },
