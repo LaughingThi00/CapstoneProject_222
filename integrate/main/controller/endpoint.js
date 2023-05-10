@@ -98,7 +98,6 @@ router.get("/transaction", async (req, res) => {
           message: "Something went wrong!",
         });
       } else {
-
         addressUser = findListUserAddress(user);
 
         result = result.data.transactions.filter(
@@ -121,8 +120,8 @@ router.get("/transaction", async (req, res) => {
           message: "Something went wrong! hihihi",
         });
       else {
-        const user = await User.find({merchant});
-        console.log("USERLIST LA:",user)
+        const user = await User.find({ merchant });
+        console.log("USERLIST LA:", user);
         addressUser = findListMerchantAddress(user, merchant);
         result = result.data.transactions.filter(
           (item) =>
@@ -147,8 +146,16 @@ router.get("/transaction", async (req, res) => {
 // @access Private
 
 router.put("/buy-crypto", async (req, res) => {
-  const { userId, merchant, amount_VND, for_token, network, bill, platform } =
-    req.body;
+  const {
+    userId,
+    merchant,
+    amount_VND,
+    for_token,
+    network,
+    bill,
+    platform,
+    slippage,
+  } = req.body;
   if (!checkBalance(bill, amount_VND, platform))
     res.status(401).json({
       success: false,
@@ -156,22 +163,29 @@ router.put("/buy-crypto", async (req, res) => {
         "User have not send VND for us or catch a mistake when verifying your information",
     });
   try {
-    const updateSysBalance = await axios.put(`${Url.apiBackEndUrl}/systemwallet/update-balance`, {
-      address:platform,
-      token:"VND",
-      type:"+",
-      amount:amount_VND,
-    });
+    const updateSysBalance = await axios.put(
+      `${Url.apiBackEndUrl}/systemwallet/update-balance`,
+      {
+        address: platform,
+        token: "VND",
+        type: "+",
+        amount: amount_VND,
+      }
+    );
 
-    if(!updateSysBalance.data.success) res.status(400).json({success:false,message:"Catch error!"})
+    if (!updateSysBalance.data.success)
+      res.status(400).json({ success: false, message: "Catch error!" });
 
-    const result = await axios.post(`${Url.apiBlockChainUrl}/buy-crypto`, {
+    const result = await axios.post(`${Url.apiBlockChainUrl}/buy-crypto`, 
+    {
       userId,
       merchant,
       amount_VND,
       for_token,
-      network,
+      chainId: network,
+      slippage,
     });
+
     if (!result.data.success)
       res.status(401).json({
         success: false,
@@ -190,15 +204,21 @@ router.put("/buy-crypto", async (req, res) => {
 // @access Private
 
 router.put("/purchase", async (req, res) => {
-  const { from_address, to_address, token, amount,network } = req.body;
+  const { from_address, to_address, token, amount, network, merchant } =
+    req.body;
   try {
-    const result = await axios.put(`${Url.apiBlockChainUrl}/purchase`, {
-      from_address,
-      to_address,
-      token,
+    transaction
+    const result = await axios.put(`${Url.apiBlockChainUrl}/transfer`, {
+      userId: from_address,
+      merchant,
+      toAddress: to_address,
+      tokenAddress: transToTokenAddress(token),
       amount,
-      network
+      chainId: network,
     });
+
+    
+
     if (result.data.success)
       res.status(200).json({
         success: true,

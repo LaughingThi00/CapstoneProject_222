@@ -77,7 +77,10 @@ router.post("/", async (req, res) => {
           merchant,
           asset: [
             { token: "BTC", address: assetRes.data.data.addressBitcoin, amount: 0 },
-            { token: "EVM", address: assetRes.data.data.addressEther, amount: 0 },
+            { token: "ETH", address: assetRes.data.data.addressEther, amount: 0 },
+            { token: "USDT", address: assetRes.data.data.addressEther, amount: 0 },
+            { token: "BNB", address: assetRes.data.data.addressEther, amount: 0 },
+
           ],
         });
 

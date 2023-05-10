@@ -30,7 +30,7 @@
 
   "token": [
     {
-      "name": "Bitcoin",
+      "name": "Bitcoin", 
       "option-network": [
         {
           "name": "BTC",
@@ -91,5 +91,9 @@
       "name":"PAYPAL",
       "account":"00013230464976"
     }
-  ]
+  ],
+  "key":{
+    "publicKey":"",
+    "privateKey":""
+  }
 }
