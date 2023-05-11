@@ -27,73 +27,113 @@
       ]
     }
   ],
-
   "token": [
     {
-      "name": "Bitcoin", 
-      "option-network": [
+      "name": "Bitcoin",
+      "symbol": "BTC",
+      "supported_network":[
+        "Bitcoin","EVM"
+      ],
+      "option_network": [
         {
-          "name": "BTC",
-          "address": "0x345345345345",
+          "name": "Bitcoin",
+          "address": "",
           "chainID": ""
         },
         {
-          "name": "EVM1",
-          "chainID": "123254545",
-          "address": "0x457585675858657457"
+          "name": "Ethereum",
+          "chainID": "1",
+          "address": ""
         },
         {
-          "name": "EVM3",
-          "chainID": "364456568",
-          "address": "0x598704587095860345"
+          "name": "BinanceSmartchain",
+          "chainID": "97",
+          "address": "0xAce40aF21659D0114568c12dc8FEbc477627e780"
         }
       ]
     },
     {
       "name": "Ethereum",
-      "option-network": [
+      "symbol": "ETH",
+      "supported_network":[
+    "EVM"
+      ],
+      "option_network": [
         {
-          "name": "BTC",
-          "chainID": "",
-          "address": "0x345345345345"
+          "name": "Ethereum",
+          "chainID": "1",
+          "address": ""
         },
         {
-          "name": "EVM1",
-          "chainID": "123254545",
-          "address": "0x457585675858657457"
+          "name": "BinanceSmartchain",
+          "chainID": "97",
+          "address": "0x20401137ed2a17AE5bfac387483f1D49D2100A0C"
+        }
+      ]
+    },
+    {
+      "name": "BNB",
+      "symbol": "BNB",
+      "supported_network":[
+        "EVM"
+          ],
+      "option_network": [
+        {
+          "name": "Ethereum",
+          "chainID": "1",
+          "address": ""
         },
         {
-          "name": "EVM2",
-          "chainID": "245468534",
-          "address": "0x384736569685748930"
+          "name": "BinanceSmartchain",
+          "chainID": "97",
+          "address": "native"
+        }
+      ]
+    },
+    {
+      "name": "Tether",
+      "symbol": "USDT",
+      "supported_network":[
+        "EVM"
+          ],
+      "option_network": [
+        {
+          "name": "Ethereum",
+          "chainID": "1",
+          "address": ""
+        },
+        {
+          "name": "BinanceSmartchain",
+          "chainID": "97",
+          "address": "0x57aa96000E6317c846bbce0AF17B41B1cBdd300F"
         }
       ]
     }
   ],
-  "third-partner":[
+  "third_partner": [
     {
-      "name":"MOMO",
-      "account":"0978342341"
+      "name": "MOMO",
+      "account": "0978342341"
     },
     {
-      "name":"AGRIBANK",
-      "account":"7106205244872"
+      "name": "AGRIBANK",
+      "account": "7106205244872"
     },
     {
-      "name":"DONGABANK",
-      "account":"0912309218309"
+      "name": "DONGABANK",
+      "account": "0912309218309"
     },
     {
-      "name":"VNPAY",
-      "account":"234239402348"
+      "name": "VNPAY",
+      "account": "234239402348"
     },
     {
-      "name":"PAYPAL",
-      "account":"00013230464976"
+      "name": "PAYPAL",
+      "account": "00013230464976"
     }
   ],
-  "key":{
-    "publicKey":"",
-    "privateKey":""
+  "key": {
+    "publicKey": "",
+    "privateKey": ""
   }
 }

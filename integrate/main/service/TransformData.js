@@ -1,3 +1,5 @@
+const Default_Data = require("./../constants/default.json");
+
 const findListUserAddress = (user) => {
   const data = [];
   user.asset.forEach((item) => {
@@ -17,4 +19,9 @@ const findListMerchantAddress = (userlist, merchant) => {
   return data;
 };
 
-module.exports={findListUserAddress,findListMerchantAddress}
+const findSupportedNetwork = (token) => {
+  const list = JSON.parse(JSON.stringify(Default_Data)).token;
+  const result = list.find((item) => item.symbol === token);
+  return result ? result.supported_network : null;
+};
+module.exports = { findListUserAddress, findListMerchantAddress,findSupportedNetwork };

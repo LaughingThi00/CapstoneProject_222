@@ -7,19 +7,23 @@ const UserSchema = new Schema({
     required: true,
     unique: true,
   },
-  merchant:{
+  merchant: {
     type: String,
     required: true,
   },
 
   asset: [
-    
-      {
-        token: { type: String, required: true }, 
-        address: { type: String, required: true }, 
-        amount: { type: Number, required: true },
-      }
-    ]
+    {
+      token: { type: String, required: true },
+      wallet: [
+        {
+          network: { type: String, required: true },
+          address: { type: String },
+        },
+      ],
+      amount: { type: Number, required: true },
+    },
+  ]
 });
 
 module.exports = mongoose.model("User", UserSchema);

@@ -2,28 +2,38 @@
 GET http://localhost:5000/api/user 
 content-type: application/json
 
+
+###
+GET http://localhost:5000/api/user/find-user 
+content-type: application/json
+
+{
+     "address": "1DK9cLGQCuJuGPzNmB1czXf7a4z3ri9nhQ"
+}
+
 ###
 POST http://localhost:5000/api/user 
 content-type: application/json
 
 {
     "merchant":"111111",
-    "userId":"89658463"
+    "userId":"48248"
 
 }
 
 ###
-PUT http://localhost:5000/api/user/656853645 
+PUT http://localhost:5000/api/user 
 content-type: application/json
 
 {
-
-    "token": "EVM",
+    "merchant":"111111",
+    "id":"48248",
+    "token": "ETH",
     "type":"+",
     "amount":20
 }
 
 ###
-DELETE  http://localhost:5000/api/user/thanh1 
+DELETE  http://localhost:5000/api/user/723409284 
 content-type: application/json
 
