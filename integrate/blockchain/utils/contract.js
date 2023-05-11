@@ -27,6 +27,20 @@ class Contract {
 
         return contract;
     }
+    static getRouterContract({chainId,address}){
+        let routerABIPath = path.join(__dirname, '../constants/abis/routerContract.json')
+        let routerABI = fs.readFileSync(routerABIPath, {
+            encoding: 'utf-8'
+        });
+        let loadRouterABI = JSON.parse(routerABI);
+        const contract = Contract.getContract({
+            abi: loadRouterABI,
+            chainId,
+            address,
+        });
+
+        return contract;
+    }
 }
 
 module.exports = Contract

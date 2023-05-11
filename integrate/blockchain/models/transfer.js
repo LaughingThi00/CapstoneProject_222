@@ -2,10 +2,12 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const TransactionSchema = new Schema({
-	userId: String,  
+	userId: String,
+    merchant: String,
     blockNumber: Number,
     transactionHash: String,
     amount: Number,
+    asset: String,
     toAddress: String,
     tokenAddress: String,
     effectiveGasPrice: Number,

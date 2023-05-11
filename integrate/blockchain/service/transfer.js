@@ -2,21 +2,23 @@
 const Web3 = require('../utils/web3')
 const Contract = require('../utils/contract')
 const Transaction = require('../models/transfer')
-
+const ADDRESS = require('../constants/address')
 async function transfer({
     userId,
+    merchant,
     chainId, 
     toAddress, 
-    amount, 
-    tokenAddress}){
+    amount,
+    asset}){
         try {
             const privateKey = process.env.HOT_WALLET_PRIVATE_KEY;
             const web3 = await Web3.httpProvider(chainId);
-            const account = web3.eth.accounts.privateKeyToAccount(privateKey);            
+            const account = web3.eth.accounts.privateKeyToAccount(privateKey);
+            const tokenAddress = ADDRESS.TOKENS[asset][chainId];
             const tokenContract = await Contract.getTokenContract({chainId, address: tokenAddress})
             
             var dataTransfer = tokenContract.methods.transfer(
-                toAddress,
+                toAddress.toLowerCase(),
                 web3.utils.toWei(amount.toString(), 'ether')
             );
             
@@ -25,7 +27,7 @@ async function transfer({
             var tx = {
                 from:account.address,
                 gas: 501064,
-                to:tokenAddress,
+                to:tokenAddress.toLowerCase(),
                 data:dataTransfer.encodeABI(),
                 nonce: web3.utils.toHex(count)
             };
@@ -35,9 +37,11 @@ async function transfer({
 
             const result = await Transaction.create({
                 userId: userId,
+                merchant: merchant,
                 blockNumber: receipt.blockNumber,
                 transactionHash: receipt.transactionHash.toLowerCase(),
                 amount: amount,
+                asset: asset,
                 toAddress: toAddress.toLowerCase(),
                 tokenAddress: tokenAddress.toLowerCase(),
                 effectiveGasPrice: receipt.effectiveGasPrice,

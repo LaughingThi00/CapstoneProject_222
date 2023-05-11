@@ -20,12 +20,12 @@ router.get("/health-check",  async (req, res) => {
 });     
 router.post("/create-wallet",  async (req, res) => {
     try {
-        const { userId } = req.body;
+        const { userId, merchant } = req.body;
         const users = await Wallet.find({userId: userId});
         // console.log("user", users);
 
-        if (users.length ==0){
-            const data = await createWallet(userId);
+        if (users.length === 0){
+            const data = await createWallet(userId, merchant);
             res.json({ success: true, data });
         }
         else{

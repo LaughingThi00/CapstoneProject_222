@@ -2,7 +2,8 @@ const mongoose = require('mongoose')
 const Schema = mongoose.Schema
 
 const WalletSchema = new Schema({
-	userId: String,  
+	userId: String,
+    merchant: String,
     key: {
         evm: {
             networkId: Number,

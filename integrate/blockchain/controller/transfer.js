@@ -20,13 +20,13 @@ router.get("/health-check",  async (req, res) => {
 });     
 router.post("/transfer",  async (req, res) => {
     try {
-        const { userId, chainId, toAddress, amount, tokenAddress } = req.body;
+        const { userId, merchant, chainId, toAddress, amount, asset } = req.body;
         const users = await Wallet.find({userId: userId});
         if (users.length==0){
             res.json({success: true, data: [], message: "user is not found"})
         }
         else{{
-            const data = await transfer({userId, chainId, toAddress, amount, tokenAddress});
+            const data = await transfer({userId, chainId, merchant, toAddress, amount, asset});
             res.json({success: true, data})
         }}
 
