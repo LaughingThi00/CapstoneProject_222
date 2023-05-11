@@ -4,6 +4,7 @@ const cors = require('cors')
 const cron = require('node-cron')
 const walletRouter = require('./controller/wallet')
 const transferRouter = require('./controller/transfer')
+const buyCrypto = require('./controller/buy_crypto')
 const getMongoUrl = require('./utils/get-mongo-url');
 const listenDeposit = require('./jobs/deposit')
 // const path = require('path')
@@ -31,7 +32,7 @@ const connectDB = async () => {
 connectDB()
 
 // cron.schedule("*/1 * * * * *", listenDeposit)
-// listenDeposit();
+listenDeposit();
 
 const app = express()
 app.use(express.json())
@@ -43,6 +44,7 @@ if(process.env.NODE_ENV === 'production')
 
 app.use('/api/wallet', walletRouter)
 app.use('/api/transaction', transferRouter)
+app.use('/api/buy', buyCrypto)
 
 const PORT = process.env.API_PORT || 5000
 

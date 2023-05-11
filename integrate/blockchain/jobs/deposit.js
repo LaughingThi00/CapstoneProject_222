@@ -11,7 +11,6 @@ const DepositHelper = require('../service/listen_deposit')
 async function listenDeposit(){
     try{
         const listChainId=[97];
-        // const web3 = Web3.httpProvider(chainId);
         const user = await Wallet.find();
         // console.log('user:', user);
         const listUserAddress = user.map(item=>item.key.evm.address)

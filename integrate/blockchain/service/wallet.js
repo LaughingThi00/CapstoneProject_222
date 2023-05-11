@@ -2,12 +2,13 @@
 const Wallet = require("../models/wallet")
 const {createWalletEther, createWalletBitcoin} = require("../utils/create-wallet-helper")
 
-async function createWallet(userId){
+async function createWallet(userId, merchant){
 
     const walletEther = createWalletEther();
     const bitcoinWallet = createWalletBitcoin()
     await Wallet.create({
         userId: userId,
+        merchant: merchant,
         key: {
             bitcoin: {
                 networkId: 1,
