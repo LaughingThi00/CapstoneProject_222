@@ -4,11 +4,11 @@ content-type: application/json
 
 
 ###
-GET http://localhost:5000/api/user/find-user 
+POST http://localhost:5000/api/user/find-user 
 content-type: application/json
 
 {
-     "address": "1DK9cLGQCuJuGPzNmB1czXf7a4z3ri9nhQ"
+     "address": "0x8096eA05DD54B05BA9beb92D8d9B224857eAe002"
 }
 
 ###

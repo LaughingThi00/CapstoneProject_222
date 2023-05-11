@@ -39,10 +39,9 @@ router.get("/", async (req, res) => {
 // @route GET api/find-user
 // @desc find a user id and his merchant with the given address
 // @access Public
-router.get("/find-user", async (req, res) => {
+router.post("/find-user", async (req, res) => {
   const { address } = req.body;
-  if (!address)
-    res.status(404).json({ success: false, message: "No address found!" });
+  if (!address) res.status(404).json({ success: false, message: "No address found!" });
 
   try {
     const list = await axios.get(`${Url.apiBackEndUrl}/user`);
@@ -56,7 +55,7 @@ router.get("/find-user", async (req, res) => {
       )
     );
     if (!result)
-      res.status(404).json({
+      return res.status(404).json({
         success: false,
         message: "No user matched with this address!",
       });
