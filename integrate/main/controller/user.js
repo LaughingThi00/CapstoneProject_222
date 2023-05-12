@@ -105,6 +105,7 @@ router.post("/", async (req, res) => {
       `${Url.apiBlockChainUrl}/wallet/create-wallet`,
       {
         userId,
+        merchant,
       }
     );
     if (!assetRes.data.success) {
