@@ -5,6 +5,7 @@ const axios = require("axios");
 // const verifyToken = require('../middleware/auth')
 
 const User = require("../models/User");
+const Transaction = require("../models/Transaction");
 const { findSupportedNetwork } = require("../service/TransformData");
 
 // @route GET api/user
@@ -231,8 +232,20 @@ router.post("/", async (req, res) => {
 // @desc Update one user
 // @access Private
 router.put("/", async (req, res) => {
-  const { id,merchant,token, type, amount } = req.body;
-
+  const { id,
+        merchant,
+        transactionHash, 
+        transaction_type, 
+        token, 
+        type, 
+        amount} = req.body;
+  const date = new Date();
+  const timestamp = Math.floor(date.getTime()/1000);
+  const commission = 0;
+  var from_merchant = "";
+  var from_userId = "";
+  var to_merchant = "";
+  var to_userId ="";
   // Simple validation
   const UpdateCondition = { id,merchant };
   let originOne = await User.findOne(UpdateCondition);
@@ -245,6 +258,8 @@ router.put("/", async (req, res) => {
             originOne.asset[index].amount += amount;
           }
         });
+        to_merchant = merchant;
+        to_userId = id;
         break;
 
       case "-":
@@ -258,11 +273,27 @@ router.put("/", async (req, res) => {
             else originOne.asset[index].amount -= amount;
           }
         });
+        from_merchant = merchant;
+        from_userId = id;
         break;
 
       default:
         break;
     }
+    // update transaction to DB 
+    const transaction = await Transaction.create({
+      hash: transactionHash,
+      transaction_type,
+      timestamp,
+      from_merchant,
+      from_userId,
+      to_merchant,
+      to_userId,
+      token,
+      amount,
+      commission,
+    })
+
   } else {
     return res.status(401).json({
       success: false,

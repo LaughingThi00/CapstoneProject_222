@@ -7,17 +7,26 @@ const TransactionSchema = new Schema({
     required: true,
     unique: true,
   },
+  transaction_type: {
+    type: String,
+    required: true,
+    unique: true,
+  },
   timestamp: {
     type: String,
     required: true,
   },
-  from_address: {
-    type: String,
-    required: true,
+  from_merchant:{
+    type: String
   },
-  to_address: {
-    type: String,
-    required: true,
+  from_userId: {
+    type: String
+  },
+  to_merchant: {
+    type: String
+  },
+  to_userId: {
+    type: String
   },
   token: {
     type: String,

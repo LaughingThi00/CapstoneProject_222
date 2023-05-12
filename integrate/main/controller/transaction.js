@@ -24,9 +24,12 @@ router.get("/", async (req, res) => {
 router.post("/", async (req, res) => {
   const {
     hash,
+    transaction_type,
     timestamp,
-    from_address,
-    to_address,
+    from_merchant,
+    from_userId,
+    to_merchant,
+    to_userId,
     token,
     amount,
     commission,
@@ -35,9 +38,12 @@ router.post("/", async (req, res) => {
   // Simple validation
   if (
     !hash ||
+    !transaction_type ||
     !timestamp ||
-    !from_address ||
-    !to_address ||
+    !from_merchant ||
+    !from_userId ||
+    !to_merchant ||
+    !to_userId ||
     !token ||
     !amount ||
     !commission
@@ -66,9 +72,12 @@ router.post("/", async (req, res) => {
     try {
       const newTransaction = new Transaction({
         hash,
+        transaction_type,
         timestamp,
-        from_address,
-        to_address,
+        from_merchant,
+        from_userId,
+        to_merchant,
+        to_userId,
         token,
         amount,
         commission,
