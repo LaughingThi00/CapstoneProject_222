@@ -3,6 +3,7 @@ const Web3 = require('../utils/web3')
 const Contract = require('../utils/contract')
 const Transaction = require('../models/transfer')
 const ADDRESS = require('../constants/address')
+const UpdateBalance = require("../utils/updateBalance");
 async function transfer({
     userId,
     merchant,
@@ -34,11 +35,15 @@ async function transfer({
             
             const signedTx = await web3.eth.accounts.signTransaction(tx, privateKey);
             const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
+            // console.log("receipt", receipt)
+
+            await UpdateBalance(userId, merchant, receipt.transactionHash, asset, "-", amount);
 
             const result = await Transaction.create({
                 userId: userId,
                 merchant: merchant,
                 blockNumber: receipt.blockNumber,
+                timeStamp: (await Web3.getBlock(receipt.blockNumber, chainId)).timestamp,
                 transactionHash: receipt.transactionHash.toLowerCase(),
                 amount: amount,
                 asset: asset,

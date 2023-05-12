@@ -5,6 +5,7 @@ const TransactionSchema = new Schema({
 	userId: String,
     merchant: String,
     blockNumber: Number,
+    timeStamp: Number,
     transactionHash: String,
     amount: Number,
     asset: String,

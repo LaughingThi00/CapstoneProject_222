@@ -67,7 +67,7 @@ async function buyCrypto({
         const {valueIn, valueOut} = await handleSwap(transferLogs)
 
 
-        await UpdateBalance(userId, merchant, for_token, web3.utils.fromWei(valueOut));
+        await UpdateBalance(userId, merchant, receipt.transactionHash, for_token, "+", web3.utils.fromWei(valueOut));
 
         const result = await BuyCrypto.create({
             userId: userId,
@@ -77,6 +77,7 @@ async function buyCrypto({
             slippage: slippage,
             chainId: chainId,
             blockNumber: receipt.blockNumber,
+            timeStamp: (await Web3.getBlock(receipt.blockNumber, chainId)).timestamp,
             transactionHash: receipt.transactionHash,
             from: receipt.from,
             RouterAddress: receipt.to,

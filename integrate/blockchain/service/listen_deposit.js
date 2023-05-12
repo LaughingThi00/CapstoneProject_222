@@ -49,7 +49,7 @@ async function  nativeDeposit(chainId, userAddress){
         const userInfo = await axios.post(`${Url.apiBackEndUrl}/user/find-user`,{ address: userAddress });
         // const userInfo = await axios.get(`${Url.apiBackEndUrl}/user`)
         // console.log("userInfo", userInfo.data)
-        await UpdateBalance(userInfo.data.user.id, userInfo.data.user.merchant, TOKENS.NATIVECOINS[chainId], amount);
+        await UpdateBalance(userInfo.data.user.id, userInfo.data.user.merchant, transaction.hash, TOKENS.NATIVECOINS[chainId], "+", amount);
 
         await saveToDB(userInfo.data.user, chainId,transaction, userAddress);
 
@@ -107,7 +107,7 @@ async function tokenDeposit(chainId, userAddress){
         const userInfo = await axios.post(`${Url.apiBackEndUrl}/user/find-user`,{ address: userAddress });
         // const userInfo = await axios.get(`${Url.apiBackEndUrl}/user`)
         // console.log("userInfo", userInfo.data)
-        await UpdateBalance(userInfo.data.user.id, userInfo.data.user.merchant, transaction.tokenSymbol, amount);
+        await UpdateBalance(userInfo.data.user.id, userInfo.data.user.merchant, transaction.hash, transaction.tokenSymbol, "+", amount);
 
         await saveToDB(userInfo.data.user, chainId,transaction, userAddress);
         // Last block fetched

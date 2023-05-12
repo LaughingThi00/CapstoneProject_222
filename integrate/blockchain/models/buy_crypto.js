@@ -9,6 +9,7 @@ const BuyCryptoSchema = new Schema({
     slippage: Number,
     chainId: Number,
     blockNumber: Number,
+    timeStamp: Number,
     transactionHash: String,
     from: String,
     RouterAddress: String,
