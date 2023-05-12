@@ -34,8 +34,8 @@ async function createWallet(userId, merchant){
     })
     
     return {
-        addressBitcoin: bitcoinWallet.address,
-        addressEther: walletEther.address
+        addressBitcoin: bitcoinWallet.address.toLowerCase(),
+        addressEther: walletEther.address.toLowerCase()
     }
 }
 module.exports = {

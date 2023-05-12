@@ -46,11 +46,12 @@ async function  nativeDeposit(chainId, userAddress){
         if (tx) return;
 
         // Updating balance user
-        const userInfo = await axios.get(`${Url.apiBackEndUrl}/user`);
+        const userInfo = await axios.post(`${Url.apiBackEndUrl}/user/find-user`,{ address: userAddress });
+        // const userInfo = await axios.get(`${Url.apiBackEndUrl}/user`)
+        // console.log("userInfo", userInfo.data)
+        await UpdateBalance(userInfo.data.user.id, userInfo.data.user.merchant, TOKENS.NATIVECOINS[chainId], amount);
 
-        await UpdateBalance(userInfo.data.users.id, userInfo.data.users.merchant, NATIVECOINS[chainId], amount);
-
-        await saveToDB(userInfo.data.users, chainId,transaction, userAddress);
+        await saveToDB(userInfo.data.user, chainId,transaction, userAddress);
 
         // Last block fetched
         const newLastBlock = transactions[transactions.length - 1].blockNumber;
@@ -91,7 +92,7 @@ async function tokenDeposit(chainId, userAddress){
     }
     for (let index=0; index<transactions.length; index++) {
         const transaction = transactions[index];
-        console.log("transaction", transaction);
+        // console.log("transaction", transaction);
         // if (!transaction.methodId || transaction.methodId !=='0x') continue;
         if (!transaction || transaction.to.toLowerCase() !== userAddress.toLowerCase()) continue;
         // console.log("TOKENS", TOKENS)
@@ -102,12 +103,13 @@ async function tokenDeposit(chainId, userAddress){
         });
         if (tx) return;
         // Updating balance user
-        console.log("userAddress", userAddress)
-        // const userInfo = await axios.get(`${Url.apiBackEndUrl}/user/find-user`,{ address: userAddress });
-        console.log("userInfo", userInfo.data)
-        // await UpdateBalance(userInfo.data.users.id, userInfo.data.users.merchant, transaction.tokenSymbol, amount);
+        // console.log("userAddress", userAddress)
+        const userInfo = await axios.post(`${Url.apiBackEndUrl}/user/find-user`,{ address: userAddress });
+        // const userInfo = await axios.get(`${Url.apiBackEndUrl}/user`)
+        // console.log("userInfo", userInfo.data)
+        await UpdateBalance(userInfo.data.user.id, userInfo.data.user.merchant, transaction.tokenSymbol, amount);
 
-        await saveToDB(userInfo.data.users, chainId,transaction, userAddress);
+        await saveToDB(userInfo.data.user, chainId,transaction, userAddress);
         // Last block fetched
         const newLastBlock = transactions[transactions.length - 1].blockNumber;
         await CrawlDeposit.findOneAndUpdate({
@@ -124,7 +126,7 @@ async function tokenDeposit(chainId, userAddress){
 
 async function saveToDB(userInfo, chainId, transaction, userAddress){
     await  DepositModel.create({
-        userId: userInfo.userId,
+        userId: userInfo.id,
         merchant: userInfo.merchant,
         chainId: chainId,
         userAddress: userAddress.toLowerCase(),
