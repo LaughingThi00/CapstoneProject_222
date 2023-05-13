@@ -79,10 +79,10 @@ router.post("/find-user", async (req, res) => {
 // @desc create user and his wallet
 // @access Public
 router.post("/", async (req, res) => {
-  const { merchant, userId } = req.body;
+  const { merchant, id } = req.body;
 
   // Simple validation
-  if (!userId) {
+  if (!id) {
     return res
       .status(400)
       .json({ success: false, message: "Missing id of this user" });
@@ -90,7 +90,7 @@ router.post("/", async (req, res) => {
 
   try {
     // Check if user exists
-    const user = await User.findOne({ id: userId });
+    const user = await User.findOne({ id });
 
     if (user) {
       return res
@@ -104,7 +104,7 @@ router.post("/", async (req, res) => {
     const assetRes = await axios.post(
       `${Url.apiBlockChainUrl}/wallet/create-wallet`,
       {
-        userId,
+        userId:id,
         merchant,
       }
     );
@@ -116,7 +116,7 @@ router.post("/", async (req, res) => {
       try {
 
         const newUser = new User({
-          id: userId,
+          id,
           merchant,
           asset: [
             {
@@ -233,6 +233,7 @@ router.post("/", async (req, res) => {
 // @desc Update one user
 // @access Private
 router.put("/", async (req, res) => {
+  console.log(`~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~`)
   const { id,
         merchant,
         transactionHash, 
@@ -261,6 +262,7 @@ router.put("/", async (req, res) => {
         });
         to_merchant = merchant;
         to_userId = id;
+        console.log("token:",token,"amount:",amount)
         break;
 
       case "-":

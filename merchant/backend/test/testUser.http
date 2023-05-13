@@ -7,9 +7,9 @@ POST http://localhost:6969/api/user
 content-type: application/json
 
 {
-"id":"USER10",
-"type":"user",
-"username":"user10",
+"id":"user5",
+"type":"normal",
+"username":"user5",
 "password":"1",
 "recovery_mail":"", 
 "active_day":"" 

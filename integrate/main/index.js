@@ -5,6 +5,7 @@ const cors = require('cors')
 
 // const authRouter = require('./controller/auth')
 const userRouter = require('./controller/user')
+const billRouter = require('./controller/bill')
 const transactionRouter = require('./controller/transaction')
 const systemWalletRouter = require('./controller/systemwallet')
 const merchantRouter = require('./controller/merchant')
@@ -47,6 +48,7 @@ app.use(cors())
 // app.use('/api/auth', authRouter)
  
 app.use('/api/user', userRouter)
+app.use('/api/bill', billRouter)
 app.use('/api/transaction', transactionRouter)
 app.use('/api/systemwallet', systemWalletRouter)
 app.use('/api/merchant', merchantRouter)
@@ -54,6 +56,6 @@ app.use('/endpoint', endpointRouter)
 
 
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5001
 
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`))

@@ -17,6 +17,8 @@ import Checkout from './pages/Checkout'
 import Compare from './components/Compare'
 import Policy from './pages/Policy'
 import Complete from './pages/Complete'
+import CryptoPayment from './pages/CryptoPayment'
+import CryptoWallet from './pages/CryptoWallet'
 
 function App () {
   return (
@@ -35,6 +37,8 @@ function App () {
           <Route path='/compare' element={<Compare />} />
           <Route path='/policy' element={<Policy />} />
           <Route path='/complete' element={<Complete />} />
+          <Route path='/crypto-payment' element ={<CryptoPayment />} />
+          <Route path='/crypto-wallet' element ={<CryptoWallet />} />
 
         </Routes>
       </Router>

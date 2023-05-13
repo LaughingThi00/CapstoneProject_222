@@ -1,8 +1,6 @@
-import '../css/cartscreen.css'
-// import axios from "axios";
-import { useState } from 'react'
-import { Navigate } from 'react-router-dom'
 import { Button } from 'react-bootstrap'
+import '../css/cartscreen.css'
+import { useState } from 'react'
 
 const CartScreen = () => {
   const [cart, setCart] = useState(
@@ -95,11 +93,7 @@ const CartScreen = () => {
       <div className='checkout'>
         <a href='/checkout'>
           <Button
-            variant='primary' onClick={
-// handlePay
-             () => <Navigate to='/checkout' />
-
-          }
+            variant='primary' 
           >Thanh toán
           </Button>{' '}
         </a>

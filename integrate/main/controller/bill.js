@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-const Url= require("../../constants/constant");
 const axios=require("axios");
 const {genKey}=require('./../service/RSA')
 // const verifyToken = require('../middleware/auth')
@@ -36,7 +35,7 @@ router.post("/", async (req, res) => {
 
   try {
     // Check if bill exists
-    const _bill = await Bill.findOne({ bill,partner });
+    const _bill = await Bill.findOne({ id:bill,partner });
 
     if (_bill) {
       return res

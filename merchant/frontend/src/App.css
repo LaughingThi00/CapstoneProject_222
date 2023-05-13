@@ -36,3 +36,9 @@
     transform: rotate(360deg);
   }
 }
+
+
+.accordion *{
+  background-color: white!important;
+  color: black!important;
+}

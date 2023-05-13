@@ -16,14 +16,64 @@ const { checkBalance } = require("../service/Check");
 // @desc Get all user infomation of an merchant
 // @access Private
 
-router.get("/user", async (req, res) => {
+router.get("/price", async (req, res) => {
+  try {
+    response1 = await axios.get(
+      'https://api.binance.com/api/v3/ticker/price?symbols=["BNBUSDT","ETHUSDT","BTCUSDT"]'
+    );
+
+    response2 = await axios.get(
+      "https://api.apilayer.com/fixer/latest?base=USD&symbols=VND",
+      {
+        headers: {
+          apiKey: "IKZ11s36ZMp1fbYqP1M4tgv2ROIQGDHj",
+        },
+      }
+    );
+    if (response1.data && response2.data) {
+      let price = [];
+      const base_VND = response2.data.rates.VND;
+
+      response1.data.forEach((item) => {
+        switch (item.symbol) {
+          case "BTCUSDT":
+            price.push({ name: "BTC", price: base_VND * item.price });
+            break;
+          case "ETHUSDT":
+            price.push({ name: "ETH", price: base_VND * item.price });
+            break;
+          case "BNBUSDT":
+            price.push({ name: "BNB", price: base_VND * item.price });
+            break;
+        }
+      });
+      price.push({ name: "USDT", price: base_VND });
+      return res.status(200).json({
+        success: true,
+        message: "Excellent process!",
+        price,
+      });
+
+    } else {
+      return res
+      .status(500)
+      .json({ success: false, message: "We catch an error hihihihihi" });
+    }
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json({ success: false, message: "We catch an error huhuhuhuh" });
+  }
+});
+
+router.post("/", async (req, res) => {
   //* RSA, n-crypt start/end
 
   const { merchant } = req.body;
 
   try {
     const users = await User.find({ merchant });
-    console.log(users);
     if (users.length) {
       res.status(200).json({
         success: true,
@@ -41,6 +91,34 @@ router.get("/user", async (req, res) => {
   }
 });
 
+// @route GET endpoint/user
+// @desc Get all user infomation of an merchant
+// @access Private
+
+router.post("/find-user-wallet", async (req, res) => {
+  //* RSA, n-crypt start/end
+
+  const { id, merchant } = req.body;
+
+  try {
+    const user = await User.findOne({ id, merchant });
+    if (user) {
+      res.status(200).json({
+        success: true,
+        message: "Excellent project!",
+        user,
+      });
+    } else
+      res.status(404).json({
+        success: false,
+        message: `We didn't found any user with your information. Have you created wallet for this user already?.`,
+      });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ success: false, message: "Internal Error" });
+  }
+});
+
 // @route GET endpoint/create-wallet
 // @desc create wallet for one user of one merchant, with or without mode
 // @access Private
@@ -48,18 +126,17 @@ router.get("/user", async (req, res) => {
 router.post("/create-wallet", async (req, res) => {
   //* RSA, n-crypt start/end
 
-  const { merchant, userId, mode } = req.body;
+  const { merchant, id } = req.body;
 
   try {
     if (!(await Merchant.findOne({ partner_code: merchant })))
       throw new Error("Merchant not found");
-    if (await User.findOne({ id: userId }))
+    if (await User.findOne({ id }))
       throw new Error("User already exists");
 
     const result = await axios.post(`${Url.apiBackEndUrl}/user`, {
       merchant,
-      userId,
-      mode,
+      id
     });
     if (!result.data.success) throw new Error(result.data.message);
     res.status(200).json({
@@ -80,14 +157,14 @@ router.post("/create-wallet", async (req, res) => {
 router.get("/transaction", async (req, res) => {
   //* RSA, n-crypt start/end
 
-  const { merchant, userId } = req.body;
+  const { merchant,id } = req.body;
 
   try {
     if (!(await Merchant.findOne({ partner_code: merchant })))
       throw new Error("Merchant not found");
-    if (userId) {
+    if (id) {
       //find transaction of a user
-      const user = await User.findOne({ id: userId, merchant });
+      const user = await User.findOne({ id, merchant });
       if (!user) throw new Error("User not exists");
 
       let result = await axios.get(`${Url.apiBackEndUrl}/transaction`);
@@ -121,7 +198,6 @@ router.get("/transaction", async (req, res) => {
         });
       else {
         const user = await User.find({ merchant });
-        console.log("USERLIST LA:", user);
         addressUser = findListMerchantAddress(user, merchant);
         result = result.data.transactions.filter(
           (item) =>
@@ -145,9 +221,9 @@ router.get("/transaction", async (req, res) => {
 // @desc buy crypto for a user
 // @access Private
 
-router.put("/buy-crypto", async (req, res) => {
+router.post("/buy-crypto", async (req, res) => {
   const {
-    userId,
+    id,    
     merchant,
     amount_VND,
     for_token,
@@ -156,13 +232,25 @@ router.put("/buy-crypto", async (req, res) => {
     platform,
     slippage,
   } = req.body;
-  if (!checkBalance(bill, amount_VND, platform))
-    res.status(401).json({
+  try {
+    const checkBillResult=await checkBalance(bill, amount_VND, platform);
+  if (!checkBillResult )
+    return res.status(401).json({
       success: false,
       message:
-        "User have not send VND for us or catch a mistake when verifying your information",
+        "~~~~User have not send VND for us or catch a mistake when verifying your information",
     });
-  try {
+  else{
+    const responseBill= await axios.post(`${Url.apiBackEndUrl}/bill`,{  bill,partner:platform});
+    if(!responseBill.data.success) {
+      console.log("Xay ra loi")
+      return res.status(401).json({
+        success: false,
+        message:
+          "~~~~User have not send VND for us or catch a mistake when verifying your information",
+      });
+    }
+  }
     const updateSysBalance = await axios.put(
       `${Url.apiBackEndUrl}/systemwallet/update-balance`,
       {
@@ -176,13 +264,12 @@ router.put("/buy-crypto", async (req, res) => {
     if (!updateSysBalance.data.success)
       res.status(400).json({ success: false, message: "Catch error!" });
 
-    const result = await axios.post(`${Url.apiBlockChainUrl}/buy-crypto`, 
-    {
-      userId,
+    const result = await axios.post(`${Url.apiBlockChainUrl}/buy/buy-crypto`, {
+      userId:id,      
       merchant,
       amount_VND,
       for_token,
-      chainId: network,
+      chainId: 97,
       slippage,
     });
 
@@ -207,17 +294,15 @@ router.put("/purchase", async (req, res) => {
   const { from_address, to_address, token, amount, network, merchant } =
     req.body;
   try {
-    transaction
+    transaction;
     const result = await axios.put(`${Url.apiBlockChainUrl}/transfer`, {
-      userId: from_address,
+      id: from_address,
       merchant,
       toAddress: to_address,
       tokenAddress: transToTokenAddress(token),
       amount,
       chainId: network,
     });
-
-    
 
     if (result.data.success)
       res.status(200).json({

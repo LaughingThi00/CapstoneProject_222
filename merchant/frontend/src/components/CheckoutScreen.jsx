@@ -1,175 +1,259 @@
-import '../css/checkoutscreen.css'
-import axios from 'axios'
+import "../css/checkoutscreen.css";
+import axios from "axios";
 // import { useState } from "react";
-import { Button } from 'react-bootstrap'
-import { Navigate } from 'react-router-dom'
-import { apiPayment } from '../constants/Constant'
+import { Button } from "react-bootstrap";
+import { Navigate } from "react-router-dom";
+import { apiPayment, endpointUrl } from "../constants/Constant";
+import { useContext } from "react";
+import { AuthContext } from "./../contexts/AuthContext";
 
-function CheckoutScreen () {
-  const cart = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : []
+export const transformCryptoUserData = (user) => {
+  let res = {
+    id: user.id,
+    BTC: user.asset.find((item) => item.token === "BTC").amount,
+    ETH: user.asset.find((item) => item.token === "ETH").amount,
+    USDT: user.asset.find((item) => item.token === "USDT").amount,
+    BNB: user.asset.find((item) => item.token === "BNB").amount,
+  };
+  console.log(res);
+  return res;
+};
+
+// async
+export const formatter = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "VND",
+});
+
+export const calculateOrder = () => {
+  const cart = localStorage.getItem("cart")
+    ? JSON.parse(localStorage.getItem("cart"))
+    : [];
 
   const toNum = (str) => {
-    return Number(str.split(' ')[0].replace(/\./g, ''))
-  }
+    return Number(str.split(" ")[0].replace(/\./g, ""));
+  };
+  let sum = 0;
+  cart.forEach((x) => {
+    sum += toNum(x.product.priceOn) * x.num;
+  });
+  return sum;
+};
 
-  const formatter = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'VND'
-
-  })
-  let sum = 0
-
-  cart.forEach(x => {
-    sum += toNum(x.product.priceOn) * x.num
-  })
+function CheckoutScreen() {
+  const { user } = useContext(AuthContext);
 
   const handlePay = async (e) => {
-    e.preventDefault()
+    e.preventDefault();
     try {
       const payment = await axios.post(`${apiPayment}`, {
         amount: sum,
         orderId: `DONHANG${Math.floor(Math.random() * 100000)}`,
-        orderInfo: 'DON HANG BKROBOTIC'
-      })
+        orderInfo: "DON HANG BKROBOTIC",
+      });
 
       if (payment.data.code === 200) {
-        console.log(payment.data.data)
-        window.location.replace(payment.data.data)
+        console.log(payment.data.data);
+        window.location.replace(payment.data.data);
       }
     } catch (error) {
-      console.log('Xay ra loi')
-      console.log(error)
+      console.log("Xay ra loi");
+      console.log(error);
     }
-  }
+  };
+
+  const takePrice = async () => {
+    try {
+      const response = await axios.get(`${endpointUrl}/price`);
+      if (response.data.success) {
+        console.log("Data from Price API:", response.data);
+        localStorage.setItem("price", JSON.stringify(response.data.price));
+      } else {
+        console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
+        localStorage.setItem("price", null);
+      }
+    } catch (error) {
+      console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
+      localStorage.setItem("price", null);
+    }
+  };
+
+  const FindInfoCrypto = async () => {
+
+    try {
+      const response = await axios.post(
+        `${endpointUrl}/find-user-wallet`,
+        {
+          merchant: "111111",
+          id: user.id,
+        }
+      );
+      if (response.data.success) {
+        console.log("call FindInfoCrypto ", response.data.user)
+        localStorage.setItem(
+          "wallet",
+          JSON.stringify(transformCryptoUserData(response.data.user))
+        );
+        window.location.replace("/crypto-payment");
+      } else {
+        localStorage.setItem("wallet", null);
+        window.location.replace("/crypto-payment");
+      }
+    } catch (error) {
+      localStorage.setItem("wallet", null);
+      window.location.replace("/crypto-payment");
+    }
+  };
+  // const [CryptoUser,setCryptoUser]=useState(null);
+  // var CryptoUser
+  // const CryptoUser= await FindInfoCrypto();
+  // useEffect(()=>{
+
+  //   console.log("CryptoUser in useEffect:",CryptoUser)
+  // },[])
+  const sum = calculateOrder();
+  const handleCryptoPayment = () => {
+    FindInfoCrypto();
+    takePrice();
+  };
   return (
-    <div className='container'>
-      <div className='form'>
+    <div className="container">
+      <div className="form">
         <form>
           <h3>Thông tin giao hàng</h3>
 
-          <label id='fullname'>
-            {' '}
-            Họ và tên <span className='star'>*</span>
+          <label id="fullname">
+            {" "}
+            Họ và tên <span className="star">*</span>
           </label>
           <input
-            type='text'
-            name='fullname'
-            style={{ width: '100%' }}
-            placeholder='Nguyễn Văn A'
+            type="text"
+            name="fullname"
+            style={{ width: "100%" }}
+            placeholder="Nguyễn Văn A"
           />
 
-          <div className='flex-row'>
-            <div className='flex-col-2'>
-              <label>
-                Email
-              </label>
+          <div className="flex-row">
+            <div className="flex-col-2">
+              <label>Email</label>
               <input
-                type='text'
-                id='email'
-                name='email'
-                style={{ width: '100%' }}
-
-                placeholder='abc@hcmut.edu.vn'
+                type="text"
+                id="email"
+                name="email"
+                style={{ width: "100%" }}
+                placeholder="abc@hcmut.edu.vn"
               />
             </div>
-            <div className='flex-col-2'>
-              <label>Số điện thoại <span> *</span></label>
+            <div className="flex-col-2">
+              <label>
+                Số điện thoại <span> *</span>
+              </label>
               <input
-                type='text'
-                id='phone'
-                name='phone'
-                style={{ width: '100%' }}
-
-                placeholder='0948566534'
+                type="text"
+                id="phone"
+                name="phone"
+                style={{ width: "100%" }}
+                placeholder="0948566534"
               />
             </div>
           </div>
 
-          <label id='adr'>
-            {' '}
-            Địa chỉ <span className='star'>*</span>
+          <label id="adr">
+            {" "}
+            Địa chỉ <span className="star">*</span>
           </label>
           <input
-            type='text'
-            style={{ width: '100%' }}
-            name='address'
-            placeholder='Đại học Bách Khoa'
+            type="text"
+            style={{ width: "100%" }}
+            name="address"
+            placeholder="Đại học Bách Khoa"
           />
 
-          <div className='separation' />
+          <div className="separation" />
 
           <p>Phương thức thanh toán</p>
-          <div className='radio-item'>
-            <label id='COD'>
+          <div className="radio-item">
+            <label id="COD">
               <img
-                alt=''
-                src='https://cdn-icons-png.flaticon.com/512/5720/5720434.png'
+                alt=""
+                src="https://cdn-icons-png.flaticon.com/512/5720/5720434.png"
               />
               Thanh toán khi nhận hàng
             </label>
-            <input type='radio' id='COD' name='pay-method' value='COD' />
+            <input type="radio" id="COD" name="pay-method" value="COD" />
           </div>
 
-          <div className='radio-item'>
-            <label id='bank'>
+          <div className="radio-item">
+            <label id="bank">
               <img
-                alt=''
-                src='https://cdn-icons-png.flaticon.com/512/5720/5720434.png'
+                alt=""
+                src="https://cdn-icons-png.flaticon.com/512/5720/5720434.png"
               />
               Chuyển khoản qua ngân hàng
             </label>
-            <input type='radio' id='bank' name='pay-method' value='bank' />
+            <input type="radio" id="bank" name="pay-method" value="bank" />
           </div>
-          <div className='radio-item'>
-            <label id='momo'>
+          <div className="radio-item">
+            <label id="momo">
               <img
-                alt=''
-                src='https://cdn-icons-png.flaticon.com/512/5720/5720434.png'
+                alt=""
+                src="https://cdn-icons-png.flaticon.com/512/5720/5720434.png"
               />
               Ví momo
             </label>
-            <input type='radio' id='momo' name='pay-method' value='momo' />
+            <input type="radio" id="momo" name="pay-method" value="momo" />
           </div>
-          <div className='radio-item'>
-            <label id='zalo'>
+          <div className="radio-item">
+            <label id="zalo">
               <img
-                alt=''
-                src='https://cdn-icons-png.flaticon.com/512/5720/5720434.png'
+                alt=""
+                src="https://cdn-icons-png.flaticon.com/512/5720/5720434.png"
               />
               Ví zalopay
             </label>
-            <input type='radio' id='zalo' name='pay-method' value='zalo' />
+            <input type="radio" id="zalo" name="pay-method" value="zalo" />
+          </div>
+          <div style={{ margin: "10px" }}>
+            {/* <a href="/crypto-payment"> */}
+            <Button onClick={handleCryptoPayment}>
+              Thanh toán với ví điện tử{" "}
+            </Button>
+            {/* </a> */}
           </div>
 
-          <div className='separation' />
+          <div className="separation" />
 
-          <div className='end-form'>
+          <div className="end-form">
             <p>Giá trị đơn hàng</p>
             <p>{formatter.format(sum)}</p>
           </div>
 
-          <div className='end-form'>
+          <div className="end-form">
             <p>Phí vận chuyển</p>
-            <p>{formatter.format('30000')}</p>
+            <p>{formatter.format("30000")}</p>
           </div>
 
-          <div className='end-form'>
+          <div className="end-form">
             <p>Tổng cộng</p>
             <p>{formatter.format(sum + 30000)}</p>
           </div>
 
-          <div className='separation' />
+          <div className="separation" />
 
           {/* <Button variant="danger" onClick={()=><Navigate to='/cart' />}> Giỏ hàng</Button> */}
         </form>
-        <div className='checkout-button'>
-          <Button variant='success' onClick={() => <Navigate to='/cart' />}> Về giỏ hàng</Button>
-          <Button variant='primary' onClick={handlePay}>Thanh toán</Button>
+        <div className="checkout-button">
+          <Button variant="success" onClick={() => <Navigate to="/cart" />}>
+            {" "}
+            Về giỏ hàng
+          </Button>
+          <Button variant="primary" onClick={handlePay}>
+            Thanh toán
+          </Button>
         </div>
-
       </div>
     </div>
-  )
+  );
 }
 
-export default CheckoutScreen
+export default CheckoutScreen;

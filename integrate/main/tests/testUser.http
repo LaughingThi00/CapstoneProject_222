@@ -17,7 +17,8 @@ content-type: application/json
 
 {
     "merchant":"111111",
-    "userId":"48248"
+    "id":"user3",
+    
 
 }
 
@@ -27,8 +28,8 @@ content-type: application/json
 
 {
     "merchant":"111111",
-    "id":"48248",
-    "token": "ETH",
+    "id":"user2",
+    "token": "BNB",
     "type":"+",
     "amount":20
 }

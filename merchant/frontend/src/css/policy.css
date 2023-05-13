@@ -24,25 +24,25 @@ background-color: #fff;
     width: 75%;
 }
 
-.accordion *{
+.policy-sidebar .accordion *{
     background-color: #1866e4;
     color: #fff;
 font-family:Verdana, Geneva, Tahoma, sans-serif;
 }
 
-.accordion {
+.policy-sidebar  .accordion {
     border-radius: 30px;
     padding:10px;
 }
-.accordion:first-child .accordion-header {
+.policy-sidebar .accordion:first-child .accordion-header {
     border-radius: 30px;
 }
 
-.accordion .accordion-button{
+.policy-sidebar .accordion .accordion-button{
     font-weight: bolder;
 }
 
-.accordion-body{
+.policy-sidebar  .accordion-body{
     padding:0;
 }
 .policy-sidebar ul{
