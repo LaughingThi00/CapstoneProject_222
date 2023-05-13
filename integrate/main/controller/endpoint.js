@@ -291,15 +291,14 @@ router.post("/buy-crypto", async (req, res) => {
 // @access Private
 
 router.put("/purchase", async (req, res) => {
-  const { from_address, to_address, token, amount, network, merchant } =
+  const { id, merchant, to_address, token, amount, network=97 } =
     req.body;
   try {
-    transaction;
-    const result = await axios.put(`${Url.apiBlockChainUrl}/transfer`, {
-      id: from_address,
+    const result = await axios.post(`${Url.apiBlockChainUrl}/transaction/transfer`, {
+      userId:id,
       merchant,
       toAddress: to_address,
-      tokenAddress: transToTokenAddress(token),
+      asset: token,
       amount,
       chainId: network,
     });

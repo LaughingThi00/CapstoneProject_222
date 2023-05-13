@@ -53,23 +53,71 @@ const CryptoPaymentModal = () => {
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const [One, setOne] = useState(null);
-
+  const [toast, setToast] = useState({
+    show: false,
+    bg: null,
+    header: null,
+    content: null,
+  });
   const handleChange = (e) => {
     if (!e.target.name || !e.target.value) return;
     if (e.target.name === "token")
       setOne({
         ...One,
         [e.target.name]: e.target.value,
-        amount: Number((price[e.target.value] * 101.5).toFixed(5)),
+        amount: Number((price[e.target.value] * 1.015).toFixed(5)),
       });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!One) return;
+    if (!One||!One.token||!One.amount||!CryptoUser) return;
     if (One.amount >= CryptoUser[One.token]) {
       setShowToast(true);
     } else {
+
+
+      try {
+        console.log("Data request:",{
+          id: CryptoUser.id,
+          merchant: "111111",
+          to_address:"0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87", 
+          token:One.token, amount:One.amount
+        })
+        const response = await axios.put(`${endpointUrl}/purchase`, {
+          id: CryptoUser.id,
+          merchant: "111111",
+          to_address:"0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87", 
+          token:One.token, amount:One.amount
+        })
+        if (response.data.success) {
+          await UpdateCryptoInfo(CryptoUser.id);
+          setToast({
+            show: true,
+            bg: "success",
+            header: "Thanh toán thành công",
+            content: "Giao dịch đã thành công, bạn đã được cộng token.",
+          });
+        } else {
+      
+          setToast({
+            show: true,
+            bg: "danger",
+            header: "Thanh toán thất bại",
+            content:
+              "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
+          });
+        }
+      } catch (error) {
+        setToast({
+          show: true,
+          bg: "danger",
+          header: "Thanh toán thất bại",
+          content:
+            "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
+        });
+      }
+     
     }
   };
 
@@ -212,6 +260,27 @@ const handleBuyCrypto=()=>{
               </Toast.Body>
             </Toast>
           </ToastContainer>
+
+          <ToastContainer className="p-3" position="top-end">
+          <Toast
+            onClose={() => setToast({ ...toast, show: false })}
+            show={toast.show}
+            delay={3000}
+            autohide
+            bg={toast.bg}
+          >
+            <Toast.Header>
+              <img
+                src="holder.js/20x20?text=%20"
+                className="rounded me-2"
+                alt=""
+              />
+              <strong className="me-auto">{toast.header}</strong>
+              <small>0 seconds ago</small>
+            </Toast.Header>
+            <Toast.Body>{toast.content}</Toast.Body>
+          </Toast>
+        </ToastContainer>
         </Modal>
       </div>
     </>

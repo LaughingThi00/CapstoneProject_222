@@ -83,36 +83,46 @@ const BuyCryptoModal = () => {
 
       return;
     }
+try {
+  const response = await axios.post(`${endpointUrl}/buy-crypto`, {
+    id: CryptoUser.id,
+    merchant: "111111",
+    amount_VND: One.amount_VND,
+    for_token: One.token,
+    network: "",
+    bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
+    platform: "MOMO",
+    slippage: 1,
+  });
 
-    const response = await axios.post(`${endpointUrl}/buy-crypto`, {
-      id: CryptoUser.id,
-      merchant: "111111",
-      amount_VND: One.amount_VND,
-      for_token: One.token,
-      network: "",
-      bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
-      platform: "MOMO",
-      slippage: 1,
+  if (response.data.success) {
+    await UpdateCryptoInfo(CryptoUser.id);
+    setToast({
+      show: true,
+      bg: "success",
+      header: "Thanh toán thành công",
+      content: "Giao dịch đã thành công, bạn đã được cộng token.",
     });
+  } else {
 
-    if (response.data.success) {
-      await UpdateCryptoInfo(CryptoUser.id);
-      setToast({
-        show: true,
-        bg: "success",
-        header: "Thanh toán thành công",
-        content: "Giao dịch đã thành công, bạn đã được cộng token.",
-      });
-    } else {
-
-      setToast({
-        show: true,
-        bg: "danger",
-        header: "Thanh toán thất bại",
-        content:
-          "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
-      });
-    }
+    setToast({
+      show: true,
+      bg: "danger",
+      header: "Thanh toán thất bại",
+      content:
+        "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
+    });
+  }
+} catch (error) {
+  setToast({
+    show: true,
+    bg: "danger",
+    header: "Thanh toán thất bại",
+    content:
+      "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
+  });
+}
+    
   };
 
   return (

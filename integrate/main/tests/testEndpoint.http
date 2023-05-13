@@ -45,10 +45,10 @@ content-type: application/json
 {
     "id":"user2",    
     "merchant":"111111",
-    "amount_VND":1000000000,
-    "for_token":"BTC",
+    "amount_VND":10000000000,
+    "for_token":"ETH",
     "network":"",
-    "bill":"MOMO2567670",
+    "bill":"MOMO234234786",
     "platform":"MOMO",
     "slippage":1
 }
@@ -61,3 +61,30 @@ content-type: application/json
         "partner_code":"123456"
 
 }
+
+###
+PUT http://localhost:5001/endpoint/purchase
+content-type: application/json
+
+{
+    "id": "user2",
+    "merchant": "111111",
+    "to_address":"0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87", 
+    "token":"BTC", 
+    "amount": 0.03187,
+    "network":97
+}
+
+###
+POST http://localhost:3001/api/transaction/transfer
+content-type: application/json
+
+{
+    "userId": "user2",
+    "merchant": "111111",
+    "toAddress":"0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87", 
+    "asset":"BTC", 
+    "amount": 0.03187,
+    "chainId":97
+}
+

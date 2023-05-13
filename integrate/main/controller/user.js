@@ -257,12 +257,11 @@ router.put("/", async (req, res) => {
       case "+":
         originOne.asset.forEach((item, index) => {
           if (item.token === token) {
-            originOne.asset[index].amount += amount;
+            originOne.asset[index].amount += Number(amount);
           }
         });
         to_merchant = merchant;
         to_userId = id;
-        console.log("token:",token,"amount:",amount)
         break;
 
       case "-":
@@ -273,7 +272,7 @@ router.put("/", async (req, res) => {
                 success: false,
                 message: "User doesn't have enough token!",
               });
-            else originOne.asset[index].amount -= amount;
+            else originOne.asset[index].amount -= Number(amount);
           }
         });
         from_merchant = merchant;
