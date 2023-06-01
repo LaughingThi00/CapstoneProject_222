@@ -25,7 +25,7 @@ async function buyCrypto({
         const USDTAddress = '0x57aa96000E6317c846bbce0AF17B41B1cBdd300F';
         const tokenOut=ADDRESS.TOKENS[for_token][chainId];
 
-        var amountIn = amount_VND/23300*10**18;         //convert from amount_VND
+        var amountIn = web3.utils.toWei((amount_VND/23300).toString(),'ether');         //convert from amount_VND
         var amountOutMin = '0';                         // calculation by slippage
         if (for_token ==='BNB'){
             var dataSwap = routerContract.methods.swapExactTokensForETH(
