@@ -124,6 +124,7 @@ try {
 }
     
   };
+  const formatter = new Intl.NumberFormat();
 
   return (
     <>
