@@ -26,7 +26,7 @@ content-type: application/json
 
 {
     "merchant":"111111",
-      "id":"45744574"
+      "id":"435346"
 
 }
 
@@ -45,21 +45,12 @@ content-type: application/json
 {
     "id":"user2",    
     "merchant":"111111",
-    "amount_VND":10000000000,
+    "amount_VND":100000,
     "for_token":"ETH",
     "network":"",
-    "bill":"MOMO234234786",
+    "bill":"MOMO2342236",
     "platform":"MOMO",
     "slippage":1
-}
-
-###
-DELETE  http://localhost:5001/api/merchant 
-content-type: application/json
-
-{
-        "partner_code":"123456"
-
 }
 
 ###
@@ -73,18 +64,5 @@ content-type: application/json
     "token":"BTC", 
     "amount": 0.03187,
     "network":97
-}
-
-###
-POST http://localhost:3001/api/transaction/transfer
-content-type: application/json
-
-{
-    "userId": "user2",
-    "merchant": "111111",
-    "toAddress":"0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87", 
-    "asset":"BTC", 
-    "amount": 0.03187,
-    "chainId":97
 }
 

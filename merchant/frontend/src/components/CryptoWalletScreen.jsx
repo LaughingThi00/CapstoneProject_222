@@ -321,6 +321,7 @@ try {
 }
   }
 
+  const formatter = new Intl.NumberFormat();
 
   return (
     <div>
@@ -372,8 +373,8 @@ try {
               price_token.map((item, index) => {
                 return (
                   <div key={index}>
-                    <div className="bold-text">{item.name}: </div> {item.price}{" "}
-                    ({item.name}/VND)
+                    <div className="bold-text">{item.name}: </div> {formatter.format(item.price)}{" "}
+                    (VND/{item.name})
                   </div>
                 );
               })}

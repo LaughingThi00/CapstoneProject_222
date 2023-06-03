@@ -22,3 +22,5 @@ const MerchantSchema = new Schema({
 });
 
 module.exports = mongoose.model("Merchant", MerchantSchema);
+
+
