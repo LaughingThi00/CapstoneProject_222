@@ -279,7 +279,7 @@ router.post("/buy-crypto", async (req, res) => {
         message:
           "We catch an error when trying to buy token in blockchain server.",
       });
-    res.status(200).json({ success: true, message: "Exellent process!" });
+    res.status(200).json({ success: true, message: "Exellent process!",hash:result.data.data.transactionHash });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false, message: "Internal Error" });
@@ -307,7 +307,7 @@ router.put("/purchase", async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Successful purchase!",
-        transaction: result.data.transaction,
+        hash: result.data.data.transactionHash,
       });
     else
       res.status(400).json({

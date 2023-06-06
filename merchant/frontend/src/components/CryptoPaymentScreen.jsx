@@ -9,16 +9,33 @@ import {
 } from "react-bootstrap";
 import { calculateOrder, formatter } from "./CheckoutScreen";
 import "../css/cryptopayment.css";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { endpointUrl } from "../constants/Constant";
 import axios from "axios";
 import { UpdateCryptoInfo } from "./CryptoWalletScreen";
 
+// export const setPrice = async () => {
+//   let PriceFromAPI = null;
+//   try {
+//     let response = await axios.get(`${endpointUrl}/price`);
+//     if (response.data.success) {
+//       PriceFromAPI = response.data.price;
+//       localStorage.setItem("price", JSON.stringify(PriceFromAPI));
+//     } else {
+//       console.log("Error");
+//       return null;
+//     }
+//   } catch (error) {
+//     console.log("Error")
+//   }
+// };
+
 export const getPriceByToken = () => {
   const cash = calculateOrder();
-  const PriceFromAPI = JSON.parse(localStorage.getItem("price")) ?? 0;
+  const PriceFromAPI = JSON.parse(localStorage.getItem("price")) ?? null;
   let Price = { BTC: 0, ETH: 0, BNB: 0, USDT: 0 };
+
   if (!PriceFromAPI) return Price;
 
   PriceFromAPI.forEach((item) => {
@@ -42,12 +59,10 @@ export const getPriceByToken = () => {
   return Price;
 };
 
-
-
 const CryptoPaymentModal = () => {
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
-  const price = getPriceByToken();
-  const navigate=useNavigate();
+  let price = getPriceByToken();
+  const navigate = useNavigate();
   const [ShowToast, setShowToast] = useState(false);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -58,6 +73,7 @@ const CryptoPaymentModal = () => {
     bg: null,
     header: null,
     content: null,
+    hash:null,
   });
   const handleChange = (e) => {
     if (!e.target.name || !e.target.value) return;
@@ -71,35 +87,35 @@ const CryptoPaymentModal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!One||!One.token||!One.amount||!CryptoUser) return;
+    if (!One || !One.token || !One.amount || !CryptoUser) return;
     if (One.amount >= CryptoUser[One.token]) {
       setShowToast(true);
     } else {
-
-
       try {
-        console.log("Data request:",{
-          id: CryptoUser.id,
-          merchant: "111111",
-          to_address:"0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87", 
-          token:One.token, amount:One.amount
-        })
+        // console.log("Data request:", {
+        //   id: CryptoUser.id,
+        //   merchant: "111111",
+        //   to_address: "0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87",
+        //   token: One.token,
+        //   amount: One.amount,
+        // });
         const response = await axios.put(`${endpointUrl}/purchase`, {
           id: CryptoUser.id,
           merchant: "111111",
-          to_address:"0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87", 
-          token:One.token, amount:One.amount
-        })
+          to_address: "0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87",
+          token: One.token,
+          amount: One.amount,
+        });
         if (response.data.success) {
           await UpdateCryptoInfo(CryptoUser.id);
           setToast({
             show: true,
             bg: "success",
             header: "Thanh toán thành công",
-            content: "Giao dịch đã thành công, bạn đã được cộng token.",
-          });
-        } else {
-      
+            content: `Giao dịch đã thành công, bạn đã được cộng token.`,
+            hash:response.data.hash
+        })
+       } else {
           setToast({
             show: true,
             bg: "danger",
@@ -117,17 +133,17 @@ const CryptoPaymentModal = () => {
             "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
         });
       }
-     
     }
   };
 
-const handleBuyCrypto=()=>{
- navigate("/crypto-wallet");
-}
+  const handleBuyCrypto = () => {
+    navigate("/crypto-wallet");
+    
+  };
 
   return (
     <>
-      <Button variant="success" onClick={()=>setShow(true)}>
+      <Button variant="success" onClick={() => setShow(true)}>
         {" "}
         Thanh toán ngay!
       </Button>
@@ -215,7 +231,11 @@ const handleBuyCrypto=()=>{
               <Button variant="primary" type="submit">
                 Thanh toán
               </Button>
-              <Button style={{marginLeft:"20px"}} variant="success" onClick={handleBuyCrypto}>
+              <Button
+                style={{ marginLeft: "20px" }}
+                variant="success"
+                onClick={handleBuyCrypto}
+              >
                 Nạp thêm
               </Button>
             </Form>
@@ -244,17 +264,20 @@ const handleBuyCrypto=()=>{
                 <small>0 seconds ago</small>
               </Toast.Header>
               <Toast.Body>
-                Số dư đồng {One? One.token: "???"} của bạn hiện không đủ, vui lòng chọn
-                token khác hoặc nạp thêm!
+                Số dư đồng {One ? One.token : "???"} của bạn hiện không đủ, vui
+                lòng chọn token khác hoặc nạp thêm!
                 <div>
                   <div className="block-small-margin">
-                    <div className="bold-text">Token: </div> {One? One.token: "???"}
+                    <div className="bold-text">Token: </div>{" "}
+                    {One ? One.token : "???"}
                   </div>
                   <div className="block-small-margin">
-                    <div className="bold-text">Cần thanh toán: </div> {One? One.amount: "???"}
+                    <div className="bold-text">Cần thanh toán: </div>{" "}
+                    {One ? One.amount : "???"}
                   </div>
                   <div className="block-small-margin">
-                    <div className="bold-text">Số dư: </div> {One? CryptoUser[One.token]: "???"}
+                    <div className="bold-text">Số dư: </div>{" "}
+                    {One ? CryptoUser[One.token] : "???"}
                   </div>
                 </div>
               </Toast.Body>
@@ -262,25 +285,29 @@ const handleBuyCrypto=()=>{
           </ToastContainer>
 
           <ToastContainer className="p-3" position="top-end">
-          <Toast
-            onClose={() => setToast({ ...toast, show: false })}
-            show={toast.show}
-            delay={3000}
-            autohide
-            bg={toast.bg}
-          >
-            <Toast.Header>
-              <img
-                src="holder.js/20x20?text=%20"
-                className="rounded me-2"
-                alt=""
-              />
-              <strong className="me-auto">{toast.header}</strong>
-              <small>0 seconds ago</small>
-            </Toast.Header>
-            <Toast.Body>{toast.content}</Toast.Body>
-          </Toast>
-        </ToastContainer>
+            <Toast
+              onClose={() => setToast({ ...toast, show: false })}
+              show={toast.show}
+              delay={10000}
+              autohide
+              bg={toast.bg}
+            >
+              <Toast.Header>
+                <img
+                  src="holder.js/20x20?text=%20"
+                  className="rounded me-2"
+                  alt=""
+                />
+                <strong className="me-auto">{toast.header}</strong>
+                <small>0 seconds ago</small>
+              </Toast.Header>
+              <Toast.Body>{toast.content}
+              {toast.hash&&<div>
+          Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống blockchain tại <a href={'https://testnet.bscscan.com/tx/'+toast.hash} > đây </a>
+          </div>}              
+              </Toast.Body>
+            </Toast>
+          </ToastContainer>
         </Modal>
       </div>
     </>
@@ -291,7 +318,7 @@ const CryptoPaymentScreen = () => {
   const { user } = useContext(AuthContext);
 
   const cash = calculateOrder();
-  const price = getPriceByToken();
+  let price = getPriceByToken();
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
 
   const [toast, setToast] = useState({
@@ -299,11 +326,11 @@ const CryptoPaymentScreen = () => {
     bg: null,
     header: null,
     content: null,
+    hash:null,
   });
 
   const handleCreateWallet = async () => {
     try {
-      console.log("call handleCreateWallet");
       const response = await axios.post(`${endpointUrl}/create-wallet`, {
         id: user.id,
         merchant: "111111",
@@ -354,7 +381,9 @@ const CryptoPaymentScreen = () => {
           <Accordion.Header>Ví của bạn</Accordion.Header>
           <Accordion.Body>
             {!CryptoUser ? (
-              <Button onClick={handleCreateWallet}>Bạn chưa có ví điện tử, tạo ngay!</Button>
+              <Button onClick={handleCreateWallet}>
+                Bạn chưa có ví điện tử, tạo ngay!
+              </Button>
             ) : (
               <>
                 <div>Bitcoin:{CryptoUser.BTC}</div>
@@ -384,7 +413,7 @@ const CryptoPaymentScreen = () => {
         <Toast
           onClose={() => setToast({ ...toast, show: false })}
           show={toast.show}
-          delay={3000}
+          delay={10000}
           autohide
           bg={toast.bg}
         >
@@ -397,7 +426,12 @@ const CryptoPaymentScreen = () => {
             <strong className="me-auto">{toast.header}</strong>
             <small>0 seconds ago</small>
           </Toast.Header>
-          <Toast.Body>{toast.content}</Toast.Body>
+          <Toast.Body>{toast.content}
+          {toast.hash&&<div>
+          Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống blockchain tại <a href={'https://testnet.bscscan.com/tx/'+toast.hash} > đây </a>
+          </div>}
+
+          </Toast.Body>
         </Toast>
       </ToastContainer>
     </div>

@@ -112,9 +112,9 @@ function CheckoutScreen() {
   //   console.log("CryptoUser in useEffect:",CryptoUser)
   // },[])
   const sum = calculateOrder();
-  const handleCryptoPayment = () => {
-    FindInfoCrypto();
-    takePrice();
+  const handleCryptoPayment = async () => {
+    await FindInfoCrypto();
+    await takePrice();
   };
   return (
     <div className="container">

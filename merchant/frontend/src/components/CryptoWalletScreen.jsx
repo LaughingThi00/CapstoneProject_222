@@ -1,28 +1,23 @@
-import React, { useContext, useEffect, useState } from "react";
-import {
-  FindInfoCrypto,
-  formatter,
-  transformCryptoUserData,
-} from "./CheckoutScreen";
-import { getPriceByToken } from "./CryptoPaymentScreen";
+import React, { useContext, useState } from "react";
+import { transformCryptoUserData } from "./CheckoutScreen";
+// import { getPriceByToken } from "./CryptoPaymentScreen";
 import Accordion from "react-bootstrap/Accordion";
 import { Button, Form, Modal, Toast, ToastContainer } from "react-bootstrap";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import "../css/cryptowallet.css";
 import axios from "axios";
 import { endpointUrl } from "../constants/Constant";
 import { AuthContext } from "../contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export const UpdateCryptoInfo = async (id) => {
-
-
   try {
     const response = await axios.post(`${endpointUrl}/find-user-wallet`, {
       merchant: "111111",
       id,
     });
     if (response.data.success) {
-      console.log("call FindInfoCrypto ", response.data.user);
+      // console.log("call FindInfoCrypto ", response.data.user);
       localStorage.setItem(
         "wallet",
         JSON.stringify(transformCryptoUserData(response.data.user))
@@ -38,11 +33,9 @@ export const UpdateCryptoInfo = async (id) => {
 const BuyCryptoModal = () => {
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
   const Price = JSON.parse(localStorage.getItem("price")) ?? null;
-
-  const navigate = useNavigate();
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  // const handleShow = () => setShow(true);
   const [One, setOne] = useState({ token: "", amount_VND: 0, slippage: 1 });
   const [amount_token, setAmount_Token] = useState(0);
   const [toast, setToast] = useState({
@@ -80,51 +73,49 @@ const BuyCryptoModal = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!CryptoUser.id || !One.amount_VND || !One.token) {
-
       return;
     }
-try {
-  const response = await axios.post(`${endpointUrl}/buy-crypto`, {
-    id: CryptoUser.id,
-    merchant: "111111",
-    amount_VND: One.amount_VND,
-    for_token: One.token,
-    network: "",
-    bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
-    platform: "MOMO",
-    slippage: 1,
-  });
+    try {
+      const response = await axios.post(`${endpointUrl}/buy-crypto`, {
+        id: CryptoUser.id,
+        merchant: "111111",
+        amount_VND: One.amount_VND,
+        for_token: One.token,
+        network: "",
+        bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
+        platform: "MOMO",
+        slippage: 1,
+      });
 
-  if (response.data.success) {
-    await UpdateCryptoInfo(CryptoUser.id);
-    setToast({
-      show: true,
-      bg: "success",
-      header: "Thanh toán thành công",
-      content: "Giao dịch đã thành công, bạn đã được cộng token.",
-    });
-  } else {
-
-    setToast({
-      show: true,
-      bg: "danger",
-      header: "Thanh toán thất bại",
-      content:
-        "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
-    });
-  }
-} catch (error) {
-  setToast({
-    show: true,
-    bg: "danger",
-    header: "Thanh toán thất bại",
-    content:
-      "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
-  });
-}
-    
+      if (response.data.success) {
+        console.log("Buying Hash:", response.data.hash);
+        await UpdateCryptoInfo(CryptoUser.id);
+        setToast({
+          show: true,
+          bg: "success",
+          header: `Thanh toán thành công.`,
+          content: "Giao dịch đã thành công, bạn đã được cộng token.",
+          hash:response.data.hash
+        });
+      } else {
+        setToast({
+          show: true,
+          bg: "danger",
+          header: "Thanh toán thất bại",
+          content:
+            "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
+        });
+      }
+    } catch (error) {
+      setToast({
+        show: true,
+        bg: "danger",
+        header: "Thanh toán thất bại",
+        content:
+          "Giao dịch đã thất bại, bạn đã mất VND mà không được cộng token. Chúng tôi sẽ cố gắng gửi token đến cho bạn sớm nhất có thể, nếu như không thành công, bạn sẽ được hoàn trả VND.",
+      });
+    }
   };
-  const formatter = new Intl.NumberFormat();
 
   return (
     <>
@@ -222,8 +213,10 @@ try {
                   <>
                     {" "}
                     Tôi đồng ý với các{" "}
-                    <a className="normal-a">điều khoản qui định</a> và chấp nhận
-                    mọi rủi ro.
+                    <a className="normal-a" href="/policy">
+                      điều khoản qui định
+                    </a>{" "}
+                    và chấp nhận mọi rủi ro.
                   </>
                 }
               />
@@ -252,12 +245,11 @@ try {
           </Button>
         </Modal.Footer>
 
-
         <ToastContainer className="p-3" position="top-end">
           <Toast
             onClose={() => setToast({ ...toast, show: false })}
             show={toast.show}
-            delay={3000}
+            delay={10000}
             autohide
             bg={toast.bg}
           >
@@ -270,7 +262,11 @@ try {
               <strong className="me-auto">{toast.header}</strong>
               <small>0 seconds ago</small>
             </Toast.Header>
-            <Toast.Body>{toast.content}</Toast.Body>
+            <Toast.Body>{toast.content}
+            {toast.hash&&<div>
+          Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống blockchain tại <a href={'https://testnet.bscscan.com/tx/'+toast.hash} > đây </a>
+          </div>}
+            </Toast.Body>
           </Toast>
         </ToastContainer>
       </Modal>
@@ -280,7 +276,7 @@ try {
 
 const CryptoWalletScreen = () => {
   const { user } = useContext(AuthContext);
-
+  const navigate=useNavigate();
   const price_token = JSON.parse(localStorage.getItem("price")) ?? null;
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
   const [toast, setToast] = useState({
@@ -290,40 +286,47 @@ const CryptoWalletScreen = () => {
     content: null,
   });
 
-  const handleCreateWallet=async ()=>{
-try {
-  const response = await axios.post(`${endpointUrl}/create-wallet`, {
-    id: user.id,
-    merchant: "111111"
-  });
-
-  if (response.data.success) {
-    await UpdateCryptoInfo(user.id);
-    setToast({
-      show: true,
-      bg: "success",
-      header: "Tạo ví thành công!",
-      content: "Chúc mừng bạn đã tạo ví thành công, từ giờ bạn có thể giao dịch bằng token. Nếu chưa có token trong ví, xin hãy nạp thêm!",
-    });
-  } else {
-
-    setToast({
-      show: true,
-      bg: "danger",
-      header: "Tạo ví thất bại",
-      content:"Chúng tôi gặp lỗi trong lúc cố gắng tạo ví điện tử cho bạn, xin vui lòng thử lại"    });
+  const   handleReturn =()=>{
+      navigate("/crypto-payment");
   }
-} catch (error) {
-  setToast({
-    show: true,
-    bg: "danger",
-    header: "Tạo ví thất bại",
-    content:"Server gặp lỗi trong lúc cố gắng tạo ví điện tử cho bạn, xin vui lòng thử lại"    });
-}
-  }
+
+  const handleCreateWallet = async () => {
+    try {
+      const response = await axios.post(`${endpointUrl}/create-wallet`, {
+        id: user.id,
+        merchant: "111111",
+      });
+
+      if (response.data.success) {
+        await UpdateCryptoInfo(user.id);
+        setToast({
+          show: true,
+          bg: "success",
+          header: "Tạo ví thành công!",
+          content:
+            "Chúc mừng bạn đã tạo ví thành công, từ giờ bạn có thể giao dịch bằng token. Nếu chưa có token trong ví, xin hãy nạp thêm!",
+        });
+      } else {
+        setToast({
+          show: true,
+          bg: "danger",
+          header: "Tạo ví thất bại",
+          content:
+            "Chúng tôi gặp lỗi trong lúc cố gắng tạo ví điện tử cho bạn, xin vui lòng thử lại",
+        });
+      }
+    } catch (error) {
+      setToast({
+        show: true,
+        bg: "danger",
+        header: "Tạo ví thất bại",
+        content:
+          "Server gặp lỗi trong lúc cố gắng tạo ví điện tử cho bạn, xin vui lòng thử lại",
+      });
+    }
+  };
 
   const formatter = new Intl.NumberFormat();
-
   return (
     <div>
       Đây là ví điện tử của bạn. Tại đây bạn có thể thực hiện giao dịch mua
@@ -338,7 +341,9 @@ try {
           <Accordion.Header>Ví của bạn</Accordion.Header>
           <Accordion.Body>
             {!CryptoUser ? (
-              <Button onClick={handleCreateWallet}>Bạn chưa có ví điện tử, tạo ngay!</Button>
+              <Button onClick={handleCreateWallet}>
+                Bạn chưa có ví điện tử, tạo ngay!
+              </Button>
             ) : (
               <>
                 <div>
@@ -374,37 +379,36 @@ try {
               price_token.map((item, index) => {
                 return (
                   <div key={index}>
-                    <div className="bold-text">{item.name}: </div> {formatter.format(item.price)}{" "}
-                    (VND/{item.name})
+                    <div className="bold-text">{item.name}: </div>{" "}
+                    {formatter.format(item.price)} (VND/{item.name})
                   </div>
                 );
               })}
           </Accordion.Body>
         </Accordion.Item>
       </Accordion>
-
       <BuyCryptoModal />
-
+      <Button onClick={handleReturn } variant="primary">Trở về thanh toán</Button>
       <ToastContainer className="p-3" position="top-end">
-          <Toast
-            onClose={() => setToast({ ...toast, show: false })}
-            show={toast.show}
-            delay={3000}
-            autohide
-            bg={toast.bg}
-          >
-            <Toast.Header>
-              <img
-                src="holder.js/20x20?text=%20"
-                className="rounded me-2"
-                alt=""
-              />
-              <strong className="me-auto">{toast.header}</strong>
-              <small>0 seconds ago</small>
-            </Toast.Header>
-            <Toast.Body>{toast.content}</Toast.Body>
-          </Toast>
-        </ToastContainer>
+        <Toast
+          onClose={() => setToast({ ...toast, show: false })}
+          show={toast.show}
+          delay={10000}
+          autohide
+          bg={toast.bg}
+        >
+          <Toast.Header>
+            <img
+              src="holder.js/20x20?text=%20"
+              className="rounded me-2"
+              alt=""
+            />
+            <strong className="me-auto">{toast.header}</strong>
+            <small>0 seconds ago</small>
+          </Toast.Header>
+          <Toast.Body>{toast.content}</Toast.Body>
+        </Toast>
+      </ToastContainer>
     </div>
   );
 };
