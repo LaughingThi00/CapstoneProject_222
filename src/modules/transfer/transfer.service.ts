@@ -63,14 +63,14 @@ export class TransferService {
             const receipt = await web3.eth.sendSignedTransaction(signedTx.rawTransaction);
             // console.log("receipt", receipt)
 
-            await updateBalance({
-                userId,
-                merchant,
-                transactionHash: receipt.transactionHash,
-                asset,
-                type: "-",
-                amount
-            });
+            // await updateBalance({
+            //     userId,
+            //     merchant,
+            //     transactionHash: receipt.transactionHash,
+            //     asset,
+            //     type: "-",
+            //     amount
+            // });
             const txh = {
                 userId: userId,
                 merchant: merchant,
@@ -85,6 +85,7 @@ export class TransferService {
                 gasUsed: receipt.gasUsed
             }
             const result = this.transferRep.create(txh)
+            await this.transferRep.save(result)
             return result
         }
     }

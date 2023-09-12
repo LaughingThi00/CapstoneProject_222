@@ -1,4 +1,4 @@
-import * as moment from 'moment';
+import moment from 'moment';
 import web3 from 'web3';
 import BigNumber from 'bignumber.js';
 

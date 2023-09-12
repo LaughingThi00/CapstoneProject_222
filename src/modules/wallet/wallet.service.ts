@@ -12,6 +12,10 @@ export class WalletService {
         @InjectRepository(Wallet)
         private walletRep: Repository<Wallet>
     ) { }
+    public async findAll() {
+        const users = await this.walletRep.find()
+        return users
+    }
     public async findUser(params: CreateWalletDto) {
         const { userId, merchant } = params;
         const users = await this.walletRep.find({

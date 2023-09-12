@@ -27,7 +27,7 @@ export class Contract {
 
     public static getTokenContract({ chainId, address }) {
         const contract = Contract.getContract({
-            abi: routerABI as AbiItem[],
+            abi: ERC20 as AbiItem[],
             chainId,
             address,
         });
@@ -37,7 +37,7 @@ export class Contract {
 
     public static getRouterContract({ chainId, address }) {
         const contract = Contract.getContract({
-            abi: ERC20 as AbiItem[],
+            abi: routerABI as AbiItem[],
             chainId,
             address,
         });

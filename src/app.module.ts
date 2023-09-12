@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { MongooseModule } from '@nestjs/mongoose';
 import { Connection } from 'typeorm';
 import { TestModule } from './modules/test-module/test.module';
 import { WalletModule } from './modules/wallet/wallet.module';

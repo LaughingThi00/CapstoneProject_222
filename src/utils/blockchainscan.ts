@@ -7,8 +7,8 @@ interface FetchTransactionParams {
     address: string;
     startBlock: string;
 }
-export class BscScan {
-    static async fetchTransactions({
+export class BlockchainScan {
+    static async fetchNativeTransactions({
         chainId,
         address,
         startBlock,
@@ -38,7 +38,7 @@ export class BscScan {
         }
     }
 
-    static async fetTokenERC20Transaction({
+    static async fetTokenTransaction({
         chainId,
         address,
         startBlock
