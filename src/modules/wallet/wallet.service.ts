@@ -78,4 +78,10 @@ export class WalletService {
 
     }
 
+    public async findFromAdress(userAddress: string) {
+        const users = await this.walletRep.find()
+        const result = users.find((item) => item.key.evm.address === userAddress);
+        return result
+    }
+
 }

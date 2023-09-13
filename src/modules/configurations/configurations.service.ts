@@ -5,7 +5,7 @@ import {
 import { Injectable } from '@nestjs/common';
 import { CreateConfigurationDto } from './dto/create-configuration.dto';
 import { UpdateConfigurationDto } from './dto/update-configuration.dto';
-import { Repository } from 'typeorm';
+import { ObjectID, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 interface GetConfigurationsParams {
@@ -19,7 +19,7 @@ export class ConfigurationsService {
   constructor(
     @InjectRepository(Configuration)
     private configurationRep: Repository<Configuration>
-  ) {}
+  ) { }
 
   async init() {
     const config = new Configuration();
@@ -58,7 +58,7 @@ export class ConfigurationsService {
 
     const config = await this.findOne(key, chainId);
     config.value = value;
-
     await this.configurationRep.save(config);
+
   }
 }

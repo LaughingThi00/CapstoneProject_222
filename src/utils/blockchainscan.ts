@@ -6,12 +6,14 @@ interface FetchTransactionParams {
     chainId: number;
     address: string;
     startBlock: string;
+    toBlock: string;
 }
 export class BlockchainScan {
     static async fetchNativeTransactions({
         chainId,
         address,
         startBlock,
+        toBlock
     }: FetchTransactionParams) {
         const url = API_KEY_SCAN[chainId].url;
         try {
@@ -23,6 +25,7 @@ export class BlockchainScan {
                     action: 'txlist',
                     sort: 'asc',
                     startblock: startBlock,
+                    toBlock: toBlock,
                 },
             });
 
@@ -38,10 +41,11 @@ export class BlockchainScan {
         }
     }
 
-    static async fetTokenTransaction({
+    static async fetTokenTransactions({
         chainId,
         address,
-        startBlock
+        startBlock,
+        toBlock
     }) {
         const url = API_KEY_SCAN[chainId].url;
         try {
@@ -53,6 +57,7 @@ export class BlockchainScan {
                     apikey: API_KEY_SCAN[chainId].key,
                     sort: 'asc',
                     startblock: startBlock,
+                    toBlock: toBlock,
                 },
             });
 

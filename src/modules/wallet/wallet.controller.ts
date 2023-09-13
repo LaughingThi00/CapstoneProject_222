@@ -16,14 +16,19 @@ import { WalletService } from './wallet.service';
 export class WalletController {
     constructor(private readonly walletService: WalletService) { }
     @Get('find-user')
-    findUser(
+    async findUser(
         @Query('userId') userId: string,
         @Query('merchant') merchant: string
     ) {
-        return this.walletService.findUser({
+        const users = await this.walletService.findUser({
             userId,
             merchant
         })
+        if (!users || users.length == 0) return {
+            data: users,
+            message: "user is not found"
+        }
+        return users
     }
     @Post('create-wallet')
     createWallet(

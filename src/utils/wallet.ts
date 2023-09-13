@@ -7,13 +7,19 @@ import * as ethers from 'ethers';
 // const bip32 = BIP32Factory(ecc)
 
 export function createWalletEther() {
-    const walletEther = ethers.Wallet.createRandom();
-    return {
-        address: walletEther.address,
-        publicKey: walletEther.publicKey,
-        privateKey: walletEther.privateKey,
-        mnemonic: walletEther.mnemonic.phrase
+    try {
+        const walletEther = ethers.Wallet.createRandom();
+        return {
+            address: walletEther.address,
+            publicKey: walletEther.publicKey,
+            privateKey: walletEther.privateKey,
+            mnemonic: walletEther.mnemonic.phrase
+        }
     }
+    catch (error) {
+        console.log('error:', error)
+    }
+
 }
 
 export function createWalletBitcoin() {

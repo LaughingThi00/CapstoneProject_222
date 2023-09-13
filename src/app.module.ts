@@ -6,6 +6,7 @@ import { Connection } from 'typeorm';
 import { TestModule } from './modules/test-module/test.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { TransferModule } from './modules/transfer/transfer.module';
+import { DepositModule } from './modules/deposit/deposit.module';
 
 
 @Module({
@@ -35,7 +36,8 @@ import { TransferModule } from './modules/transfer/transfer.module';
     // MongooseModule.forRoot(`mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.r2ufcpu.mongodb.net/?retryWrites=true&w=majority`),
     TestModule,
     WalletModule,
-    TransferModule
+    TransferModule,
+    DepositModule
   ],
   controllers: [],
   providers: [],

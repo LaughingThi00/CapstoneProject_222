@@ -29,8 +29,8 @@ export const TOKENS = {
     // },
 }
 
-const NATIVECOINS = {
-    1: '',
+export const NATIVECOINS = {
+    1: 'ETH',
     2: '',
     56: '',
     97: 'BNB'

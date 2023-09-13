@@ -9,7 +9,7 @@ export enum ConfigurationKeys {
 @Entity('configuration')
 export class Configuration {
   @ObjectIdColumn()
-  public id: ObjectID;
+  public _id: ObjectID;
 
   @Column()
   key: ConfigurationKeys;

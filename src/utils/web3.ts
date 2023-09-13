@@ -53,6 +53,16 @@ export class Web3 {
         }
     }
 
+    static async getBlockNumber(chainId: number) {
+        try {
+            const web3 = Web3.httpProvider(chainId);
+            return await web3.eth.getBlockNumber();
+        } catch (error) {
+            console.log('Error getBlockNumber:', error);
+            return null;
+        }
+    }
+
     static async getBlock(blockNumber: number, chainId: number) {
         try {
             const web3 = Web3.httpProvider(chainId);
