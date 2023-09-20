@@ -1,4 +1,3 @@
-
 export const ETH_GOERLI = 5;
 export const ETH_MAINNET = 1;
 

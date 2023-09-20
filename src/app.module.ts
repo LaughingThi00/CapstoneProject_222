@@ -8,7 +8,6 @@ import { WalletModule } from './modules/wallet/wallet.module';
 import { TransferModule } from './modules/transfer/transfer.module';
 import { DepositModule } from './modules/deposit/deposit.module';
 
-
 @Module({
   imports: [
     // Config .env
@@ -37,11 +36,11 @@ import { DepositModule } from './modules/deposit/deposit.module';
     TestModule,
     WalletModule,
     TransferModule,
-    DepositModule
+    DepositModule,
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule {
-  constructor(private connection: Connection) { }
+  constructor(private connection: Connection) {}
 }

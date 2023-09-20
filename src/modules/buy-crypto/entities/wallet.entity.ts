@@ -1,14 +1,14 @@
-import { AbstractEntity } from "src/common/entities/abstract-entity";
-import { BeforeInsert, Column, Entity } from "typeorm";
+import { AbstractEntity } from 'src/common/entities/abstract-entity';
+import { Column, Entity } from 'typeorm';
 
 @Entity('wallets')
 export class Wallet extends AbstractEntity {
-    @Column({ default: '' })
-    userId: string
+  @Column({ default: '' })
+  userId: string;
 
-    @Column({ default: '' })
-    merchant: string
+  @Column({ default: '' })
+  merchant: string;
 
-    @Column({ default: {} })
-    key: object
+  @Column({ default: {} })
+  key: object;
 }

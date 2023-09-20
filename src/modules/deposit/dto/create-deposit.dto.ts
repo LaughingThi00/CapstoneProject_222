@@ -1,1 +1,1 @@
-export class CreateDepositDto { }
+export class CreateDepositDto {}

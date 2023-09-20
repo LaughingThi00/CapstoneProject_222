@@ -29,13 +29,13 @@ async function bootstrap() {
       },
       transform: true,
       transformOptions: { enableImplicitConversion: true },
-    })
+    }),
   );
   app.useGlobalFilters(new AllExceptionsFilter());
 
   const reflector = app.get(Reflector);
   app.useGlobalInterceptors(
-    new TransformInterceptor()
+    new TransformInterceptor(),
     // new ClassSerializerInterceptor(reflector),
   );
   // Versioning
@@ -55,7 +55,7 @@ async function bootstrap() {
   SwaggerModule.setup('/api/document', app, document);
 
   console.log(
-    `Open http://localhost:${process.env.APP_PORT}/api/document to see the documentation`
+    `Open http://localhost:${process.env.APP_PORT}/api/document to see the documentation`,
   );
 
   // Start listening

@@ -3,7 +3,6 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
-  Controller,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -49,7 +48,7 @@ export class TransformInterceptor<T>
           message,
           statusCode: 200,
         };
-      })
+      }),
     );
   }
 }
