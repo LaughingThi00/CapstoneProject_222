@@ -1,4 +1,4 @@
-export class CreateBuyAssetDto {
+export class CreateExchangeAssetDto {
     userId: string;
     merchant: string;
     type: string;

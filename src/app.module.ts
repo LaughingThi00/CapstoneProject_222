@@ -7,7 +7,7 @@ import { TestModule } from './modules/test-module/test.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { TransferModule } from './modules/transfer/transfer.module';
 import { DepositModule } from './modules/deposit/deposit.module';
-import { BuyAssetModule } from './modules/buy-asset/buy-asset.module';
+import { ExchangeAssetModule } from './modules/exchange-asset/exchange-asset.module';
 
 @Module({
   imports: [
@@ -38,7 +38,7 @@ import { BuyAssetModule } from './modules/buy-asset/buy-asset.module';
     WalletModule,
     TransferModule,
     DepositModule,
-    BuyAssetModule
+    ExchangeAssetModule
   ],
   controllers: [],
   providers: [],

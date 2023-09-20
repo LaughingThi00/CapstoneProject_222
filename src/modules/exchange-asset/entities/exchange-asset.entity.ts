@@ -1,8 +1,8 @@
 import { AbstractEntity } from 'src/common/entities/abstract-entity';
 import { Column, Entity } from 'typeorm';
 
-@Entity('buy-assets')
-export class BuyAsset extends AbstractEntity {
+@Entity('exchange-assets')
+export class ExchangeAsset extends AbstractEntity {
   @Column({ default: '' })
   userId: string;
 
