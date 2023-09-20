@@ -7,6 +7,7 @@ import { TestModule } from './modules/test-module/test.module';
 import { WalletModule } from './modules/wallet/wallet.module';
 import { TransferModule } from './modules/transfer/transfer.module';
 import { DepositModule } from './modules/deposit/deposit.module';
+import { BuyAssetModule } from './modules/buy-asset/buy-asset.module';
 
 @Module({
   imports: [
@@ -37,10 +38,11 @@ import { DepositModule } from './modules/deposit/deposit.module';
     WalletModule,
     TransferModule,
     DepositModule,
+    BuyAssetModule
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule {
-  constructor(private connection: Connection) {}
+  constructor(private connection: Connection) { }
 }
