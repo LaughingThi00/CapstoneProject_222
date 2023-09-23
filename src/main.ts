@@ -1,7 +1,6 @@
-import { TransformInterceptor } from './interceptors/transform.interceptor';
+import { TransformInterceptor } from './blockchain/interceptors/transform.interceptor';
 import {
   BadRequestException,
-  ClassSerializerInterceptor,
   ValidationError,
   ValidationPipe,
   VersioningType,
@@ -9,7 +8,7 @@ import {
 import { NestFactory, Reflector } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { AllExceptionsFilter } from './filters/all-exceptions.filter';
+import { AllExceptionsFilter } from './blockchain/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

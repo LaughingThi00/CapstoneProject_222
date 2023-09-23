@@ -1,0 +1,269 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Roboto";
+    display: block;
+  }
+
+  
+.header {
+    background-color: #fff;
+    padding: 10px 20px;
+    /* width: 100%; */
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .header-logo {
+    display: flex;
+    width: 200px;
+    align-items: center;
+    justify-content: space-between;
+  }
+  
+  .header-logo-img {
+  }
+  
+  .header-logo-text {
+    font-size: 20px;
+    font-weight: 900;
+  }
+  
+  .header-slider {
+    padding: 10px 2px;
+    display: inline-block;
+    list-style-type: none;
+  }
+  
+  /* .header-slider-item {
+    background-color: #fff;
+    color: #000;
+    font-weight: 300;
+    padding: 10px 20px;
+    align-content: center;
+    display: inline-block;
+    width: 100px;
+    text-align: center;
+  }
+  
+  .header-slider-item:hover {
+    background-color: #307fe2;
+    color: #fff;
+    cursor: pointer;
+  }
+   */
+/*    
+  .header-icon {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+  
+  .header-icon-item {
+    padding: 10px;
+    font-size: 30px;
+  } */
+
+  
+  .footer{
+
+}
+
+.footer-heading{
+  padding:10px;
+text-align: center;
+background-color: #C1C1C1;
+}
+
+.footer-content{
+display: flex;
+justify-content: space-evenly;
+margin:30px 0;
+}
+
+.FC-item{
+width: 20%;
+}
+
+.FCi-list{
+  list-style-type: none;
+}
+
+.FCi-name{
+font-weight: 700;
+}
+
+.FCi-topic{
+padding-top:10px;
+border-bottom: #ccc solid 1px;
+width: 100%;
+cursor: pointer;
+}
+
+.footer-end{
+  padding:10px;
+  text-align: center;
+background-color: #307FE2;
+}
+
+
+
+.content-container{
+    display: flex;
+    flex-wrap: wrap;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.item{
+    margin: 10px;
+    width: 30%;
+    max-height: 18vh;
+}
+
+
+.DP-text {
+    color: #fef08a;
+    font-size: 40px;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 50px 0;
+  }
+  
+  .DP-container {
+    display: flex;
+    justify-content: space-evenly;
+    height: auto;
+  }
+  
+  .DP-item {
+    width: 18%;
+    max-height: 60vh;
+    border-radius: 20px;
+    background-color: #fff;
+    box-shadow: 2px 2px 2px 2px rgba(174, 171, 171, 0.5);
+    position: relative;
+    margin: 20px 10px;
+    text-align: center;
+  }
+  .button-hover:hover {
+    opacity: 0.5;
+    cursor: pointer;
+  }
+  .DP-item:hover {
+    cursor: pointer;
+    animation: shake ease 0.2s;
+  }
+  
+  .DPi-image {
+    width: 100%;
+    max-height: 60%;
+    border-radius: 20px;
+  }
+
+  
+  
+.sale {
+    position: absolute;
+    left: 3px;
+    top: 25px;
+    display: inline-block;
+    color: #fff;
+    font-weight: 700;
+    background-color: red;
+    padding: 20px 12px;
+    text-align: center;
+    line-height: 100%;
+    border-radius: 50%;
+  }
+  
+  .DPi-name {
+    font-weight: 700;
+    font-size: 20px;
+    padding: 10px;
+  }
+  
+  .DPi-label {
+    font-size: 18px;
+    font-weight: 400;
+    padding-bottom: 10px;
+  }
+  
+  .DPi-price {
+    display: flex;
+    justify-content: space-around;
+    font-size: 15px;
+    padding-bottom: 10px;
+  }
+  
+  .DPi-price-off {
+    color: #b4b4b4;
+    text-decoration: line-through;
+  }
+  
+  .DPi-price-on {
+    color: #f43f5e;
+  }
+  
+  .DP-buynow {
+    text-align: center;
+    background-color: #307fe2;
+    border-radius: 20px;
+    display: inline-block;
+    margin-top: 20px;
+    min-width: 100px;
+    padding: 8px 6px;
+    color: #fff;
+    z-index: 1;
+    margin: 20px auto;
+  }
+  
+  .btn-shake:hover {
+    opacity: 1;
+    cursor: pointer;
+    animation: shake 0.5s;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  
+  .DP-buynow-button {
+    transform: translateY(2px);
+  }
+
+  
+@keyframes shake {
+    0% {
+      transform: translate(1px, 1px) rotate(0deg);
+    }
+    10% {
+      transform: translate(-1px, -2px) rotate(-1deg);
+    }
+    20% {
+      transform: translate(-3px, 0px) rotate(1deg);
+    }
+    30% {
+      transform: translate(3px, 2px) rotate(0deg);
+    }
+    40% {
+      transform: translate(1px, -1px) rotate(1deg);
+    }
+    50% {
+      transform: translate(-1px, 2px) rotate(-1deg);
+    }
+    60% {
+      transform: translate(-3px, 1px) rotate(0deg);
+    }
+    70% {
+      transform: translate(3px, 1px) rotate(-1deg);
+    }
+    80% {
+      transform: translate(-1px, -1px) rotate(1deg);
+    }
+    90% {
+      transform: translate(1px, 2px) rotate(0deg);
+    }
+    100% {
+      transform: translate(1px, -2px) rotate(-1deg);
+    }
+  }
+  
