@@ -17,7 +17,7 @@ export class DepositService {
     private depositRep: Repository<Deposit>,
     private readonly walletService: WalletService,
     private readonly configurationService: ConfigurationsService,
-  ) {}
+  ) { }
 
   // Schedule every 1 minute at the 10th second
   @Cron('10 * * * * *')
@@ -26,7 +26,7 @@ export class DepositService {
     try {
       const listChainId = [97];
       const users = await this.walletService.findAll();
-      const listUserAddress = users.map((item) => item.key.evm.address);
+      const listUserAddress = users.map((item) => item.address);
       for (let i = 0; i < listChainId.length; i++) {
         // get lastBlock
         const lastBlock = await this.configurationService.getConfig({
@@ -99,6 +99,13 @@ export class DepositService {
       if (tx) return;
       const userInfo = await this.walletService.findFromAdress(userAddress);
       console.log(`${userInfo.userId} has 1 transaction native deposit! `);
+      // Transfer native to Hot wallet
+
+
+      // Update user balance
+
+
+
       await this.saveDB({
         userId: userInfo.userId,
         merchant: userInfo.merchant,
@@ -154,6 +161,14 @@ export class DepositService {
       if (tx) return;
       const userInfo = await this.walletService.findFromAdress(userAddress);
       console.log(`${userInfo.userId} has 1 transaction token deposit! `);
+
+      // Transfer token to Hot wallet
+
+
+      // Update user balance
+
+
+
       await this.saveDB({
         userId: userInfo.userId,
         merchant: userInfo.merchant,

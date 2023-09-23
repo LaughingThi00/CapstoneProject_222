@@ -1,19 +1,23 @@
-// import * as ecc from 'tiny-secp256k1';
-// import { BIP32Factory } from 'bip32';
-// import * as bip39 from 'bip39';
-// import * as bitcoin from 'bitcoinjs-lib';
 import * as ethers from 'ethers';
 
-// const bip32 = BIP32Factory(ecc)
 
-export function createWalletEther() {
+export function createWalletEther(userIndex: number) {
   try {
-    const walletEther = ethers.Wallet.createRandom();
+    // const mnemonic = bip39.generateMnemonic()
+    const mnemonic = "ticket wine surface battle couple kitten crystal apple sea input october announce";
+    // const walletEther = ethers.Wallet.fromPhrase(mnemonic)
+    const root = ethers.HDNodeWallet.fromPhrase(mnemonic)
+    const path = "m/44'/60'/0'/0/0" + userIndex
+    const account = root.derivePath(path)
+    // console.log('account:', account)
+    // console.log('walletEther:', walletEther)
+    // const node = ethers.utils.HDNode.fromMnemonic(mnemonic)
     return {
-      address: walletEther.address,
-      publicKey: walletEther.publicKey,
-      privateKey: walletEther.privateKey,
-      mnemonic: walletEther.mnemonic.phrase,
+      address: account.address,
+      publicKey: account.publicKey,
+      privateKey: account.privateKey,
+      mnemonic: mnemonic,
+      userIndex: userIndex
     };
   } catch (error) {
     console.log('error:', error);

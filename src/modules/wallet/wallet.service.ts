@@ -35,39 +35,19 @@ export class WalletService {
             }
         })
         if (!users || users.length == 0) {
-            const walletEther = createWalletEther();
-            const bitcoinWallet = createWalletBitcoin()
+            const userIndex = await this.walletRep.find()
+            const walletEther = createWalletEther(userIndex.length + 1);
             const userWallet = {
                 userId: userId,
                 merchant: merchant,
-                key: {
-                    bitcoin: {
-                        networkId: 1,
-                        networkName: "Bitcoin",
-                        address: bitcoinWallet.address.toLowerCase(),
-                        publicKey: bitcoinWallet.publicKey,
-                        privateKey: bitcoinWallet.privateKey,
-                        mnemonic: bitcoinWallet.mnemonic
-                    },
-                    evm: {
-                        networkId: 2,
-                        networkName: "EVM",
-                        address: walletEther.address.toLowerCase(),
-                        publicKey: walletEther.publicKey,
-                        privateKey: walletEther.privateKey,
-                        mnemonic: walletEther.mnemonic
-                    }
-
-                },
+                address: walletEther.address.toLowerCase(),
+                userIndex: walletEther.userIndex
             }
             const saveUser = this.walletRep.create(userWallet)
             await this.walletRep.save(saveUser)
             // console.log('userWallet:', userWallet)
 
-            return {
-                addressBitcoin: bitcoinWallet.address.toLowerCase(),
-                addressEther: walletEther.address.toLowerCase()
-            }
+            return saveUser
         }
         else {
             console.log("User has been created wallet!")
@@ -78,9 +58,21 @@ export class WalletService {
 
     }
 
+    // public async testCreateWallet() {
+    //     const userIndex = await this.walletRep.find()
+    //     const walletEther = createWalletEther(userIndex.length + 1);
+    //     return {
+    //         address: walletEther.address.toLowerCase(),
+    //         publicKey: walletEther.publicKey,
+    //         privateKey: walletEther.privateKey,
+    //         mnemonic: walletEther.mnemonic,
+    //         userIndex: walletEther.userIndex
+    //     }
+    // }
+
     public async findFromAdress(userAddress: string) {
         const users = await this.walletRep.find()
-        const result = users.find((item) => item.key.evm.address === userAddress);
+        const result = users.find((item) => item.address === userAddress);
         return result
     }
 

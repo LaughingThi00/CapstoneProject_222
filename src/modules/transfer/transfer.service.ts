@@ -14,7 +14,7 @@ export class TransferService {
     @InjectRepository(Transfer)
     private transferRep: Repository<Transfer>,
     private walletRep: WalletService,
-  ) {}
+  ) { }
   public async findTransaction({
     transactionHash,
   }: {
