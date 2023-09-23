@@ -6,7 +6,7 @@ import { TransferService } from './transfer.service';
 @ApiTags('Transfer')
 @Controller('/transfer')
 export class TransferController {
-  constructor(private readonly transferService: TransferService) {}
+  constructor(private readonly transferService: TransferService) { }
   @Get('history')
   async findTransaction(@Query('transactionHash') transactionHash: string) {
     const transactions = await this.transferService.findTransaction({
