@@ -1,4 +1,4 @@
-import { AbstractEntity } from 'src/common/entities/abstract-entity';
+import { AbstractEntity } from 'src/blockchain/common/entities/abstract-entity';
 import { BeforeInsert, Column, Entity } from 'typeorm';
 
 @Entity('transfers')

@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { ExchangeAsset } from "./entities/exchange-asset.entity";
-import { getPriceAsset, getPriceUSDTperVND } from "src/utils/marketdata";
+import { getPriceAsset, getPriceUSDTperVND } from "../../utils/marketdata";
 import { CreateExchangeAssetDto } from "./dto/create-exchange-asset.dto";
 import { WalletService } from "../wallet/wallet.service";
 

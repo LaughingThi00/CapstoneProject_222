@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { Cron, Timeout } from '@nestjs/schedule';
 import { InjectRepository } from '@nestjs/typeorm';
-import { BlockchainScan } from 'src/utils/blockchainscan';
+import { BlockchainScan } from '../../utils/blockchainscan';
 import { Repository } from 'typeorm';
 import { ConfigurationsService } from '../configurations/configurations.service';
 import { ConfigurationKeys } from '../configurations/entities/configuration.entity';
 import { WalletService } from '../wallet/wallet.service';
 import { Deposit } from './entities/deposit.entity';
-import { Web3 } from 'src/utils/web3';
-import { NATIVECOINS, TOKENS } from 'src/constants/address';
+import { Web3 } from '../../utils/web3';
+import { NATIVECOINS, TOKENS } from '../../constants/address';
 
 @Injectable()
 export class DepositService {

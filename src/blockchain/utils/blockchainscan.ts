@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { API_KEY_SCAN } from 'src/constants/blockchain_scan';
-import { BSC_API_KEY } from 'src/constants/network';
+import { API_KEY_SCAN } from '../constants/blockchain_scan';
+import { BSC_API_KEY } from '../constants/network';
 
 interface FetchTransactionParams {
   chainId: number;

@@ -6,7 +6,7 @@ import {
   BeforeUpdate,
 } from 'typeorm';
 
-import { getCurrentInSeconds } from 'src/utils/helper';
+import { getCurrentInSeconds } from '../../utils/helper';
 
 export abstract class AbstractEntity {
   @ObjectIdColumn()

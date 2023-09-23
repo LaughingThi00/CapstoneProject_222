@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { NATIVECOINS } from 'src/constants/address';
+import { NATIVECOINS } from '../../constants/address';
 import { TransferService } from './transfer.service';
 
 @ApiTags('Transfer')
