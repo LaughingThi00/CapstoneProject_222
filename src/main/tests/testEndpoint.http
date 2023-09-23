@@ -1,0 +1,68 @@
+
+POST http://localhost:5001/endpoint/ 
+content-type: application/json
+
+{
+"merchant":"111111"
+}
+
+###
+GET http://localhost:5001/endpoint/price 
+content-type: application/json
+
+###
+POST http://localhost:5001/endpoint/find-user-wallet 
+content-type: application/json
+
+{
+"id":"user2",
+"merchant":"111111"
+}
+
+
+###
+POST http://localhost:5001/endpoint/create-wallet 
+content-type: application/json
+
+{
+    "merchant":"111111",
+      "id":"435346"
+
+}
+
+###
+GET http://localhost:5001/endpoint/transaction 
+content-type: application/json
+
+{
+    "merchant":"111111"
+}
+
+###
+POST http://localhost:5001/endpoint/buy-crypto
+content-type: application/json
+
+{
+    "id":"user2",    
+    "merchant":"111111",
+    "amount_VND":100000,
+    "for_token":"ETH",
+    "network":"",
+    "bill":"MOMO2342236",
+    "platform":"MOMO",
+    "slippage":1
+}
+
+###
+PUT http://localhost:5001/endpoint/purchase
+content-type: application/json
+
+{
+    "id": "user2",
+    "merchant": "111111",
+    "to_address":"0x6980aA8B940EeE3a8D3122B5DbE0E008506E5d87", 
+    "token":"BTC", 
+    "amount": 0.03187,
+    "network":97
+}
+

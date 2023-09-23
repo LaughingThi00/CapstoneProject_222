@@ -3,11 +3,11 @@ import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Connection } from 'typeorm';
-import { TestModule } from './modules/test-module/test.module';
-import { WalletModule } from './modules/wallet/wallet.module';
-import { TransferModule } from './modules/transfer/transfer.module';
-import { DepositModule } from './modules/deposit/deposit.module';
-import { ExchangeAssetModule } from './modules/exchange-asset/exchange-asset.module';
+import { TestModule } from './blockchain/modules/test-module/test.module';
+import { WalletModule } from './blockchain/modules/wallet/wallet.module';
+import { TransferModule } from './blockchain/modules/transfer/transfer.module';
+import { DepositModule } from './blockchain/modules/deposit/deposit.module';
+import { ExchangeAssetModule } from './blockchain/modules/exchange-asset/exchange-asset.module';
 
 @Module({
   imports: [
@@ -38,11 +38,11 @@ import { ExchangeAssetModule } from './modules/exchange-asset/exchange-asset.mod
     WalletModule,
     TransferModule,
     DepositModule,
-    ExchangeAssetModule
+    ExchangeAssetModule,
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule {
-  constructor(private connection: Connection) { }
+  constructor(private connection: Connection) {}
 }

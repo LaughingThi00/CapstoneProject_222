@@ -1,0 +1,31 @@
+
+GET http://localhost:6969/api/user 
+content-type: application/json
+
+###
+POST http://localhost:6969/api/user 
+content-type: application/json
+
+{
+"id":"user15",
+"type":"normal",
+"username":"user15",
+"password":"1",
+"recovery_mail":"", 
+"active_day":"" 
+
+}
+
+###
+PUT http://localhost:6969/api/user/USER1 
+content-type: application/json
+
+{
+
+    "recovery_mail":"laughingthi@gmail.com"
+}
+
+###
+DELETE  http://localhost:6969/api/user/USER10 
+content-type: application/json
+

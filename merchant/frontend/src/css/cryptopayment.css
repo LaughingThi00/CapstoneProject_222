@@ -1,0 +1,25 @@
+.normal-a {
+  text-decoration: underline;
+  color: blue;
+  cursor: pointer;
+}
+
+.bold-text {
+  font-weight: bolder;
+  display: inline-block;
+  margin-bottom: 15px;
+}
+
+.bold-text-no-margin {
+  font-weight: bolder;
+  display: inline-block;
+  margin: 0;
+}
+.block-small-margin{
+    display: block;
+    margin:3px 0px ;
+}
+
+.block-small-margin *{
+    margin:0;
+}
