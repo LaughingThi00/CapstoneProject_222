@@ -1,4 +1,4 @@
-import { AbstractEntity } from 'src/common/entities/abstract-entity';
+import { AbstractEntity } from 'src/blockchain/common/entities/abstract-entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity('exchange-assets')
@@ -23,6 +23,4 @@ export class ExchangeAsset extends AbstractEntity {
 
   @Column({ default: 0 })
   fiatAmount: number;
-
-
 }

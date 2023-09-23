@@ -1,7 +1,7 @@
 import { ApiBody, ApiProperty } from '@nestjs/swagger';
 import { Transform, Type } from 'class-transformer';
 import { IsOptional, IsNumber, Min, IsString, Validate } from 'class-validator';
-import { AddressValidator } from 'src/validators/address.validator';
+import { AddressValidator } from 'src/blockchain/validators/address.validator';
 
 export class AddressDto {
   @Validate(AddressValidator)

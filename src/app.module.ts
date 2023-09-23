@@ -7,7 +7,7 @@ import { TestModule } from './blockchain/modules/test-module/test.module';
 import { WalletModule } from './blockchain/modules/wallet/wallet.module';
 import { TransferModule } from './blockchain/modules/transfer/transfer.module';
 import { DepositModule } from './blockchain/modules/deposit/deposit.module';
-import { ExchangeAssetModule } from './modules/exchange-asset/exchange-asset.module';
+import { ExchangeAssetModule } from './blockchain/modules/exchange-asset/exchange-asset.module';
 
 @Module({
   imports: [

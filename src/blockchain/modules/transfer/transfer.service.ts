@@ -3,9 +3,9 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CreateTransferDto } from './dto/create-transfer.dto';
 import { Transfer } from './entities/transfer.entity';
-import { Web3 } from 'src/utils/web3';
-import { Contract } from 'src/utils/contract';
-import { TOKENS } from 'src/constants/address';
+import { Web3 } from 'src/blockchain/utils/web3';
+import { Contract } from 'src/blockchain/utils/contract';
+import { TOKENS } from 'src/blockchain/constants/address';
 import { WalletService } from '../wallet/wallet.service';
 
 @Injectable()

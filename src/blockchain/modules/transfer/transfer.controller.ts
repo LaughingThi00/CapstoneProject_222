@@ -1,12 +1,12 @@
 import { Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { NATIVECOINS } from 'src/constants/address';
+import { NATIVECOINS } from 'src/blockchain/constants/address';
 import { TransferService } from './transfer.service';
 
 @ApiTags('Transfer')
 @Controller('/transfer')
 export class TransferController {
-  constructor(private readonly transferService: TransferService) { }
+  constructor(private readonly transferService: TransferService) {}
   @Get('history')
   async findTransaction(@Query('transactionHash') transactionHash: string) {
     const transactions = await this.transferService.findTransaction({

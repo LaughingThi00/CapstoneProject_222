@@ -1,4 +1,4 @@
 export class CreateWalletDto {
-    userId: string;
-    merchant: string;
+  userId: string;
+  merchant: string;
 }
