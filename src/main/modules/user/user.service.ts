@@ -166,12 +166,13 @@ export class UserService {
 
     user = await this.UserRep.findOne({
       where: [
-        { address: info.address, isDeleted: true },
-        { userId: info.userId, merchant: info.merchant, isDeleted: true },
+        { address: info.address },
+        { userId: info.userId, merchant: info.merchant },
       ],
     });
 
-    if (!user) return ExceptionService.throwBadRequest();
+    if (!user || user.isDeleted === false)
+      return ExceptionService.throwBadRequest();
 
     user.isDeleted = false;
 

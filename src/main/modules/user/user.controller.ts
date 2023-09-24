@@ -18,6 +18,12 @@ import { ChangeInfoDto } from './dto/changeInfo.dto';
 @Controller('/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Post('/')
+  async createUser(@Body() createUser: CreateUserDto) {
+    return this.userService.createOne(createUser);
+  }
+
   @Get('/')
   async findAllUser() {
     return await this.userService.findAll();
@@ -41,11 +47,6 @@ export class UserController {
   @Get('/find-deleted-user-of-one-merchant')
   async findDeletedUsersOfOneMerchant(@Body() conditionUser: ConditionUserDto) {
     return await this.userService.findDeadWithCondition(conditionUser);
-  }
-
-  @Post('/')
-  async createUser(@Body() createUser: CreateUserDto) {
-    return this.userService.createOne(createUser);
   }
 
   @Put('/increase')
@@ -73,7 +74,7 @@ export class UserController {
     return this.userService.recoverAccount(info);
   }
 
-  @Delete('/delete-pernamently')
+  @Delete('/delete-permanently')
   async hardDeleteAccount(@Body() info: ChangeInfoDto) {
     return this.userService.deleteForever(info);
   }

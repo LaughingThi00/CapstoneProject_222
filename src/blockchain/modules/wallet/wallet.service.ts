@@ -73,4 +73,8 @@ export class WalletService {
     const result = users.find((item) => item.address === userAddress);
     return result;
   }
+
+  public async findOne(userId: string) {
+    return await this.walletRep.find({ userId });
+  }
 }

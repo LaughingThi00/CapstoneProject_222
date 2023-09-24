@@ -1,6 +1,6 @@
-const crypto = require('crypto');
+import crypto from 'crypto';
 
-const genKey = () => {
+export const genKey = () => {
   let { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
     modulusLength: 2048,
     publicKeyEncoding: {
@@ -16,7 +16,7 @@ const genKey = () => {
   return { privateKey, publicKey };
 };
 
-const encryptData = (data, publicKey) => {
+export const encryptData = (data, publicKey: string) => {
   let encryptedData = crypto.publicEncrypt(
     {
       key: publicKey,
@@ -31,7 +31,7 @@ const encryptData = (data, publicKey) => {
   return encryptedData;
 };
 
-const decryptData = (encryptedData, privateKey) => {
+export const decryptData = (encryptedData, privateKey: string) => {
   let decryptedData = crypto.privateDecrypt(
     {
       key: privateKey,
@@ -45,5 +45,3 @@ const decryptData = (encryptedData, privateKey) => {
   // return decryptedData;
   return decryptedData.toString();
 };
-
-module.exports = { genKey, encryptData, decryptData };

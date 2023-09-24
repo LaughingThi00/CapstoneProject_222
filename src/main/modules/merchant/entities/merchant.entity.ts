@@ -4,14 +4,14 @@ import { Column, Entity } from 'typeorm';
 @Entity('merchant')
 export class Merchant extends AbstractEntity {
   @Column({ unique: true, nullable: false })
-  partner_code: String;
+  partner_code: string;
 
   @Column({ default: '' })
-  name: String;
+  name: string;
 
   @Column({ nullable: false })
-  privateKey: String;
+  privateKey: string;
 
   @Column({ nullable: false })
-  publicKey: String;
+  publicKey: string;
 }

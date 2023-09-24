@@ -3,36 +3,27 @@ import { Column, Entity } from 'typeorm';
 
 @Entity('transaction')
 export class Transaction extends AbstractEntity {
-  @Column({ default: '' })
-  platform: String;
+  @Column({ unique: true, nullable: false })
+  hash: string;
 
-  @Column({ default: '' })
-  hash: { type: String; required: true; unique: true };
+  @Column({ nullable: false })
+  timestamp: string;
 
-  @Column({ default: '' })
-  transaction_type: { type: String; required: true; unique: true };
+  @Column({ default: null })
+  platform: string;
 
-  @Column({ default: '' })
-  timestamp: { type: String; required: true };
+  @Column({ nullable: false })
+  from_: string;
 
-  @Column({ default: '' })
-  from_merchant: { type: String };
+  @Column({ nullable: false })
+  to_: string;
 
-  @Column({ default: '' })
-  from_userId: { type: String };
+  @Column({ nullable: false })
+  token: string;
 
-  @Column({ default: '' })
-  to_merchant: { type: String };
+  @Column({ nullable: false })
+  amount: number;
 
-  @Column({ default: '' })
-  to_userId: { type: String };
-
-  @Column({ default: '' })
-  token: { type: String; required: true };
-
-  @Column({ default: '' })
-  amount: { type: Number; required: true };
-
-  @Column({ default: '' })
-  commission: { type: Number; required: true };
+  @Column({ default: 0.005 })
+  commission: number;
 }

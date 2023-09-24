@@ -1,4 +1,4 @@
-const Default_Data = require('./../constants/default.json');
+import * as Default_Data from '../constants/default.json';
 
 const findListUserAddress = (user) => {
   const data = [];

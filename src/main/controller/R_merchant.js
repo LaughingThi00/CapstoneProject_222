@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Url = require('./../constants/constant');
+const Url = require('../constants/constant');
 const axios = require('axios');
-const { genKey } = require('./../service/RSA');
+const { genKey } = require('../service/RSA');
 // const verifyToken = require('../middleware/auth')
 
 const Merchant = require('../models/Merchant');
@@ -28,12 +28,10 @@ router.post('/', async (req, res) => {
 
   // Simple validation
   if (!partner_code || !name) {
-    return res
-      .status(400)
-      .json({
-        success: false,
-        message: 'Missing information of this merchant',
-      });
+    return res.status(400).json({
+      success: false,
+      message: 'Missing information of this merchant',
+    });
   }
 
   try {
@@ -41,12 +39,10 @@ router.post('/', async (req, res) => {
     const merchant = await Merchant.findOne({ partner_code });
 
     if (merchant) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: 'This merchant has existed already!',
-        });
+      return res.status(400).json({
+        success: false,
+        message: 'This merchant has existed already!',
+      });
     }
 
     // All good, let's create this merchant

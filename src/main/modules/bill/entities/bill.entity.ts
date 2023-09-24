@@ -3,6 +3,9 @@ import { Column, Entity } from 'typeorm';
 
 @Entity('bill')
 export class Bill extends AbstractEntity {
+  @Column({ unique: true })
+  id_: string;
+
   @Column({ default: '' })
-  platform: String;
+  platform: string;
 }

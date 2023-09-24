@@ -9,6 +9,9 @@ import { TransferModule } from './blockchain/modules/transfer/transfer.module';
 import { DepositModule } from './blockchain/modules/deposit/deposit.module';
 import { ExchangeAssetModule } from './blockchain/modules/exchange-asset/exchange-asset.module';
 import { UserModule } from './main/modules/user/user.module';
+import { MerchantModule } from './main/modules/merchant/merchant.module';
+import { TransactionModule } from './main/modules/transaction/transaction.module';
+import { BillModule } from './main/modules/bill/bill.module';
 
 @Module({
   imports: [
@@ -41,6 +44,9 @@ import { UserModule } from './main/modules/user/user.module';
     DepositModule,
     ExchangeAssetModule,
     UserModule,
+    MerchantModule,
+    TransactionModule,
+    BillModule,
   ],
   controllers: [],
   providers: [],
