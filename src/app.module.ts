@@ -8,6 +8,7 @@ import { WalletModule } from './blockchain/modules/wallet/wallet.module';
 import { TransferModule } from './blockchain/modules/transfer/transfer.module';
 import { DepositModule } from './blockchain/modules/deposit/deposit.module';
 import { ExchangeAssetModule } from './blockchain/modules/exchange-asset/exchange-asset.module';
+import { UserModule } from './main/modules/user/user.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { ExchangeAssetModule } from './blockchain/modules/exchange-asset/exchang
     TransferModule,
     DepositModule,
     ExchangeAssetModule,
+    UserModule,
   ],
   controllers: [],
   providers: [],

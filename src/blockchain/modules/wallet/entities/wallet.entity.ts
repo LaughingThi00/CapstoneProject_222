@@ -1,6 +1,5 @@
-
-import { AbstractEntity } from "src/blockchain/common/entities/abstract-entity";
-import { BeforeInsert, Column, Entity } from "typeorm";
+import { AbstractEntity } from 'src/blockchain/common/entities/abstract-entity';
+import { BeforeInsert, Column, Entity } from 'typeorm';
 
 // interface keyWallet {
 //     evm: {
@@ -22,15 +21,15 @@ import { BeforeInsert, Column, Entity } from "typeorm";
 // }
 @Entity('wallets')
 export class Wallet extends AbstractEntity {
-    @Column({ default: '' })
-    userId: string
+  @Column({ default: '' })
+  userId: string;
 
-    @Column({ default: '' })
-    merchant: string
+  @Column({ default: '' })
+  merchant: string;
 
-    @Column({ default: '' })
-    address: string
+  @Column({ default: '' })
+  address: string;
 
-    @Column({ default: 0 })
-    userIndex: number
+  @Column({ default: 0 })
+  userIndex: number;
 }

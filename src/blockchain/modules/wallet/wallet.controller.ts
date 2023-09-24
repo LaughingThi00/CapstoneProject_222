@@ -5,7 +5,7 @@ import { WalletService } from './wallet.service';
 @ApiTags('Wallet')
 @Controller('/wallet')
 export class WalletController {
-  constructor(private readonly walletService: WalletService) { }
+  constructor(private readonly walletService: WalletService) {}
   @Get('find-user')
   async findUser(
     @Query('userId') userId: string,

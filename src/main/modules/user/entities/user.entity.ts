@@ -2,12 +2,12 @@ import { AbstractEntity } from 'src/blockchain/common/entities/abstract-entity';
 import { Column, Entity } from 'typeorm';
 
 class WalletObject {
-  token: String;
-  amount: Number;
+  token: string;
+  amount: number;
 }
 
-@Entity('exchange-assets')
-export class ExchangeAsset extends AbstractEntity {
+@Entity('user')
+export class User extends AbstractEntity {
   @Column({ unique: true, nullable: false })
   userId: string;
 
@@ -17,6 +17,13 @@ export class ExchangeAsset extends AbstractEntity {
   @Column({ default: '' })
   address: string;
 
-  @Column({})
-  asset: Array<WalletObject>[];
+  @Column({
+    default: [
+      { token: 'USDT', amount: 0 },
+      { token: 'ETH', amount: 0 },
+      { token: 'BTC', amount: 0 },
+      { token: 'VND', amount: 0 },
+    ],
+  })
+  asset: Array<WalletObject>;
 }

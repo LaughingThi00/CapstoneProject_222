@@ -1,2 +1,2 @@
 //decrypt message
-//validate merchant, userId, address...
+//validate merchant, userId, address
