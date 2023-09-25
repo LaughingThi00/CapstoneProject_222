@@ -62,7 +62,7 @@ export class CommonService {
 
   public async findSystemwallet() {
     return (
-      this.walletRep.findOne('111') ??
+      (await this.walletRep.findOne('111')) ??
       ExceptionService.throwInternalServerError()
     );
   }

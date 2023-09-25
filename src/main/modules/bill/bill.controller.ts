@@ -9,7 +9,7 @@ export class BillController {
 
   @Post('/')
   async createBill(@Query() id_: string, @Query() platform: string) {
-    return this.billService.createOne({ id_, platform });
+    return await this.billService.createOne({ id_, platform });
   }
 
   @Get('/')
@@ -24,16 +24,16 @@ export class BillController {
 
   @Put('/delete-bill')
   async softDeleteBill(@Query() id_: string) {
-    return this.billService.deleteBill(id_);
+    return await this.billService.deleteBill(id_);
   }
 
   @Put('/recover-bill')
   async recoverBill(@Query() id_: string) {
-    return this.billService.recoverBill(id_);
+    return await this.billService.recoverBill(id_);
   }
 
   @Delete('/delete-permanently')
   async hardDeleteBill(@Query() id_: string) {
-    return this.billService.deleteForever(id_);
+    return await this.billService.deleteForever(id_);
   }
 }

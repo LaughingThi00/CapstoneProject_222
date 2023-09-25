@@ -17,7 +17,7 @@ export class MerchantController {
 
   @Post('/')
   async createMerchant(@Query() partner_code: string, @Query() name: string) {
-    return this.merchantService.createOne({ partner_code, name });
+    return await this.merchantService.createOne({ partner_code, name });
   }
 
   @Get('/find-one-deleted')
@@ -42,21 +42,21 @@ export class MerchantController {
 
   @Put('/change-info')
   async changeInfo(@Query() partner_code: string, @Query() name: string) {
-    return this.merchantService.changeInfo({ partner_code, name });
+    return await this.merchantService.changeInfo({ partner_code, name });
   }
 
   @Put('/delete-merchant')
   async softDeleteMerchant(@Query() partner_code: string) {
-    return this.merchantService.deleteOne(partner_code);
+    return await this.merchantService.deleteOne(partner_code);
   }
 
   @Put('/recover-merchant')
   async recoverMerchant(@Query() partner_code: string) {
-    return this.merchantService.recoverOne(partner_code);
+    return await this.merchantService.recoverOne(partner_code);
   }
 
   @Delete('/delete-permanently')
   async hardDeleteMerchant(@Query() partner_code: string) {
-    return this.merchantService.deleteForever(partner_code);
+    return await this.merchantService.deleteForever(partner_code);
   }
 }

@@ -18,7 +18,7 @@ export class TransactionController {
 
   @Post('/')
   async createTransaction(@Body() info: TransactionDto) {
-    return this.transactionService.createOne(info);
+    return await this.transactionService.createOne(info);
   }
 
   @Get('/')
@@ -28,26 +28,26 @@ export class TransactionController {
 
   @Get('/find-by-hash')
   async findByHash(@Query() hash: string) {
-    return this.transactionService.findByHash(hash);
+    return await this.transactionService.findByHash(hash);
   }
 
   @Get('/find-by-timestamp')
   async findByTimestamp(@Query() timestamp: string) {
-    return this.transactionService.findByTimestamp(timestamp);
+    return await this.transactionService.findByTimestamp(timestamp);
   }
 
   @Get('/find-by-sender')
   async findBySender(@Query() sender: string) {
-    return this.transactionService.findBySender(sender);
+    return await this.transactionService.findBySender(sender);
   }
 
   @Get('/find-by-receiver')
   async findByReceiver(@Query() receiver: string) {
-    return this.transactionService.findByReceiver(receiver);
+    return await this.transactionService.findByReceiver(receiver);
   }
 
   @Delete('/delete-permanently')
   async hardDeleteTransaction(@Query() hash: string) {
-    return this.transactionService.deleteForever(hash);
+    return await this.transactionService.deleteForever(hash);
   }
 }

@@ -15,34 +15,39 @@ export class ProductController {
   async createMerchant(
     @Body() { partner_code, name }: { partner_code: string; name: string },
   ) {
-    return this.productService.createMerchant(partner_code, name);
+    return await this.productService.createMerchant(partner_code, name);
   }
 
   @Post('/create-user')
   async createUser(
     @Body() { merchant, userId }: { merchant: string; userId: string },
   ) {
-    return this.productService.createUser(merchant, userId);
+    return await this.productService.createUser(merchant, userId);
   }
 
   @Get('/price')
   async getPrice() {
-    return this.productService.getPrice();
+    const res = await this.productService.getPrice();
+    console.log(res);
+    return res;
   }
 
   @Get('/user-list')
   async findUserList(@Body() { partner_code }: { partner_code: string }) {
-    return this.productService.findUserList(partner_code);
+    return await this.productService.findUserList(partner_code);
   }
 
   @Get('/user-info')
   async findUserWallet(@Body() { userId }: { userId: string }) {
-    return this.productService.findUserInfo(userId);
+    return await this.productService.findUserInfo(userId);
   }
 
   @Get('/transactions')
   async findTransaction(@Body() { merchant }: { merchant: string }) {
-    return this.productService.findTransaction({ by: 'merchant', merchant });
+    return await this.productService.findTransaction({
+      by: 'merchant',
+      merchant,
+    });
   }
 
   @Put('/buy-crypto')
@@ -59,7 +64,7 @@ export class ProductController {
       commission,
     }: BuyCryptoDto,
   ) {
-    return this.productService.buyCrypto({
+    return await this.productService.buyCrypto({
       userId,
       merchant,
       amount_VND,
@@ -75,7 +80,7 @@ export class ProductController {
   async purchase(
     @Body() { buyer, seller, amount, token, commission }: PurchaseDto,
   ) {
-    return this.productService.purchase({
+    return await this.productService.purchase({
       buyer,
       seller,
       amount,

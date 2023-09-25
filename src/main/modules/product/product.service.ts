@@ -57,12 +57,15 @@ export class ProductService {
             }
           });
           price.push({ name: 'USDT', price: base_VND });
+
+          console.log(price);
           return price;
         } else {
           return ExceptionService.throwInternalServerError();
         }
       });
     } catch (error) {
+      console.log('Error');
       return ExceptionService.throwInternalServerError();
     }
   }

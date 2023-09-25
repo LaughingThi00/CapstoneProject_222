@@ -21,7 +21,7 @@ export class UserController {
 
   @Post('/')
   async createUser(@Body() createUser: CreateUserDto) {
-    return this.userService.createOne(createUser);
+    return await this.userService.createOne(createUser);
   }
 
   @Get('/')
@@ -51,31 +51,31 @@ export class UserController {
 
   @Put('/increase')
   async increaseToken(@Body() info: ChangeAmountDto) {
-    return this.userService.increaseToken(info);
+    return await this.userService.increaseToken(info);
   }
 
   @Put('/decrease')
   async decreaseToken(@Body() info: ChangeAmountDto) {
-    return this.userService.decreaseToken(info);
+    return await this.userService.decreaseToken(info);
   }
 
   @Put('/change-info')
   async changeAccountInfo(@Body() info: ChangeInfoDto) {
-    return this.userService.changeInfo(info);
+    return await this.userService.changeInfo(info);
   }
 
   @Put('/delete-account')
   async softDeleteAccount(@Body() info: ChangeInfoDto) {
-    return this.userService.deleteAccount(info);
+    return await this.userService.deleteAccount(info);
   }
 
   @Put('/recover-account')
   async recoverAccount(@Body() info: ChangeInfoDto) {
-    return this.userService.recoverAccount(info);
+    return await this.userService.recoverAccount(info);
   }
 
   @Delete('/delete-permanently')
   async hardDeleteAccount(@Body() info: ChangeInfoDto) {
-    return this.userService.deleteForever(info);
+    return await this.userService.deleteForever(info);
   }
 }
