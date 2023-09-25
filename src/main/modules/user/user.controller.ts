@@ -36,7 +36,7 @@ export class UserController {
     @Query('address') address?: string,
     @Query('userId') userId?: string,
   ) {
-    return await this.userService.findOneWithCondition(address, userId);
+    return await this.userService.findOneWithCondition({ address, userId });
   }
 
   @Get('/findAll-with-condition')

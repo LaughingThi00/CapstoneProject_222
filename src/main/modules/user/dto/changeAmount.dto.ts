@@ -3,5 +3,4 @@ export class ChangeAmountDto {
   amount: number;
   address?: string;
   userId?: string;
-  merchant?: string;
 }

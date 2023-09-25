@@ -16,7 +16,7 @@ export const genKey = () => {
   return { privateKey, publicKey };
 };
 
-export const encryptData = (data, publicKey: string) => {
+export const encryptData = (data: any, publicKey: string) => {
   let encryptedData = crypto.publicEncrypt(
     {
       key: publicKey,
@@ -31,7 +31,7 @@ export const encryptData = (data, publicKey: string) => {
   return encryptedData;
 };
 
-export const decryptData = (encryptedData, privateKey: string) => {
+export const decryptData = (encryptedData: any, privateKey: string) => {
   let decryptedData = crypto.privateDecrypt(
     {
       key: privateKey,

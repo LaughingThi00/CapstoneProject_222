@@ -12,6 +12,7 @@ import { UserModule } from './main/modules/user/user.module';
 import { MerchantModule } from './main/modules/merchant/merchant.module';
 import { TransactionModule } from './main/modules/transaction/transaction.module';
 import { BillModule } from './main/modules/bill/bill.module';
+import { ProductModule } from './main/modules/product/product.module';
 
 @Module({
   imports: [
@@ -47,6 +48,7 @@ import { BillModule } from './main/modules/bill/bill.module';
     MerchantModule,
     TransactionModule,
     BillModule,
+    ProductModule,
   ],
   controllers: [],
   providers: [],

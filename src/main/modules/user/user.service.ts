@@ -39,14 +39,20 @@ export class UserService {
     return users.length ? users : ExceptionService.throwNotFound();
   }
 
-  public async findOneWithCondition(address?: string, userId?: string) {
+  public async findOneWithCondition({
+    address,
+    userId,
+  }: {
+    address?: string;
+    userId?: string;
+  }) {
     const user = await this.UserRep.findOne({
       address,
       userId,
       isDeleted: false,
     });
 
-    return user ? user : ExceptionService.throwNotFound();
+    return user;
   }
 
   public async findAllWithCondition(conditionUser: ConditionUserDto) {
@@ -55,7 +61,7 @@ export class UserService {
       isDeleted: false,
     });
 
-    return users.length ? users : ExceptionService.throwNotFound();
+    return users;
   }
 
   public async createOne(createUser: CreateUserDto) {
@@ -77,11 +83,11 @@ export class UserService {
   public async increaseToken(info: ChangeAmountDto) {
     let user: User = null;
 
-    if (info.address || (info.userId && info.merchant)) {
+    if (info.address || info.userId) {
       user = await this.UserRep.findOne({
         where: [
           { address: info.address, isDeleted: false },
-          { userId: info.userId, merchant: info.merchant, isDeleted: false },
+          { userId: info.userId, isDeleted: false },
         ],
       });
     } else return ExceptionService.throwBadRequest();
@@ -104,11 +110,11 @@ export class UserService {
   public async decreaseToken(info: ChangeAmountDto) {
     let user: User = null;
 
-    if (info.address || (info.userId && info.merchant)) {
+    if (info.address || info.userId) {
       user = await this.UserRep.findOne({
         where: [
           { address: info.address, isDeleted: false },
-          { userId: info.userId, merchant: info.merchant, isDeleted: false },
+          { userId: info.userId, isDeleted: false },
         ],
       });
     } else return ExceptionService.throwBadRequest();
