@@ -27,9 +27,7 @@ export class ProductController {
 
   @Get('/price')
   async getPrice() {
-    const res = await this.productService.getPrice();
-    console.log(res);
-    return res;
+    return await this.productService.getPrice();
   }
 
   @Get('/user-list')

@@ -24,9 +24,9 @@ export class ProductService {
     //
   }
 
-  public async getPrice() {
+  public async getPrice(): Promise<any> {
     try {
-      const response1 = await axios(
+      const response1 = await axios.get(
         'https://api.binance.com/api/v3/ticker/price?symbols=["BNBUSDT","ETHUSDT","BTCUSDT"]',
         {},
       );
@@ -38,32 +38,29 @@ export class ProductService {
           },
         },
       );
-      Promise.all([response1, response2]).then(() => {
-        if (response1.data && response2.data) {
-          let price = [];
-          const base_VND = response2.data.rates.VND;
+      if (response1.data && response2.data) {
+        let price = [];
+        const base_VND = response2.data.rates.VND;
 
-          response1.data.forEach((item) => {
-            switch (item.symbol) {
-              case 'BTCUSDT':
-                price.push({ name: 'BTC', price: base_VND * item.price });
-                break;
-              case 'ETHUSDT':
-                price.push({ name: 'ETH', price: base_VND * item.price });
-                break;
-              case 'BNBUSDT':
-                price.push({ name: 'BNB', price: base_VND * item.price });
-                break;
-            }
-          });
-          price.push({ name: 'USDT', price: base_VND });
+        response1.data.forEach((item) => {
+          switch (item.symbol) {
+            case 'BTCUSDT':
+              price.push({ name: 'BTC', price: base_VND * item.price });
+              break;
+            case 'ETHUSDT':
+              price.push({ name: 'ETH', price: base_VND * item.price });
+              break;
+            case 'BNBUSDT':
+              price.push({ name: 'BNB', price: base_VND * item.price });
+              break;
+          }
+        });
+        price.push({ name: 'USDT', price: base_VND });
 
-          console.log(price);
-          return price;
-        } else {
-          return ExceptionService.throwInternalServerError();
-        }
-      });
+        return price;
+      } else {
+        return ExceptionService.throwInternalServerError();
+      }
     } catch (error) {
       console.log('Error');
       return ExceptionService.throwInternalServerError();
