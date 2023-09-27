@@ -47,18 +47,23 @@ export class MerchantService {
   }
 
   public async createOne(info: MerchantCustomDto) {
-    if (await this.MerchantRep.findOne({ partner_code: info.partner_code }))
+    if (await this.MerchantRep.findOne({ partner_code: info.partner_code })) {
       return ExceptionService.throwBadRequest();
+    } else {
+      const { privateKey, publicKey } = genKey();
+      console.log('EXPECTED:', {
+        ...info,
+        privateKey,
+        publicKey,
+      });
+      const merchant = this.MerchantRep.create({
+        ...info,
+        privateKey,
+        publicKey,
+      });
 
-    const { privateKey, publicKey } = genKey();
-
-    const merchant = this.MerchantRep.create({
-      ...info,
-      privateKey,
-      publicKey,
-    });
-
-    return await this.MerchantRep.save(merchant);
+      return await this.MerchantRep.save(merchant);
+    }
   }
 
   public async changeInfo(info: MerchantCustomDto) {
