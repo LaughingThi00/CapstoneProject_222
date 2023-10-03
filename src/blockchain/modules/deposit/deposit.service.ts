@@ -9,6 +9,7 @@ import { WalletService } from '../wallet/wallet.service';
 import { Deposit } from './entities/deposit.entity';
 import { Web3 } from '../../utils/web3';
 import { NATIVECOINS, TOKENS } from '../../constants/address';
+import { UserService } from 'src/main/modules/user/user.service';
 
 @Injectable()
 export class DepositService {
@@ -17,6 +18,7 @@ export class DepositService {
     private depositRep: Repository<Deposit>,
     private readonly walletService: WalletService,
     private readonly configurationService: ConfigurationsService,
+    private userRep: UserService
   ) { }
 
   // Schedule every 1 minute at the 10th second
@@ -103,7 +105,12 @@ export class DepositService {
 
 
       // Update user balance
-
+      const increaseBalance = {
+        token: NATIVECOINS[chainId],
+        amount: amount,
+        userId: userInfo.userId
+      }
+      await this.userRep.increaseToken(increaseBalance)
 
 
       await this.saveDB({
@@ -166,7 +173,12 @@ export class DepositService {
 
 
       // Update user balance
-
+      const increaseBalance = {
+        token: transaction.tokenSymbol,
+        amount: amount,
+        userId: userInfo.userId
+      }
+      await this.userRep.increaseToken(increaseBalance)
 
 
       await this.saveDB({

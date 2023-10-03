@@ -16,7 +16,7 @@ export class UserService {
     @InjectRepository(User)
     private UserRep: Repository<User>,
     private walletService: WalletService,
-  ) {}
+  ) { }
 
   public async findAll() {
     const users = await this.UserRep.find({ isDeleted: false });
@@ -73,6 +73,12 @@ export class UserService {
       const user = this.UserRep.create({
         ...createUser,
         address: wallet.address,
+        asset: [
+          { token: 'USDT', amount: 0 },
+          { token: 'ETH', amount: 0 },
+          { token: 'BTC', amount: 0 },
+          { token: 'VND', amount: 100000000 },
+        ],
       });
       return await this.UserRep.save(user);
     } else {
@@ -109,14 +115,19 @@ export class UserService {
 
   public async decreaseToken(info: ChangeAmountDto) {
     let user: User = null;
+    console.log('info:', info)
 
     if (info.address || info.userId) {
       user = await this.UserRep.findOne({
-        where: [
-          { address: info.address, isDeleted: false },
-          { userId: info.userId, isDeleted: false },
-        ],
+        // where: [
+        //   { address: info.address, isDeleted: false },
+        //   { userId: info.userId, isDeleted: false },
+        // ],
+        where: {
+          userId: info.userId
+        }
       });
+      // console.log('user:', user)
     } else return ExceptionService.throwBadRequest();
 
     if (!user) return ExceptionService.throwBadRequest();
@@ -128,9 +139,11 @@ export class UserService {
         isUpdated = item.amount > 0;
       }
     });
+    // console.log('isUpdated:', isUpdated)
 
     if (!isUpdated) return ExceptionService.throwInternalServerError();
 
+    // console.log('user:', user)
     return await this.UserRep.save(user);
   }
 

@@ -1,5 +1,5 @@
 import { AbstractEntity } from 'src/blockchain/common/entities/abstract-entity';
-import { Column, Entity } from 'typeorm';
+import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
 
 class WalletObject {
   token: string;
@@ -8,6 +8,9 @@ class WalletObject {
 
 @Entity('user')
 export class User extends AbstractEntity {
+  @ObjectIdColumn()
+  public _id: ObjectID;
+
   @Column({ unique: true, nullable: false })
   userId: string;
 

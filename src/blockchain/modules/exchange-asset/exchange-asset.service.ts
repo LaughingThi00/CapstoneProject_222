@@ -5,6 +5,7 @@ import { ExchangeAsset } from "./entities/exchange-asset.entity";
 import { getPriceAsset, getPriceUSDTperVND } from "../../utils/marketdata";
 import { CreateExchangeAssetDto } from "./dto/create-exchange-asset.dto";
 import { WalletService } from "../wallet/wallet.service";
+import { UserService } from "src/main/modules/user/user.service";
 
 @Injectable()
 export class ExchangeAssetService {
@@ -12,6 +13,7 @@ export class ExchangeAssetService {
         @InjectRepository(ExchangeAsset)
         private exchangeAssetRep: Repository<ExchangeAsset>,
         private walletRep: WalletService,
+        private userRep: UserService
     ) { }
     public async findHistory({
         userId,
@@ -59,8 +61,21 @@ export class ExchangeAssetService {
 
                 // Transfer from Exchange to HotWallet
 
-
+                console.log("update balance")
                 // Update user balance 
+                const decreaseBalance = {
+                    token: "VND",
+                    amount: amountVND,
+                    userId: userId
+                }
+                await this.userRep.decreaseToken(decreaseBalance)
+                console.log("done")
+                const increaseBalance = {
+                    token: asset,
+                    amount: assetAmount,
+                    userId: userId
+                }
+                await this.userRep.increaseToken(increaseBalance)
             }
             else {
                 const priceUSDT = await getPriceUSDTperVND()
@@ -72,6 +87,19 @@ export class ExchangeAssetService {
 
 
                 // Update user balance 
+                const decreaseBalance = {
+                    token: "VND",
+                    amount: amountVND,
+                    userId: userId
+                }
+                await this.userRep.decreaseToken(decreaseBalance)
+
+                const increaseBalance = {
+                    token: asset,
+                    amount: assetAmount,
+                    userId: userId
+                }
+                await this.userRep.increaseToken(increaseBalance)
             }
             const data = new CreateExchangeAssetDto
             data.userId = userId
@@ -123,6 +151,19 @@ export class ExchangeAssetService {
 
 
                 // Update user balance 
+                const decreaseBalance = {
+                    token: asset,
+                    amount: assetAmount,
+                    userId: userId
+                }
+                await this.userRep.decreaseToken(decreaseBalance)
+
+                const increaseBalance = {
+                    token: "VND",
+                    amount: amountVND,
+                    userId: userId
+                }
+                await this.userRep.increaseToken(increaseBalance)
             }
             else {
 
@@ -135,8 +176,21 @@ export class ExchangeAssetService {
                 amountVND = assetAmount * bidPriceToVND
                 // Transfer from Exchange to HotWallet
 
-
                 // Update user balance 
+                const decreaseBalance = {
+                    token: asset,
+                    amount: assetAmount,
+                    userId: userId
+                }
+                await this.userRep.decreaseToken(decreaseBalance)
+
+
+                const increaseBalance = {
+                    token: "VND",
+                    amount: amountVND,
+                    userId: userId
+                }
+                await this.userRep.increaseToken(increaseBalance)
             }
             const data = new CreateExchangeAssetDto
             data.userId = userId

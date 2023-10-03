@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserModule } from 'src/main/modules/user/user.module';
 import { ConfigurationsModule } from '../configurations/configurations.module';
 import { Configuration } from '../configurations/entities/configuration.entity';
 import { WalletModule } from '../wallet/wallet.module';
@@ -12,8 +13,9 @@ import { Deposit } from './entities/deposit.entity';
     TypeOrmModule.forFeature([Deposit]),
     WalletModule,
     ConfigurationsModule,
+    UserModule
   ],
   controllers: [DepositController],
   providers: [DepositService],
 })
-export class DepositModule {}
+export class DepositModule { }

@@ -4,9 +4,10 @@ import { WalletModule } from "../wallet/wallet.module";
 import { ExchangeAssetController } from "./exchange-asset.controller";
 import { ExchangeAssetService } from "./exchange-asset.service";
 import { ExchangeAsset } from "./entities/exchange-asset.entity";
+import { UserModule } from "src/main/modules/user/user.module";
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ExchangeAsset]), WalletModule],
+    imports: [TypeOrmModule.forFeature([ExchangeAsset]), WalletModule, UserModule],
     controllers: [ExchangeAssetController],
     providers: [ExchangeAssetService],
     exports: [ExchangeAssetService],
