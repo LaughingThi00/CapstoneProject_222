@@ -7,33 +7,38 @@ import { BillService } from './bill.service';
 export class BillController {
   constructor(private readonly billService: BillService) {}
 
-  @Post('/')
-  async createBill(@Query() id_: string, @Query() platform: string) {
-    return await this.billService.createOne({ id_, platform });
-  }
+  // @Post('/')
+  // async createBill(@Query() id_: string, @Query() platform: string) {
+  //   return await this.billService.createOne({ id_, platform });
+  // }
 
   @Get('/')
   async findAllBill() {
     return await this.billService.findAll();
   }
 
-  @Get('/')
-  async findOneBill(@Query() id_: string) {
-    return await this.billService.findOne(id_);
-  }
+  // @Get('/')
+  // async findOneBill(@Query() id_: string) {
+  //   return await this.billService.findOne(id_);
+  // }
 
-  @Put('/delete-bill')
-  async softDeleteBill(@Query() id_: string) {
-    return await this.billService.deleteBill(id_);
-  }
+  // @Put('/delete-bill')
+  // async softDeleteBill(@Query() id_: string) {
+  //   return await this.billService.deleteBill(id_);
+  // }
 
-  @Put('/recover-bill')
-  async recoverBill(@Query() id_: string) {
-    return await this.billService.recoverBill(id_);
-  }
+  // @Put('/recover-bill')
+  // async recoverBill(@Query() id_: string) {
+  //   return await this.billService.recoverBill(id_);
+  // }
 
-  @Delete('/delete-permanently')
-  async hardDeleteBill(@Query() id_: string) {
-    return await this.billService.deleteForever(id_);
+  // @Delete('/delete-permanently')
+  // async hardDeleteBill(@Query() id_: string) {
+  //   return await this.billService.deleteForever(id_);
+  // }
+
+  @Delete('/delete-permanently-all')
+  async hardDeleteAll() {
+    return await this.billService.deleteForeverAll();
   }
 }

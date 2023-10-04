@@ -10,7 +10,7 @@ import { getCurrentInSeconds } from '../../utils/helper';
 
 export abstract class AbstractEntity {
   @ObjectIdColumn()
-  public id: ObjectID;
+  public _id: ObjectID;
 
   @Column({ type: 'number' })
   public createdAt: number;

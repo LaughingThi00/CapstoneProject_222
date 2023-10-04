@@ -16,7 +16,7 @@ export class UserService {
     @InjectRepository(User)
     private UserRep: Repository<User>,
     private walletService: WalletService,
-  ) { }
+  ) {}
 
   public async findAll() {
     const users = await this.UserRep.find({ isDeleted: false });
@@ -47,9 +47,15 @@ export class UserService {
     userId?: string;
   }) {
     const user = await this.UserRep.findOne({
-      address,
-      userId,
-      isDeleted: false,
+      where: userId
+        ? {
+            userId,
+            isDeleted: false,
+          }
+        : {
+            address,
+            isDeleted: false,
+          },
     });
 
     return user;
@@ -77,7 +83,8 @@ export class UserService {
           { token: 'USDT', amount: 0 },
           { token: 'ETH', amount: 0 },
           { token: 'BTC', amount: 0 },
-          { token: 'VND', amount: 100000000 },
+          { token: 'BNB', amount: 0 },
+          { token: 'VND', amount: 0 },
         ],
       });
       return await this.UserRep.save(user);
@@ -91,10 +98,9 @@ export class UserService {
 
     if (info.address || info.userId) {
       user = await this.UserRep.findOne({
-        where: [
-          { address: info.address, isDeleted: false },
-          { userId: info.userId, isDeleted: false },
-        ],
+        where: info.userId
+          ? { userId: info.userId, isDeleted: false }
+          : { address: info.address, isDeleted: false },
       });
     } else return ExceptionService.throwBadRequest();
 
@@ -103,8 +109,35 @@ export class UserService {
     let isUpdated = false;
     user.asset.forEach((item) => {
       if (item.token === info.token) {
-        item.amount += info.amount;
+        item.amount += Number(info.amount);
+
         isUpdated = true;
+      }
+    });
+
+    if (!isUpdated) return ExceptionService.throwInternalServerError();
+    console.log('USER:', user);
+    return await this.UserRep.save(user);
+  }
+
+  public async decreaseToken(info: ChangeAmountDto) {
+    let user: User = null;
+
+    if (info.address || info.userId) {
+      user = await this.UserRep.findOne({
+        where: info.userId
+          ? { userId: info.userId, isDeleted: false }
+          : { address: info.address, isDeleted: false },
+      });
+    } else return ExceptionService.throwBadRequest();
+
+    if (!user) return ExceptionService.throwBadRequest();
+
+    let isUpdated = false;
+    user.asset.forEach((item) => {
+      if (item.token === info.token) {
+        item.amount -= Number(info.amount);
+        isUpdated = item.amount > 0;
       }
     });
 
@@ -113,38 +146,28 @@ export class UserService {
     return await this.UserRep.save(user);
   }
 
-  public async decreaseToken(info: ChangeAmountDto) {
-    let user: User = null;
-    console.log('info:', info)
+  public async systemReceiveToken({
+    token,
+    amount,
+  }: {
+    token: string;
+    amount: number;
+  }) {
+    if (!(await this.findOneWithCondition({ userId: 'SYSTEM' })))
+      await this.createOne({ userId: 'SYSTEM', merchant: 'SYSTEM' });
+    return await this.increaseToken({ userId: 'SYSTEM', token, amount });
+  }
 
-    if (info.address || info.userId) {
-      user = await this.UserRep.findOne({
-        // where: [
-        //   { address: info.address, isDeleted: false },
-        //   { userId: info.userId, isDeleted: false },
-        // ],
-        where: {
-          userId: info.userId
-        }
-      });
-      // console.log('user:', user)
-    } else return ExceptionService.throwBadRequest();
-
-    if (!user) return ExceptionService.throwBadRequest();
-
-    let isUpdated = false;
-    user.asset.forEach((item) => {
-      if (item.token === info.token) {
-        item.amount -= info.amount;
-        isUpdated = item.amount > 0;
-      }
-    });
-    // console.log('isUpdated:', isUpdated)
-
-    if (!isUpdated) return ExceptionService.throwInternalServerError();
-
-    // console.log('user:', user)
-    return await this.UserRep.save(user);
+  public async systemSendToken({
+    token,
+    amount,
+  }: {
+    token: string;
+    amount: number;
+  }) {
+    if (!(await this.findOneWithCondition({ userId: 'SYSTEM' })))
+      await this.createOne({ userId: 'SYSTEM', merchant: 'SYSTEM' });
+    return await this.decreaseToken({ userId: 'SYSTEM', token, amount });
   }
 
   public async changeInfo(info: ChangeInfoDto) {
@@ -167,10 +190,9 @@ export class UserService {
     let user: User = null;
 
     user = await this.UserRep.findOne({
-      where: [
-        { address: info.address, isDeleted: false },
-        { userId: info.userId, merchant: info.merchant, isDeleted: false },
-      ],
+      where: info.address
+        ? { address: info.address, isDeleted: false }
+        : { userId: info.userId, merchant: info.merchant, isDeleted: false },
     });
 
     if (!user) return ExceptionService.throwBadRequest();
@@ -184,10 +206,9 @@ export class UserService {
     let user: User = null;
 
     user = await this.UserRep.findOne({
-      where: [
-        { address: info.address },
-        { userId: info.userId, merchant: info.merchant },
-      ],
+      where: info.address
+        ? { address: info.address }
+        : { userId: info.userId, merchant: info.merchant },
     });
 
     if (!user || user.isDeleted === false)
@@ -202,14 +223,26 @@ export class UserService {
     let user: User = null;
 
     user = await this.UserRep.findOne({
-      where: [
-        { address: info.address, isDeleted: true },
-        { userId: info.userId, merchant: info.merchant, isDeleted: true },
-      ],
+      where: info.address
+        ? { address: info.address, isDeleted: true }
+        : { userId: info.userId, merchant: info.merchant, isDeleted: true },
     });
 
     if (!user) return ExceptionService.throwBadRequest();
 
-    return await this.UserRep.remove(user);
+    const res = await this.UserRep.remove(user);
+    if (res)
+      return (
+        (await this.walletService.deleteOne({ userId: user.userId })) ??
+        ExceptionService.throwInternalServerError()
+      );
+    else return ExceptionService.throwInternalServerError();
+  }
+
+  public async deleteForeverAll() {
+    const res = await this.UserRep.delete({});
+    return (await this.walletService.deleteAll())
+      ? res
+      : ExceptionService.throwBadRequest();
   }
 }

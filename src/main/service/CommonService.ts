@@ -7,11 +7,7 @@ import { ExceptionService } from 'src/common/service/exception.service';
 export class CommonService {
   constructor(private billRep: BillService, private walletRep: WalletService) {}
 
-  public async checkBalance(
-    bill: string,
-    amount_VND: number,
-    platform: string,
-  ) {
+  public async checkBalance(bill: string, amountVND: number, platform: string) {
     //functions to check if system bank balance has received
     //an amount of money from the bill. If yes, return true.
 
@@ -20,7 +16,7 @@ export class CommonService {
     try {
       const thisbill = await this.billRep.findOne(bill);
       if (thisbill) {
-        console.log('Da tim thay bill:', thisbill);
+        console.log('This bill has exit:', thisbill);
         return false;
       }
 
@@ -51,12 +47,12 @@ export class CommonService {
           break;
 
         default:
+          check = true;
           break;
       }
       return check;
     } catch (error) {
-      console.log('Error!!!!');
-      return false;
+      return ExceptionService.throwInternalServerError();
     }
   }
 

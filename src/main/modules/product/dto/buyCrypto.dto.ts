@@ -1,7 +1,7 @@
 export class BuyCryptoDto {
   userId: string;
   merchant: string;
-  amount_VND: number;
+  amountVND: number;
   for_token: string;
   bill: string;
   platform?: string = 'MOMO';

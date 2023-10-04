@@ -51,11 +51,7 @@ export class MerchantService {
       return ExceptionService.throwBadRequest();
     } else {
       const { privateKey, publicKey } = genKey();
-      console.log('EXPECTED:', {
-        ...info,
-        privateKey,
-        publicKey,
-      });
+
       const merchant = this.MerchantRep.create({
         ...info,
         privateKey,
@@ -133,5 +129,8 @@ export class MerchantService {
     if (!merchant) return ExceptionService.throwBadRequest();
 
     return await this.MerchantRep.remove(merchant);
+  }
+  public async deleteForeverAll() {
+    return await this.MerchantRep.delete({});
   }
 }

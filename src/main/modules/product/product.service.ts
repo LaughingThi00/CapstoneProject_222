@@ -11,6 +11,7 @@ import { CommonService } from 'src/main/service/CommonService';
 import { BillService } from '../bill/bill.service';
 import { Bill } from '../bill/entities/bill.entity';
 import { PurchaseDto } from './dto/purchase.dto';
+import { DepositVNDDto } from './dto/depositVND.dto';
 
 @Injectable()
 export class ProductService {
@@ -77,11 +78,11 @@ export class ProductService {
   }
 
   public async findUserInfo(userId: string) {
-    return this.userRep.findOneWithCondition({ userId });
+    return await this.userRep.findOneWithCondition({ userId });
   }
 
   public async createUser(merchant: string, userId: string) {
-    return this.userRep.createOne({ merchant, userId });
+    return await this.userRep.createOne({ merchant, userId });
   }
 
   public async findTransaction(info: FindTransactionDto) {
@@ -101,6 +102,7 @@ export class ProductService {
         const user = await this.userRep.findOneWithCondition({
           userId: info.userId,
         });
+        if (!(user instanceof User)) return ExceptionService.throwBadRequest();
         return transactions.filter((transaction) => {
           user.address === transaction.from_ ||
             user.address === transaction.to_;
@@ -133,7 +135,7 @@ export class ProductService {
     try {
       const checkBillResult = await this.commonService.checkBalance(
         info.bill,
-        info.amount_VND,
+        info.amountVND,
         info.platform,
       );
       if (!checkBillResult) return ExceptionService.throwBadRequest();
@@ -146,7 +148,7 @@ export class ProductService {
           ExceptionService.throwInternalServerError();
         const updateSysBalance = await this.userRep.increaseToken({
           token: 'VND',
-          amount: info.amount_VND,
+          amount: info.amountVND,
           userId: 'SYSTEM',
         });
 
@@ -163,13 +165,77 @@ export class ProductService {
   }
 
   public async purchase(info: PurchaseDto) {
-    const blcTransfer = 'TODO_Blockchain_Transfer';
-    return blcTransfer
-      ? blcTransfer
+    info.amount = Number(info.amount);
+
+    const pricelist = await this.getPrice();
+
+    let sell: number = info.by_token === 'VND' ? 1 : 0,
+      buy: number = 0,
+      transfer: number;
+
+    pricelist.forEach((tag) => {
+      if (tag.name === info.by_token) sell = tag.price;
+      else if (tag.name === info.for_token) buy = tag.price;
+    });
+
+    if (!sell || !buy) return ExceptionService.throwBadRequest();
+
+    transfer = (info.amount * sell) / buy;
+    let commission = info.amount * info.commission;
+    return (await this.userRep.decreaseToken({
+      token: info.by_token,
+      amount: info.amount,
+      userId: info.buyer,
+    })) &&
+      (await this.userRep.increaseToken({
+        token: info.by_token,
+        amount: info.amount,
+        userId: info.seller,
+      })) &&
+      (await this.userRep.decreaseToken({
+        token: info.for_token,
+        amount: transfer,
+        userId: info.buyer,
+      })) &&
+      (await this.userRep.increaseToken({
+        token: info.by_token,
+        amount: transfer - commission,
+        userId: info.seller,
+      })) &&
+      (await this.userRep.systemReceiveToken({
+        token: info.by_token,
+        amount: commission,
+      }))
+      ? {
+          soldToken: info.by_token,
+          amountSold: info.amount,
+          buyedToken: info.for_token,
+          amountBuyed: transfer,
+          commissionLoss: commission,
+        }
       : ExceptionService.throwInternalServerError();
   }
 
-  public async depositVND() {
-    //
+  public async depositVND(info: DepositVNDDto) {
+    if (
+      await this.commonService.checkBalance(
+        info.bill,
+        info.amountVND,
+        info.platform,
+      )
+    ) {
+      const result = await this.userRep.increaseToken({
+        token: 'VND',
+        amount: info.amountVND,
+        userId: info.userId,
+      });
+      if (result && result instanceof User)
+        return (await this.billService.createOne({
+          id_: info.bill,
+          platform: info.platform,
+        }))
+          ? result
+          : ExceptionService.throwInternalServerError();
+    } else return ExceptionService.throwInternalServerError();
   }
 }

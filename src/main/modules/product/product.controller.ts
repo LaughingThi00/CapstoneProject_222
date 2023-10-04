@@ -4,6 +4,7 @@ import { ProductService } from './product.service';
 import { BuyCryptoDto } from './dto/buyCrypto.dto';
 import { PurchaseDto } from './dto/purchase.dto';
 import { MerchantCustomDto } from '../merchant/dto/merchantCustom.dto';
+import { DepositVNDDto } from './dto/depositVND.dto';
 
 @ApiTags('(Main)-Product')
 @Controller('/product')
@@ -54,7 +55,7 @@ export class ProductController {
     {
       userId,
       merchant,
-      amount_VND,
+      amountVND,
       for_token,
       bill,
       platform,
@@ -65,7 +66,7 @@ export class ProductController {
     return await this.productService.buyCrypto({
       userId,
       merchant,
-      amount_VND,
+      amountVND,
       for_token,
       bill,
       platform,
@@ -76,19 +77,29 @@ export class ProductController {
 
   @Put('/purchase')
   async purchase(
-    @Body() { buyer, seller, amount, token, commission }: PurchaseDto,
+    @Body()
+    { buyer, seller, amount, by_token, for_token, commission }: PurchaseDto,
   ) {
     return await this.productService.purchase({
       buyer,
       seller,
-      amount,
-      token,
+      amount: Number(amount),
+      by_token,
+      for_token,
       commission,
     });
   }
 
   @Put('/deposit-vnd')
-  async depositVND() {
-    //
+  async depositVND(
+    @Body() { userId, merchant, amountVND, bill, platform }: DepositVNDDto,
+  ) {
+    return await this.productService.depositVND({
+      userId,
+      merchant,
+      amountVND: Number(amountVND),
+      bill,
+      platform,
+    });
   }
 }

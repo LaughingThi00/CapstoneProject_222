@@ -8,9 +8,6 @@ class WalletObject {
 
 @Entity('user')
 export class User extends AbstractEntity {
-  @ObjectIdColumn()
-  public _id: ObjectID;
-
   @Column({ unique: true, nullable: false })
   userId: string;
 

@@ -62,4 +62,8 @@ export class TransactionService {
 
     return await this.TransactionRep.remove(transaction);
   }
+
+  public async deleteForeverAll() {
+    return await this.TransactionRep.delete({});
+  }
 }

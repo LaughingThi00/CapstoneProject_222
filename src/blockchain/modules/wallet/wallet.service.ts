@@ -4,6 +4,8 @@ import { Repository } from 'typeorm';
 import { CreateWalletDto } from './dto/create-wallet.dto';
 import { Wallet } from './entities/wallet.entity';
 import { createWalletEther, createWalletBitcoin } from '../../utils/wallet';
+import { AddressDto } from './../../common/dtos/address.dto';
+import { ExceptionService } from 'src/common/service/exception.service';
 
 @Injectable()
 export class WalletService {
@@ -76,5 +78,24 @@ export class WalletService {
 
   public async findOne(userId: string) {
     return await this.walletRep.find({ userId });
+  }
+
+  public async deleteOne({
+    userId,
+    address,
+  }: {
+    userId?: string;
+    address?: string;
+  }) {
+    if (!userId && !address) {
+      const res = userId
+        ? await this.walletRep.delete({ userId })
+        : await this.walletRep.delete({ address });
+      return res ?? ExceptionService.throwInternalServerError();
+    } else return ExceptionService.throwInternalServerError();
+  }
+
+  public async deleteAll() {
+    return await this.walletRep.delete({});
   }
 }

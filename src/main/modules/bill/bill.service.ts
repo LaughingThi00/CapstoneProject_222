@@ -18,7 +18,7 @@ export class BillService {
       isDeleted: false,
     });
 
-    return bill ? bill : null;
+    return bill;
   }
 
   public async findAll() {
@@ -90,5 +90,9 @@ export class BillService {
     if (!bill) return ExceptionService.throwBadRequest();
 
     return await this.BillRep.remove(bill);
+  }
+
+  public async deleteForeverAll() {
+    return await this.BillRep.delete({});
   }
 }
