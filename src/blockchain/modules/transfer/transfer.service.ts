@@ -7,6 +7,7 @@ import { Web3 } from '../../utils/web3';
 import { Contract } from '../../utils/contract';
 import { TOKENS } from '../../constants/address';
 import { WalletService } from '../wallet/wallet.service';
+import { UserService } from 'src/main/modules/user/user.service';
 
 @Injectable()
 export class TransferService {
@@ -14,6 +15,7 @@ export class TransferService {
     @InjectRepository(Transfer)
     private transferRep: Repository<Transfer>,
     private walletRep: WalletService,
+    private userRep: UserService,
   ) { }
   public async findTransaction({
     transactionHash,
@@ -69,14 +71,15 @@ export class TransferService {
       );
       // console.log("receipt", receipt)
 
-      // await updateBalance({
-      //     userId,
-      //     merchant,
-      //     transactionHash: receipt.transactionHash,
-      //     asset,
-      //     type: "-",
-      //     amount
-      // });
+      console.log('update balance');
+      // Update user balance
+      const decreaseBalance = {
+        token: asset,
+        amount: amount,
+        userId: userId,
+      };
+      await this.userRep.decreaseToken(decreaseBalance);
+      console.log('done');
       const txh = {
         userId: userId,
         merchant: merchant,
@@ -129,14 +132,12 @@ export class TransferService {
       );
       // console.log("receipt", receipt)
 
-      // await updateBalance({
-      //     userId,
-      //     merchant,
-      //     transactionHash: receipt.transactionHash,
-      //     asset,
-      //     type: "-",
-      //     amount
-      // });
+      const decreaseBalance = {
+        token: asset,
+        amount: amount,
+        userId: userId,
+      };
+      await this.userRep.decreaseToken(decreaseBalance);
       const txh = {
         userId: userId,
         merchant: merchant,
