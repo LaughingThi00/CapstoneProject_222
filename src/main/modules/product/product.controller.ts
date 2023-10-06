@@ -5,6 +5,7 @@ import { BuyCryptoDto } from './dto/buyCrypto.dto';
 import { PurchaseDto } from './dto/purchase.dto';
 import { MerchantCustomDto } from '../merchant/dto/merchantCustom.dto';
 import { DepositVNDDto } from './dto/depositVND.dto';
+import { ChangeTokenDto } from './dto/changeToken.dto';
 
 @ApiTags('(Main)-Product')
 @Controller('/product')
@@ -49,47 +50,6 @@ export class ProductController {
     });
   }
 
-  @Put('/buy-crypto')
-  async buyCrypto(
-    @Body()
-    {
-      userId,
-      merchant,
-      amountVND,
-      for_token,
-      bill,
-      platform,
-      slippage,
-      commission,
-    }: BuyCryptoDto,
-  ) {
-    return await this.productService.buyCrypto({
-      userId,
-      merchant,
-      amountVND,
-      for_token,
-      bill,
-      platform,
-      slippage,
-      commission,
-    });
-  }
-
-  @Put('/purchase')
-  async purchase(
-    @Body()
-    { buyer, seller, amount, by_token, for_token, commission }: PurchaseDto,
-  ) {
-    return await this.productService.purchase({
-      buyer,
-      seller,
-      amount: Number(amount),
-      by_token,
-      for_token,
-      commission,
-    });
-  }
-
   @Put('/deposit-vnd')
   async depositVND(
     @Body() { userId, merchant, amountVND, bill, platform }: DepositVNDDto,
@@ -100,6 +60,89 @@ export class ProductController {
       amountVND: Number(amountVND),
       bill,
       platform,
+    });
+  }
+
+  @Put('/change-token')
+  async changeTokenController(
+    @Body()
+    { userId, merchant, address, amount, byToken, forToken }: ChangeTokenDto,
+  ) {
+    return await this.productService.changeToken({
+      userId,
+      merchant,
+      address,
+      amount: Number(amount),
+      byToken,
+      forToken,
+    });
+  }
+
+  @Put('/buy-crypto-direct')
+  async buyCryptoDirectController(
+    @Body()
+    { userId, merchant, amountVND, forToken, bill, platform }: BuyCryptoDto,
+  ) {
+    return await this.productService.buyCrypto({
+      userId,
+      merchant,
+      amountVND: Number(amountVND),
+      forToken,
+      bill,
+      platform,
+    });
+  }
+
+  @Put('/transfer-inbound')
+  async transferInboundController(
+    @Body()
+    { sender, receiver, byAmount, byToken }: PurchaseDto,
+  ) {
+    return await this.productService.transferInbound({
+      sender,
+      receiver,
+      byAmount: Number(byAmount),
+      byToken,
+    });
+  }
+
+  @Put('/transfer-outbound')
+  async transferOutboundController(
+    @Body()
+    { sender, receiver, byAmount, byToken }: PurchaseDto,
+  ) {
+    return await this.productService.transferOutbound({
+      sender,
+      receiver,
+      byAmount: Number(byAmount),
+      byToken,
+    });
+  }
+
+  @Put('/withdraw-blockchain')
+  async withdrawBlockchainController(
+    @Body()
+    { sender, receiver, byAmount, byToken }: PurchaseDto,
+  ) {
+    return await this.productService.withdrawBlockchain({
+      sender,
+      receiver,
+      byAmount: Number(byAmount),
+      byToken,
+    });
+  }
+
+  @Put('/withdraw-banking')
+  async withdrawBankingController(
+    @Body()
+    { sender, receiver, byAmount, byToken, platformWithdraw }: PurchaseDto,
+  ) {
+    return await this.productService.withdrawBanking({
+      sender,
+      receiver,
+      byAmount: Number(byAmount),
+      byToken,
+      platformWithdraw,
     });
   }
 }

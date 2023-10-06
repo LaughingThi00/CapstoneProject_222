@@ -18,7 +18,7 @@ export class TransactionService {
     return transaction ? transaction : null;
   }
 
-  public async findByTimestamp(timestamp: string) {
+  public async findByTimestamp(timestamp: number) {
     const transaction = await this.TransactionRep.find({ timestamp });
 
     return transaction ? transaction : null;
@@ -43,8 +43,9 @@ export class TransactionService {
   }
 
   public async createOne(info: TransactionDto) {
-    if (await this.TransactionRep.findOne(info.hash))
-      return ExceptionService.throwBadRequest();
+    if (info?.hash)
+      if (await this.TransactionRep.findOne({ hash: info?.hash }))
+        return ExceptionService.throwBadRequest();
 
     const transaction = this.TransactionRep.create({
       ...info,

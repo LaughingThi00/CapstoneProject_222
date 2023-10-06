@@ -1,16 +1,15 @@
 import { AbstractEntity } from 'src/blockchain/common/entities/abstract-entity';
-import { Column, Entity } from 'typeorm';
+import { BeforeInsert, Column, Entity } from 'typeorm';
+import { TransactionType } from '../dto/transaction.dto';
+import { getCurrentInSeconds } from 'src/blockchain/utils/helper';
 
 @Entity('transaction')
 export class Transaction extends AbstractEntity {
-  @Column({ unique: true, nullable: false })
-  hash: string;
+  @Column({ nullable: false })
+  type: TransactionType;
 
   @Column({ nullable: false })
-  timestamp: string;
-
-  @Column({ default: null })
-  platform: string;
+  timestamp: number;
 
   @Column({ nullable: false })
   from_: string;
@@ -18,12 +17,29 @@ export class Transaction extends AbstractEntity {
   @Column({ nullable: false })
   to_: string;
 
-  @Column({ nullable: false })
-  token: string;
+  @Column()
+  forToken?: string = null;
 
-  @Column({ nullable: false })
-  amount: number;
+  @Column()
+  forAmount?: number = null;
 
-  @Column({ default: 0.005 })
-  commission: number;
+  @Column()
+  byToken?: string = null;
+
+  @Column()
+  byAmount?: number = null;
+
+  @Column()
+  platformWithdraw?: string = null;
+
+  @Column()
+  commission?: number = 0;
+
+  @Column()
+  hash?: string = null;
+
+  @BeforeInsert()
+  insertDefault() {
+    this.timestamp = getCurrentInSeconds();
+  }
 }
