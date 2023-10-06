@@ -14,7 +14,7 @@ export class ExchangeAssetService {
     private exchangeAssetRep: Repository<ExchangeAsset>,
     private walletRep: WalletService,
     private userRep: UserService,
-  ) {}
+  ) { }
   public async findHistory({
     userId,
     merchant,
