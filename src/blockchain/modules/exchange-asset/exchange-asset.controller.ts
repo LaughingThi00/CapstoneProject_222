@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ExchangeAssetService } from './exchange-asset.service';
 
 @ApiTags('Exchange-Asset')
 @Controller('/exchange-asset')
 export class ExchangeAssetController {
-  constructor(private readonly exchangeAssetService: ExchangeAssetService) {}
+  constructor(private readonly exchangeAssetService: ExchangeAssetService) { }
   @Get('history')
   async findHistory(
     @Query('userId') userId: string,
@@ -58,8 +58,15 @@ export class ExchangeAssetController {
   async priceUSDT() {
     return this.exchangeAssetService.getPriceUSDT();
   }
-  @Get('price-asset')
-  async priceAsset(@Query('symbol') symbol: string) {
+  @Get('price-token')
+  async priceToken(@Query('symbol') symbol: string) {
     return this.exchangeAssetService.getPriceToken(symbol.toLocaleUpperCase());
+  }
+  @Get('change-asset')
+  async priceAsset(
+    @Query('tokenIn') tokenIn: string,
+    @Query('tokenOut') tokenOut: string,
+    @Query('amountIn') amountIn: number,) {
+    return this.exchangeAssetService.exchangeToken({ tokenIn, tokenOut, amountIn })
   }
 }

@@ -203,4 +203,41 @@ export class ExchangeAssetService {
   public async getPriceToken(symbol: string) {
     return getPriceAsset(symbol);
   }
+  public async exchangeToken({ tokenIn, tokenOut, amountIn }: { tokenIn: string, tokenOut: string, amountIn: number }) {
+    tokenIn = tokenIn.toLocaleUpperCase();
+    tokenOut = tokenOut.toLocaleUpperCase();
+    let amountOut = 0;
+    if (tokenIn == "VND") {
+      if (tokenOut == 'USDT') {
+        const price = await getPriceUSDTperVND();
+        amountOut = amountIn / Number(price);
+      }
+      else {
+        const priceUSDT = await getPriceUSDTperVND();
+        const price = await getPriceAsset(tokenOut + 'USDT');
+        const askPrice = price.askPrice;
+        const askPriceToVND = Number(askPrice) * Number(priceUSDT);
+        amountOut = amountIn / askPriceToVND;
+      }
+    }
+    else if (tokenOut == "VND") {
+      if (tokenIn == 'USDT') {
+        const price = await getPriceUSDTperVND();
+        amountOut = amountIn * Number(price);
+      }
+      else {
+        const priceUSDT = await getPriceUSDTperVND();
+        const price = await getPriceAsset(tokenIn + 'USDT');
+        const bidPrice = price.bidPrice;
+        const askPriceToVND = Number(bidPrice) * Number(priceUSDT);
+        amountOut = amountIn * askPriceToVND;
+      }
+    }
+    else {
+      const priceIn = await getPriceAsset(tokenIn + 'USDT');
+      const priceOut = await getPriceAsset(tokenOut + 'USDT');
+      amountOut = (Number(priceIn.askPrice)) / (Number(priceOut.askPrice));
+    }
+    return amountOut;
+  }
 }
