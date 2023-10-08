@@ -204,6 +204,7 @@ export class ExchangeAssetService {
     return getPriceAsset(symbol);
   }
   public async exchangeToken({ tokenIn, tokenOut, amountIn }: { tokenIn: string, tokenOut: string, amountIn: number }) {
+    if (amountIn <= 0) { }
     tokenIn = tokenIn.toLocaleUpperCase();
     tokenOut = tokenOut.toLocaleUpperCase();
     let amountOut = 0;
@@ -234,9 +235,19 @@ export class ExchangeAssetService {
       }
     }
     else {
-      const priceIn = await getPriceAsset(tokenIn + 'USDT');
-      const priceOut = await getPriceAsset(tokenOut + 'USDT');
-      amountOut = (Number(priceIn.askPrice)) / (Number(priceOut.askPrice));
+      if (tokenIn == 'USDT') {
+        const priceIn = await getPriceAsset(tokenOut + 'USDT');
+        amountOut = amountIn / Number(priceIn.askPrice);
+      }
+      else if (tokenOut == 'USDT') {
+        const priceIn = await getPriceAsset(tokenIn + 'USDT');
+        amountOut = amountIn * Number(priceIn.askPrice);
+      }
+      else {
+        const priceIn = await getPriceAsset(tokenIn + 'USDT');
+        const priceOut = await getPriceAsset(tokenOut + 'USDT');
+        amountOut = (Number(priceIn.askPrice)) / (Number(priceOut.askPrice));
+      }
     }
     return amountOut;
   }
