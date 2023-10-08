@@ -13,7 +13,6 @@ import { Bill } from '../bill/entities/bill.entity';
 import { PurchaseDto } from './dto/purchase.dto';
 import { DepositVNDDto } from './dto/depositVND.dto';
 import { ChangeTokenDto } from './dto/changeToken.dto';
-import { Repository } from 'typeorm';
 import { TransactionType } from '../transaction/dto/transaction.dto';
 
 @Injectable()
@@ -21,7 +20,6 @@ export class ProductService {
   constructor(
     private merchantService: MerchantService,
     private userService: UserService,
-    private userRep: Repository<User>,
     private transactionService: TransactionService,
     private commonService: CommonService,
     private billService: BillService,
@@ -185,7 +183,9 @@ export class ProductService {
           userId: info.userId,
         });
         if (result && result instanceof User) {
-          const user = await this.userRep.findOne({ userId: info.userId });
+          const user = await this.userService.findOneWithCondition({
+            userId: info.userId,
+          });
 
           await this.billService.createOne({
             id_: info.bill,
@@ -232,7 +232,7 @@ export class ProductService {
         }
       });
 
-      await this.userRep.save(user);
+      await this.userService.saveUser(user);
 
       return await this.transactionService.createOne({
         type: TransactionType.ChangeToken,
@@ -296,7 +296,7 @@ export class ProductService {
           }
         });
 
-        await this.userRep.save(user);
+        await this.userService.saveUser(user);
 
         return await this.transactionService.createOne({
           type: TransactionType.BuyCryptoDirect,
@@ -318,8 +318,12 @@ export class ProductService {
   public async transferInbound(info: PurchaseDto) {
     try {
       //find 2 users
-      const sender = await this.userRep.findOne({ userId: info.sender });
-      const receiver = await this.userRep.findOne({ userId: info.receiver });
+      const sender = await this.userService.findOneWithCondition({
+        userId: info.sender,
+      });
+      const receiver = await this.userService.findOneWithCondition({
+        userId: info.receiver,
+      });
 
       if (!sender || !receiver) return ExceptionService.throwBadRequest();
 
@@ -357,7 +361,9 @@ export class ProductService {
   public async transferOutbound(info: PurchaseDto) {
     try {
       //find user
-      const sender = await this.userRep.findOne({ userId: info.sender });
+      const sender = await this.userService.findOneWithCondition({
+        userId: info.sender,
+      });
 
       if (!sender) return ExceptionService.throwBadRequest();
 
@@ -392,7 +398,9 @@ export class ProductService {
   public async withdrawBlockchain(info: PurchaseDto) {
     try {
       //find  user
-      const sender = await this.userRep.findOne({ userId: info.sender });
+      const sender = await this.userService.findOneWithCondition({
+        userId: info.sender,
+      });
 
       if (!sender) return ExceptionService.throwBadRequest();
 
@@ -428,7 +436,9 @@ export class ProductService {
   public async withdrawBanking(info: PurchaseDto) {
     try {
       //find user
-      const sender = await this.userRep.findOne({ userId: info.sender });
+      const sender = await this.userService.findOneWithCondition({
+        userId: info.sender,
+      });
 
       if (!sender) return ExceptionService.throwBadRequest();
 

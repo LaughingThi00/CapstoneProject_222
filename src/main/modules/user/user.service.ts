@@ -245,4 +245,8 @@ export class UserService {
       ? res
       : ExceptionService.throwBadRequest();
   }
+
+  public async saveUser(user: User) {
+    return await this.UserRep.save(user);
+  }
 }
