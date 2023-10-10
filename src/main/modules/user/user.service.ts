@@ -116,7 +116,6 @@ export class UserService {
     });
 
     if (!isUpdated) return ExceptionService.throwInternalServerError();
-    console.log('USER:', user);
     return await this.UserRep.save(user);
   }
 
@@ -146,29 +145,29 @@ export class UserService {
     return await this.UserRep.save(user);
   }
 
-  public async systemReceiveToken({
-    token,
-    amount,
-  }: {
-    token: string;
-    amount: number;
-  }) {
-    if (!(await this.findOneWithCondition({ userId: 'SYSTEM' })))
-      await this.createOne({ userId: 'SYSTEM', merchant: 'SYSTEM' });
-    return await this.increaseToken({ userId: 'SYSTEM', token, amount });
-  }
+  // public async systemReceiveToken({
+  //   token,
+  //   amount,
+  // }: {
+  //   token: string;
+  //   amount: number;
+  // }) {
+  //   if (!(await this.findOneWithCondition({ userId: 'SYSTEM' })))
+  //     await this.createOne({ userId: 'SYSTEM', merchant: 'SYSTEM' });
+  //   return await this.increaseToken({ userId: 'SYSTEM', token, amount });
+  // }
 
-  public async systemSendToken({
-    token,
-    amount,
-  }: {
-    token: string;
-    amount: number;
-  }) {
-    if (!(await this.findOneWithCondition({ userId: 'SYSTEM' })))
-      await this.createOne({ userId: 'SYSTEM', merchant: 'SYSTEM' });
-    return await this.decreaseToken({ userId: 'SYSTEM', token, amount });
-  }
+  // public async systemSendToken({
+  //   token,
+  //   amount,
+  // }: {
+  //   token: string;
+  //   amount: number;
+  // }) {
+  //   if (!(await this.findOneWithCondition({ userId: 'SYSTEM' })))
+  //     await this.createOne({ userId: 'SYSTEM', merchant: 'SYSTEM' });
+  //   return await this.decreaseToken({ userId: 'SYSTEM', token, amount });
+  // }
 
   public async changeInfo(info: ChangeInfoDto) {
     let user: User = null;

@@ -50,6 +50,18 @@ export class ProductController {
     });
   }
 
+  @Get('/transactions/:merchant/:userId')
+  async findTransactionByUserId(
+    @Param('merchant') merchant: string,
+    @Param('userId') userId: string,
+  ) {
+    return await this.productService.findTransaction({
+      by: 'userId',
+      merchant,
+      userId,
+    });
+  }
+
   @Put('/deposit-vnd')
   async depositVND(
     @Body() { userId, merchant, amountVND, bill, platform }: DepositVNDDto,
@@ -96,9 +108,10 @@ export class ProductController {
   @Put('/transfer-inbound')
   async transferInboundController(
     @Body()
-    { sender, receiver, byAmount, byToken }: PurchaseDto,
+    { merchant, sender, receiver, byAmount, byToken }: PurchaseDto,
   ) {
     return await this.productService.transferInbound({
+      merchant,
       sender,
       receiver,
       byAmount: Number(byAmount),
@@ -109,9 +122,10 @@ export class ProductController {
   @Put('/transfer-outbound')
   async transferOutboundController(
     @Body()
-    { sender, receiver, byAmount, byToken }: PurchaseDto,
+    { merchant, sender, receiver, byAmount, byToken }: PurchaseDto,
   ) {
     return await this.productService.transferOutbound({
+      merchant,
       sender,
       receiver,
       byAmount: Number(byAmount),
@@ -122,9 +136,10 @@ export class ProductController {
   @Put('/withdraw-blockchain')
   async withdrawBlockchainController(
     @Body()
-    { sender, receiver, byAmount, byToken }: PurchaseDto,
+    { merchant, sender, receiver, byAmount, byToken }: PurchaseDto,
   ) {
     return await this.productService.withdrawBlockchain({
+      merchant,
       sender,
       receiver,
       byAmount: Number(byAmount),
@@ -135,13 +150,13 @@ export class ProductController {
   @Put('/withdraw-banking')
   async withdrawBankingController(
     @Body()
-    { sender, receiver, byAmount, byToken, platformWithdraw }: PurchaseDto,
+    { merchant, sender, receiver, byAmount, platformWithdraw }: PurchaseDto,
   ) {
     return await this.productService.withdrawBanking({
+      merchant,
       sender,
       receiver,
       byAmount: Number(byAmount),
-      byToken,
       platformWithdraw,
     });
   }

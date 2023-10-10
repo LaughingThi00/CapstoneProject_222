@@ -1,7 +1,9 @@
 export class PurchaseDto {
-  sender: string;
-  receiver: string;
+  merchant: string;
+  sender: string; //userId
+  receiver: string; //if kind of this transaction is transferOutbound or Withdraw: address. If not, userId
   byAmount: number;
   byToken?: string = 'VND';
   platformWithdraw?: string = null;
+  commission?: number = 2.5;
 }

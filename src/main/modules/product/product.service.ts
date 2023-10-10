@@ -14,6 +14,9 @@ import { PurchaseDto } from './dto/purchase.dto';
 import { DepositVNDDto } from './dto/depositVND.dto';
 import { ChangeTokenDto } from './dto/changeToken.dto';
 import { TransactionType } from '../transaction/dto/transaction.dto';
+import { ExchangeAssetService } from 'src/blockchain/modules/exchange-asset/exchange-asset.service';
+import { TransferService } from 'src/blockchain/modules/transfer/transfer.service';
+import { Transfer } from 'src/blockchain/modules/transfer/entities/transfer.entity';
 
 @Injectable()
 export class ProductService {
@@ -23,6 +26,8 @@ export class ProductService {
     private transactionService: TransactionService,
     private commonService: CommonService,
     private billService: BillService,
+    private exchangeAssetService: ExchangeAssetService,
+    private transferService: TransferService,
   ) {
     //
   }
@@ -71,68 +76,99 @@ export class ProductService {
   }
 
   public async createMerchant(partner_code: string, name?: string) {
-    return await this.merchantService.createOne({ partner_code, name });
+    try {
+      return await this.merchantService.createOne({ partner_code, name });
+    } catch (error) {
+      console.log(error);
+      return ExceptionService.throwBadRequest();
+    }
   }
 
   public async findUserList(merchant: string, onlyAddress: boolean = false) {
-    const list = await this.userService.findAllWithCondition({ merchant });
-    return onlyAddress ? list.map((user) => user.address) : list;
+    try {
+      const list = await this.userService.findAllWithCondition({ merchant });
+      return onlyAddress ? list.map((user) => user.address) : list;
+    } catch (error) {
+      console.log(error);
+      return ExceptionService.throwBadRequest();
+    }
   }
 
   public async findUserInfo(userId: string) {
-    return await this.userService.findOneWithCondition({ userId });
+    try {
+      return await this.userService.findOneWithCondition({ userId });
+    } catch (error) {
+      console.log(error);
+      return ExceptionService.throwBadRequest();
+    }
   }
 
   public async createUser(merchant: string, userId: string) {
-    return await this.userService.createOne({ merchant, userId });
+    try {
+      return await this.userService.createOne({ merchant, userId });
+    } catch (error) {
+      console.log(error);
+      return ExceptionService.throwBadRequest();
+    }
   }
 
   public async findTransaction(info: FindTransactionDto) {
-    const transactions = await this.transactionService.findAll();
+    try {
+      const transactions = await this.transactionService.findAll();
 
-    switch (info.by) {
-      case 'merchant':
-        if (!info.merchant) return ExceptionService.throwBadRequest();
-        const listAddr = (await this.findUserList(
-          info.merchant,
-          true,
-        )) as string[];
-        return transactions.filter((transaction) => {
-          listAddr.includes(transaction.from_) ||
-            listAddr.includes(transaction.to_);
-        });
+      switch (info.by) {
+        case 'merchant':
+          if (!info.merchant) return ExceptionService.throwBadRequest();
+          const listAddr = (await this.findUserList(
+            info.merchant,
+            true,
+          )) as string[];
 
-      case 'userId':
-        if (!info.userId) return ExceptionService.throwBadRequest();
-        const user = await this.userService.findOneWithCondition({
-          userId: info.userId,
-        });
-        if (!(user instanceof User)) return ExceptionService.throwBadRequest();
-        return transactions.filter((transaction) => {
-          user.address === transaction.from_ ||
-            user.address === transaction.to_;
-        });
+          return transactions.filter((transaction) => {
+            return (
+              listAddr.includes(transaction.from_) ||
+              listAddr.includes(transaction.to_)
+            );
+          });
 
-      case 'receiver':
-        if (!info.receiver) return ExceptionService.throwBadRequest();
-        return transactions.filter((transaction) => {
-          transaction.from_ === info.sender;
-        });
+        case 'userId':
+          if (!info.userId) return ExceptionService.throwBadRequest();
+          const user = await this.userService.findOneWithCondition({
+            userId: info.userId,
+          });
+          if (!(user instanceof User))
+            return ExceptionService.throwBadRequest();
+          return transactions.filter((transaction) => {
+            return (
+              user.address === transaction.from_ ||
+              user.address === transaction.to_
+            );
+          });
 
-      case 'sender':
-        if (!info.sender) return ExceptionService.throwBadRequest();
-        return transactions.filter((transaction) => {
-          transaction.to_ === info.receiver;
-        });
+        case 'receiver':
+          if (!info.receiver) return ExceptionService.throwBadRequest();
+          return transactions.filter((transaction) => {
+            return transaction.from_ === info.sender;
+          });
 
-      case 'hash':
-        if (!info.hash) return ExceptionService.throwBadRequest();
-        return transactions.filter((transaction) => {
-          transaction.hash === info.hash;
-        });
+        case 'sender':
+          if (!info.sender) return ExceptionService.throwBadRequest();
+          return transactions.filter((transaction) => {
+            return transaction.to_ === info.receiver;
+          });
 
-      default:
-        break;
+        case 'hash':
+          if (!info.hash) return ExceptionService.throwBadRequest();
+          return transactions.filter((transaction) => {
+            return transaction.hash === info.hash;
+          });
+
+        default:
+          break;
+      }
+    } catch (error) {
+      console.log(error);
+      return ExceptionService.throwBadRequest();
     }
   }
 
@@ -147,24 +183,22 @@ export class ProductService {
     amount: number;
     commission?: number;
   }) {
-    amount = Number(amount);
+    try {
+      amount = Number(amount);
 
-    const pricelist = await this.getPrice();
+      let transfer = await this.exchangeAssetService.exchangeToken({
+        tokenIn: byToken,
+        tokenOut: forToken,
+        amountIn: amount,
+      });
+      if (transfer === undefined || transfer === null)
+        return ExceptionService.throwInternalServerError();
 
-    let sell: number = byToken === 'VND' ? 1 : 0,
-      buy: number = 0,
-      transfer: number;
-
-    pricelist.forEach((tag) => {
-      if (tag.name === byToken) sell = tag.price;
-      else if (tag.name === forToken) buy = tag.price;
-    });
-
-    if (!sell || !buy) return ExceptionService.throwBadRequest();
-
-    transfer = (amount * sell) / buy;
-
-    return { transfer, commission: (amount * commission) / 100 };
+      return { transfer, commission: (amount * commission) / 100 };
+    } catch (error) {
+      console.log(error);
+      return ExceptionService.throwBadRequest();
+    }
   }
 
   //Help user deposit VND to user's wallet be transfering e-banking
@@ -204,6 +238,7 @@ export class ProductService {
       } else return ExceptionService.throwInternalServerError();
     } catch (error) {
       console.log(error);
+      return ExceptionService.throwBadRequest();
     }
   }
 
@@ -213,6 +248,9 @@ export class ProductService {
       const user = await this.userService.findOneWithCondition({
         userId: info.userId,
       });
+
+      if (!user) return ExceptionService.throwBadRequest();
+
       const amountchange = await this.calculateToken({
         byToken: info.byToken,
         amount: info.amount,
@@ -245,6 +283,7 @@ export class ProductService {
       });
     } catch (error) {
       console.log(error);
+      return ExceptionService.throwBadRequest();
     }
   }
 
@@ -264,14 +303,14 @@ export class ProductService {
         });
         if (!(responseBill instanceof Bill))
           ExceptionService.throwInternalServerError();
-        const updateSysBalance = await this.userService.increaseToken({
-          token: 'VND',
-          amount: info.amountVND,
-          userId: 'SYSTEM',
-        });
+        // const updateSysBalance = await this.userService.increaseToken({
+        //   token: 'VND',
+        //   amount: info.amountVND,
+        //   userId: 'SYSTEM',
+        // });
 
-        if (!(updateSysBalance instanceof User))
-          return ExceptionService.throwInternalServerError();
+        // if (!(updateSysBalance instanceof User))
+        //   return ExceptionService.throwInternalServerError();
 
         const user = await this.userService.findOneWithCondition({
           userId: info.userId,
@@ -311,6 +350,7 @@ export class ProductService {
       }
     } catch (error) {
       console.log(error);
+      return ExceptionService.throwBadRequest();
     }
   }
 
@@ -350,10 +390,10 @@ export class ProductService {
         to_: receiver.address,
         byToken: info.byToken,
         byAmount: info.byAmount,
-        commission: 2.5,
       });
     } catch (error) {
       console.log(error);
+      return ExceptionService.throwBadRequest();
     }
   }
 
@@ -367,6 +407,7 @@ export class ProductService {
 
       if (!sender) return ExceptionService.throwBadRequest();
 
+      // calculate gas fee, commission
       //increase, decrease user
 
       await this.userService.decreaseToken({
@@ -376,7 +417,16 @@ export class ProductService {
       });
 
       //call blockchain service to transfer tokens
-
+      const transfer = await this.transferService.createTokenTransfer({
+        userId: info.sender,
+        merchant: info.merchant,
+        chainId: 97,
+        toAddress: info.receiver,
+        amount: info.byAmount,
+        asset: info.byToken,
+      });
+      if (!transfer || !(transfer instanceof Transfer))
+        return ExceptionService.throwInternalServerError();
       //increase for system wallet commission 2.5
 
       //create transaction
@@ -386,11 +436,12 @@ export class ProductService {
         to_: info.receiver,
         byToken: info.byToken,
         byAmount: info.byAmount,
-        hash: null,
-        commission: 2.5,
+        hash: transfer.transactionHash,
+        commission: info.commission,
       });
     } catch (error) {
       console.log(error);
+      return ExceptionService.throwBadRequest();
     }
   }
 
@@ -404,17 +455,26 @@ export class ProductService {
 
       if (!sender) return ExceptionService.throwBadRequest();
 
-      // decrease  user
+      // calculate gas fee, commission
+      //increase, decrease user
 
-      const decrease = await this.userService.decreaseToken({
+      await this.userService.decreaseToken({
         userId: info.sender,
         token: info.byToken,
         amount: info.byAmount,
       });
-      if (!decrease) return ExceptionService.throwInternalServerError();
 
       //call blockchain service to transfer tokens
-
+      const transfer = await this.transferService.createTokenTransfer({
+        userId: info.sender,
+        merchant: info.merchant,
+        chainId: 97,
+        toAddress: info.receiver,
+        amount: info.byAmount,
+        asset: info.byToken,
+      });
+      if (!transfer || !(transfer instanceof Transfer))
+        return ExceptionService.throwInternalServerError();
       //increase for system wallet commission 2.5
 
       //create transaction
@@ -424,11 +484,12 @@ export class ProductService {
         to_: info.receiver,
         byToken: info.byToken,
         byAmount: info.byAmount,
-        hash: null,
+        hash: transfer.transactionHash,
         commission: 2.5,
       });
     } catch (error) {
       console.log(error);
+      return ExceptionService.throwBadRequest();
     }
   }
 
@@ -467,6 +528,7 @@ export class ProductService {
       });
     } catch (error) {
       console.log(error);
+      return ExceptionService.throwBadRequest();
     }
   }
 }

@@ -1,14 +1,13 @@
 import { getCurrentInSeconds } from 'src/blockchain/utils/helper';
 
 export enum TransactionType {
-  DepositVND = 1, //bill, amount
-  ChangeToken = 2, //byToken, forToken, byAmount,forAmount
-  BuyCryptoDirect = 3, // bill, byToken, forToken, byAmount,forAmount
-
-  TransferOutbound = 4, // token, amount, commission, hash
-  TransferInbound = 5, // token, amount, commission
-  WithdrawBlockchain = 6, //token, amount, commission, hash. [Just like TransferOutbound]
-  WithdrawBanking = 7, //platformWithdraw, amount, commission
+  DepositVND = 'deposit-vnd', //1. bill, amount
+  ChangeToken = 'change-token', //2. byToken, forToken, byAmount,forAmount
+  BuyCryptoDirect = 'buy-crypto-direct', //3. bill, byToken, forToken, byAmount,forAmount
+  TransferOutbound = 'transfer-outbound', //4. token, amount, commission, hash
+  TransferInbound = 'transfer-inbound', //5. token, amount, commission
+  WithdrawBlockchain = 'withdraw-blockchain', //6. token, amount, commission, hash. [Just like TransferOutbound]
+  WithdrawBanking = 'withdraw-banking', //7. platformWithdraw, amount, commission
 }
 
 export class TransactionDto {
@@ -23,5 +22,5 @@ export class TransactionDto {
   byAmount?: number = null;
   platformWithdraw?: string = null;
   commission?: number = 2.5;
-  hash?: string = null;
+  hash?: string = 'null';
 }

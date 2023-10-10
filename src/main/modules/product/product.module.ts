@@ -6,6 +6,8 @@ import { TransactionModule } from '../transaction/transaction.module';
 import { BillModule } from '../bill/bill.module';
 import { MerchantModule } from '../merchant/merchant.module';
 import { CommonModule } from 'src/main/service/commonService.module';
+import { ExchangeAssetModule } from 'src/blockchain/modules/exchange-asset/exchange-asset.module';
+import { TransferModule } from 'src/blockchain/modules/transfer/transfer.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { CommonModule } from 'src/main/service/commonService.module';
     CommonModule,
     UserModule,
     TransactionModule,
+    ExchangeAssetModule,
+    TransferModule,
   ],
   controllers: [ProductController],
   providers: [ProductService],

@@ -1,0 +1,123 @@
+
+//--------------------------------------------------------------------
+//@Mục đích: Để khởi tạo tài khoản Merchant trong hệ thống
+
+POST /api/v1/product/init-partner
+{
+"partner_code":"M1",
+"name":"TIKI"
+}
+
+//--------------------------------------------------------------------
+//@Mục đích: Để khởi tạo một user cho một merchant
+
+POST /api/v1/product/create-user/{merchant}/{userId}
+
+
+//--------------------------------------------------------------------
+//@Mục đích: Lấy giá các đồng token quy về VND gởi cho phía merchant
+
+GET /api/v1/product/price
+
+//--------------------------------------------------------------------
+//@Mục đích: Lấy danh sách thông tin user của một merchant
+
+GET /api/v1/product/user-list/{partner_code}
+
+//--------------------------------------------------------------------
+//@Mục đích: Lấy thông tin của 1 user
+
+GET /api/v1/product/user-info/{user}
+
+//--------------------------------------------------------------------
+//@Mục đích: Lấy về danh sách mọi transaction của các user thuộc 1 merchant
+GET /api/v1/product/transactions/{merchant}
+
+//--------------------------------------------------------------------
+//@Mục đích: Lấy về danh sách mọi transaction của 1 user thuộc 1 merchant
+GET /api/v1/product/transactions/{merchant}/{userId}
+
+//--------------------------------------------------------------------
+//@Mục đích: Chuyển VND từ ngân hàng vào hệ thống
+PUT /api/v1/product/deposit-vnd
+
+{ "userId":"M1001",
+ "merchant":"M1", 
+ "amountVND":"10000000000", 
+ "bill":"B-M1001-MOMO", 
+ "platform":"MOMO" }
+
+//--------------------------------------------------------------------
+//@Mục đích: Chuyển đổi giữa các đồng token với nhau (hiện có 5 đồng token)
+PUT /api/v1/product/change-token
+{ "userId":"M1001", 
+"merchant":"M1", 
+"amount":"1000000", 
+"byToken":"VND", 
+"forToken":"USDT" }
+
+//--------------------------------------------------------------------
+//@Mục đích: Mua token trực tiếp bằng cách chuyển tiền từ ngân hàng vào hệ thống để đổi lấy 1 đồng token nào đó
+
+PUT /api/v1/product/buy-crypto-direct
+{ "userId":"M1001",
+ "merchant":"M1",
+ "amountVND":"1000000",
+ "forToken":"BNB",
+ "bill":"B2-M1001-MOMO",
+ "platform":"MOMO" 
+}
+//--------------------------------------------------------------------
+//@Mục đích: Chuyển tiền nội bộ giữa các user trong hệ thống
+
+PUT /api/v1/product/transfer-inbound
+
+{ 
+ "merchant":"M1",
+ "sender":"M1001",
+ "receiver":"M1002",
+ "byAmount":"6969",
+ "byToken":"VND" 
+}
+
+
+//--------------------------------------------------------------------
+//@Mục đích: chuyển token ra các tài khoản blockchain ngoài hệ thống. không được chuyển VND
+
+PUT /api/v1/product/transfer-outbound
+
+ { "merchant":"M1",
+  "sender":"M1001",
+  "receiver":"0x040372eb8b0b10246a0f371ce611b0a503057732",
+  "byAmount":"1",
+  "byToken":"USDT" 
+ }
+
+
+//--------------------------------------------------------------------
+//@Mục đích: Cho user rút token từ hệ thống về ví blockchain
+
+PUT /api/v1/product/withdraw-blockchain
+ 
+ { "merchant":"M1",
+  "sender":"M1001",
+  "receiver":"0x040372eb8b0b10246a0f371ce611b0a503057732",
+  "byAmount":"1",
+  "byToken":"USDT" 
+ }
+
+
+
+//--------------------------------------------------------------------
+//@Mục đích: Cho user rút tiền từ hệ thống về ngân hàng
+ 
+PUT /api/v1/product/withdraw-banking
+
+ {
+      "merchant":"M1",
+      "sender":"",
+      "receiver":"",
+      "byAmount":"",
+      "byToken":"VND",
+      "platformWithdraw":"MOMO"
+      }   

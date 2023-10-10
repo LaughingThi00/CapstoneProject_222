@@ -43,26 +43,25 @@ export class TransactionService {
   }
 
   public async createOne(info: TransactionDto) {
-    if (info?.hash)
+    if (info?.hash) {
       if (await this.TransactionRep.findOne({ hash: info?.hash }))
         return ExceptionService.throwBadRequest();
+    }
 
-    const transaction = this.TransactionRep.create({
-      ...info,
-    });
+    const transaction = this.TransactionRep.create(info);
 
     return await this.TransactionRep.save(transaction);
   }
 
-  public async deleteForever(hash: string) {
-    let transaction: Transaction = null;
+  // public async deleteForever(hash: string) {
+  //   let transaction: Transaction = null;
 
-    transaction = await this.TransactionRep.findOne(hash);
+  //   transaction = await this.TransactionRep.findOne(hash);
 
-    if (!transaction) return ExceptionService.throwBadRequest();
+  //   if (!transaction) return ExceptionService.throwBadRequest();
 
-    return await this.TransactionRep.remove(transaction);
-  }
+  //   return await this.TransactionRep.remove(transaction);
+  // }
 
   public async deleteForeverAll() {
     return await this.TransactionRep.delete({});
