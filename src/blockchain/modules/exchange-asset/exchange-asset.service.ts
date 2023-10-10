@@ -84,19 +84,19 @@ export class ExchangeAssetService {
         // Transfer from Exchange to HotWallet
 
         // Update user balance
-        const decreaseBalance = {
-          token: 'VND',
-          amount: amountVND,
-          userId: userId,
-        };
-        await this.userRep.decreaseToken(decreaseBalance);
+        // const decreaseBalance = {
+        //   token: 'VND',
+        //   amount: amountVND,
+        //   userId: userId,
+        // };
+        // await this.userRep.decreaseToken(decreaseBalance);
 
-        const increaseBalance = {
-          token: asset,
-          amount: assetAmount,
-          userId: userId,
-        };
-        await this.userRep.increaseToken(increaseBalance);
+        // const increaseBalance = {
+        //   token: asset,
+        //   amount: assetAmount,
+        //   userId: userId,
+        // };
+        // await this.userRep.increaseToken(increaseBalance);
       }
       const data = new CreateExchangeAssetDto();
       data.userId = userId;
@@ -145,19 +145,19 @@ export class ExchangeAssetService {
         // Transfer from Exchange to HotWallet
 
         // Update user balance
-        const decreaseBalance = {
-          token: asset,
-          amount: assetAmount,
-          userId: userId,
-        };
-        await this.userRep.decreaseToken(decreaseBalance);
+        // const decreaseBalance = {
+        //   token: asset,
+        //   amount: assetAmount,
+        //   userId: userId,
+        // };
+        // await this.userRep.decreaseToken(decreaseBalance);
 
-        const increaseBalance = {
-          token: 'VND',
-          amount: amountVND,
-          userId: userId,
-        };
-        await this.userRep.increaseToken(increaseBalance);
+        // const increaseBalance = {
+        //   token: 'VND',
+        //   amount: amountVND,
+        //   userId: userId,
+        // };
+        // await this.userRep.increaseToken(increaseBalance);
       } else {
         //check balance
 
