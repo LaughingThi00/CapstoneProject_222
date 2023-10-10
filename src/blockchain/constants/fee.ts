@@ -1,0 +1,1 @@
+export const FEE_SYSTEM = 0.005; // 0.5% 

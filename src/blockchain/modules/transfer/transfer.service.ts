@@ -8,6 +8,8 @@ import { Contract } from '../../utils/contract';
 import { TOKENS } from '../../constants/address';
 import { WalletService } from '../wallet/wallet.service';
 import { UserService } from 'src/main/modules/user/user.service';
+import { feeEstimate, getGasFee, getPriceTokenToVND } from 'src/blockchain/utils/marketdata';
+import { FEE_SYSTEM } from 'src/blockchain/constants/fee';
 
 @Injectable()
 export class TransferService {
@@ -71,14 +73,14 @@ export class TransferService {
       );
       // console.log("receipt", receipt)
 
-      console.log('update balance');
-      // Update user balance
-      const decreaseBalance = {
-        token: asset,
-        amount: amount,
-        userId: userId,
-      };
-      await this.userRep.decreaseToken(decreaseBalance);
+      // console.log('update balance');
+      // // Update user balance
+      // const decreaseBalance = {
+      //   token: asset,
+      //   amount: amount,
+      //   userId: userId,
+      // };
+      // await this.userRep.decreaseToken(decreaseBalance);
       console.log('done');
       const txh = {
         userId: userId,
@@ -94,6 +96,8 @@ export class TransferService {
         effectiveGasPrice: receipt.effectiveGasPrice,
         gasUsed: receipt.gasUsed,
       };
+      const feeEst = await feeEstimate(asset, amount);
+      console.log('feeEst:', feeEst)
       const result = this.transferRep.create(txh);
       await this.transferRep.save(result);
       return result;
@@ -131,13 +135,12 @@ export class TransferService {
         signedTx.rawTransaction,
       );
       // console.log("receipt", receipt)
-
-      const decreaseBalance = {
-        token: asset,
-        amount: amount,
-        userId: userId,
-      };
-      await this.userRep.decreaseToken(decreaseBalance);
+      // const decreaseBalance = {
+      //   token: asset,
+      //   amount: amount,
+      //   userId: userId,
+      // };
+      // await this.userRep.decreaseToken(decreaseBalance);
       const txh = {
         userId: userId,
         merchant: merchant,
@@ -152,9 +155,19 @@ export class TransferService {
         effectiveGasPrice: receipt.effectiveGasPrice,
         gasUsed: receipt.gasUsed,
       };
+
+      const feeEst = await feeEstimate(asset, amount);
+      console.log('feeEst:', feeEst)
+
       const result = this.transferRep.create(txh);
       await this.transferRep.save(result);
       return result;
     }
+  }
+
+  public async feeUsed(asset: string, gasUsed: number, gasPrice: number) {
+    // const priceAsset = await getPriceTokenToVND(asset)
+    // const fee = priceAsset * gasUsed * gasPrice / 1000000000
+    // return fee
   }
 }
