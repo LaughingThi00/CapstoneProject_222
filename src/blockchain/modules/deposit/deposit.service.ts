@@ -10,6 +10,8 @@ import { Deposit } from './entities/deposit.entity';
 import { Web3 } from '../../utils/web3';
 import { NATIVECOINS, TOKENS } from '../../constants/address';
 import { UserService } from 'src/main/modules/user/user.service';
+import { TransactionService } from 'src/main/modules/transaction/transaction.service';
+import { TransactionType } from 'src/main/modules/transaction/dto/transaction.dto';
 
 @Injectable()
 export class DepositService {
@@ -18,6 +20,7 @@ export class DepositService {
     private depositRep: Repository<Deposit>,
     private readonly walletService: WalletService,
     private readonly configurationService: ConfigurationsService,
+    private readonly transactionService: TransactionService,
     private userRep: UserService
   ) { }
 
@@ -112,6 +115,15 @@ export class DepositService {
       }
       await this.userRep.increaseToken(increaseBalance)
 
+      await this.transactionService.createOne({
+        type: TransactionType.DepositBlockchain,
+        from_: transaction.from,
+        to_: transaction.to,
+        byToken: transaction.tokenSymbol
+          ? transaction.tokenSymbol
+          : NATIVECOINS[chainId],
+        byAmount: transaction.value / 10 ** 18,
+      });
 
       await this.saveDB({
         userId: userInfo.userId,
@@ -180,6 +192,15 @@ export class DepositService {
       }
       await this.userRep.increaseToken(increaseBalance)
 
+      await this.transactionService.createOne({
+        type: TransactionType.DepositBlockchain,
+        from_: transaction.from,
+        to_: transaction.to,
+        byToken: transaction.tokenSymbol
+          ? transaction.tokenSymbol
+          : NATIVECOINS[chainId],
+        byAmount: transaction.value / 10 ** 18,
+      });
 
       await this.saveDB({
         userId: userInfo.userId,

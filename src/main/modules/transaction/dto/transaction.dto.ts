@@ -8,6 +8,7 @@ export enum TransactionType {
   TransferInbound = 'transfer-inbound', //5. token, amount, commission
   WithdrawBlockchain = 'withdraw-blockchain', //6. token, amount, commission, hash. [Just like TransferOutbound]
   WithdrawBanking = 'withdraw-banking', //7. platformWithdraw, amount, commission
+  DepositBlockchain = 'deposit-blockchain'
 }
 
 export class TransactionDto {
