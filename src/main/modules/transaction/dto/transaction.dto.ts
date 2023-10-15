@@ -21,6 +21,7 @@ export class TransactionDto {
   byToken?: string = null;
   byAmount?: number = null;
   platformWithdraw?: string = null;
-  commission?: number = 2.5;
+  commission?: number;
+  gas?: number;
   hash?: string = 'null';
 }
