@@ -6,6 +6,7 @@ import { getPriceAsset, getPriceUSDTperVND } from '../../utils/marketdata';
 import { CreateExchangeAssetDto } from './dto/create-exchange-asset.dto';
 import { WalletService } from '../wallet/wallet.service';
 import { UserService } from 'src/main/modules/user/user.service';
+import { ExceptionService } from 'src/common/service/exception.service';
 
 @Injectable()
 export class ExchangeAssetService {
@@ -204,7 +205,7 @@ export class ExchangeAssetService {
     return getPriceAsset(symbol);
   }
   public async exchangeToken({ tokenIn, tokenOut, amountIn }: { tokenIn: string, tokenOut: string, amountIn: number }) {
-    if (amountIn <= 0) { }
+    // if (amountIn <= 0) return ExceptionService.throwInternalServerError();
     tokenIn = tokenIn.toLocaleUpperCase();
     tokenOut = tokenOut.toLocaleUpperCase();
     let amountOut = 0;

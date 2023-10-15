@@ -256,7 +256,7 @@ export class ProductService {
         amount: info.amount,
         forToken: info.forToken,
       });
-
+      // if (typeof amountchange === void) return ExceptionService.throwInternalServerError();
       if (!amountchange) return ExceptionService.throwInternalServerError();
 
       user.asset.forEach((item) => {
