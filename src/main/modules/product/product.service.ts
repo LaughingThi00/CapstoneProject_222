@@ -17,6 +17,8 @@ import { TransactionType } from '../transaction/dto/transaction.dto';
 import { ExchangeAssetService } from 'src/blockchain/modules/exchange-asset/exchange-asset.service';
 import { TransferService } from 'src/blockchain/modules/transfer/transfer.service';
 import { Transfer } from 'src/blockchain/modules/transfer/entities/transfer.entity';
+import { feeEstimate } from 'src/blockchain/utils/marketdata';
+import { FEE_SYSTEM } from 'src/blockchain/constants/fee';
 
 @Injectable()
 export class ProductService {
@@ -303,22 +305,16 @@ export class ProductService {
         });
         if (!(responseBill instanceof Bill))
           ExceptionService.throwInternalServerError();
-        // const updateSysBalance = await this.userService.increaseToken({
-        //   token: 'VND',
-        //   amount: info.amountVND,
-        //   userId: 'SYSTEM',
-        // });
-
-        // if (!(updateSysBalance instanceof User))
-        //   return ExceptionService.throwInternalServerError();
 
         const user = await this.userService.findOneWithCondition({
           userId: info.userId,
         });
 
+        const fee = await feeEstimate('VND', info.amountVND);
+
         const amountchange = await this.calculateToken({
           byToken: 'VND',
-          amount: info.amountVND,
+          amount: info.amountVND - fee.total,
           forToken: info.forToken,
         });
 
@@ -326,10 +322,10 @@ export class ProductService {
 
         user.asset.forEach((item) => {
           if (item.token === 'VND') {
-            if (item.amount < Number(info.amountVND))
+            if (item.amount + Number(info.amountVND) < fee.total)
               return ExceptionService.throwBadRequest();
 
-            item.amount -= Number(info.amountVND);
+            // item.amount -= Number(info.amountVND);
           } else if (item.token === info.forToken) {
             item.amount += amountchange.transfer;
           }
@@ -346,6 +342,8 @@ export class ProductService {
           byAmount: info.amountVND,
           forAmount: amountchange.transfer,
           bill: info.bill,
+          commission: fee.commission,
+          gas: fee.gas,
         });
       }
     } catch (error) {
@@ -410,6 +408,14 @@ export class ProductService {
       // calculate gas fee, commission
       //increase, decrease user
 
+      const fee = await feeEstimate('VND', info.byAmount);
+
+      await this.userService.decreaseToken({
+        userId: info.sender,
+        token: 'VND',
+        amount: fee.total,
+      });
+
       await this.userService.decreaseToken({
         userId: info.sender,
         token: info.byToken,
@@ -437,7 +443,8 @@ export class ProductService {
         byToken: info.byToken,
         byAmount: info.byAmount,
         hash: transfer.transactionHash,
-        commission: info.commission,
+        commission: fee.commission,
+        gas: fee.gas,
       });
     } catch (error) {
       console.log(error);
@@ -457,6 +464,14 @@ export class ProductService {
 
       // calculate gas fee, commission
       //increase, decrease user
+
+      const fee = await feeEstimate('VND', info.byAmount);
+
+      await this.userService.decreaseToken({
+        userId: info.sender,
+        token: 'VND',
+        amount: fee.total,
+      });
 
       await this.userService.decreaseToken({
         userId: info.sender,
@@ -485,7 +500,8 @@ export class ProductService {
         byToken: info.byToken,
         byAmount: info.byAmount,
         hash: transfer.transactionHash,
-        commission: 2.5,
+        commission: fee.commission,
+        gas: fee.gas,
       });
     } catch (error) {
       console.log(error);
@@ -503,13 +519,16 @@ export class ProductService {
 
       if (!sender) return ExceptionService.throwBadRequest();
 
+      const fee = await feeEstimate('VND', info.byAmount);
+
       //decrease user
 
       const decrease = await this.userService.decreaseToken({
         userId: info.sender,
         token: 'VND',
-        amount: info.byAmount,
+        amount: info.byAmount + fee.total,
       });
+
       if (!decrease) return ExceptionService.throwInternalServerError();
 
       //call banking service to transfer VND
@@ -524,7 +543,8 @@ export class ProductService {
         platformWithdraw: info.platformWithdraw,
         byToken: info.byToken,
         byAmount: info.byAmount,
-        commission: 2.5,
+        commission: fee.commission,
+        gas: fee.gas,
       });
     } catch (error) {
       console.log(error);
