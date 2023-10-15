@@ -133,19 +133,19 @@ export class ProductController {
     });
   }
 
-  @Put('/withdraw-blockchain')
-  async withdrawBlockchainController(
-    @Body()
-    { merchant, sender, receiver, byAmount, byToken }: PurchaseDto,
-  ) {
-    return await this.productService.withdrawBlockchain({
-      merchant,
-      sender,
-      receiver,
-      byAmount: Number(byAmount),
-      byToken,
-    });
-  }
+  // @Put('/withdraw-blockchain')
+  // async withdrawBlockchainController(
+  //   @Body()
+  //   { merchant, sender, receiver, byAmount, byToken }: PurchaseDto,
+  // ) {
+  //   return await this.productService.withdrawBlockchain({
+  //     merchant,
+  //     sender,
+  //     receiver,
+  //     byAmount: Number(byAmount),
+  //     byToken,
+  //   });
+  // }
 
   @Put('/withdraw-banking')
   async withdrawBankingController(

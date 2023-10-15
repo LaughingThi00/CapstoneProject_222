@@ -451,61 +451,61 @@ export class ProductService {
   }
 
   // Helps users withdraw tokens to user's blockchain account
-  public async withdrawBlockchain(info: PurchaseDto) {
-    try {
-      //find  user
-      const sender = await this.userService.findOneWithCondition({
-        userId: info.sender,
-      });
+  // public async withdrawBlockchain(info: PurchaseDto) {
+  //   try {
+  //     //find  user
+  //     const sender = await this.userService.findOneWithCondition({
+  //       userId: info.sender,
+  //     });
 
-      if (!sender) return ExceptionService.throwBadRequest();
+  //     if (!sender) return ExceptionService.throwBadRequest();
 
-      // calculate gas fee, commission
-      //increase, decrease user
+  //     // calculate gas fee, commission
+  //     //increase, decrease user
 
-      const fee = await feeEstimate('VND', info.byAmount);
+  //     const fee = await feeEstimate('VND', info.byAmount);
 
-      await this.userService.decreaseToken({
-        userId: info.sender,
-        token: 'VND',
-        amount: fee.total,
-      });
+  //     await this.userService.decreaseToken({
+  //       userId: info.sender,
+  //       token: 'VND',
+  //       amount: fee.total,
+  //     });
 
-      await this.userService.decreaseToken({
-        userId: info.sender,
-        token: info.byToken,
-        amount: info.byAmount,
-      });
+  //     await this.userService.decreaseToken({
+  //       userId: info.sender,
+  //       token: info.byToken,
+  //       amount: info.byAmount,
+  //     });
 
-      //call blockchain service to transfer tokens
-      const transfer = await this.transferService.createTokenTransfer({
-        userId: info.sender,
-        merchant: info.merchant,
-        chainId: 97,
-        toAddress: info.receiver,
-        amount: info.byAmount,
-        asset: info.byToken,
-      });
-      if (!transfer || !(transfer instanceof Transfer))
-        return ExceptionService.throwInternalServerError();
-      //increase for system wallet commission 2.5
+  //     //call blockchain service to transfer tokens
+  //     const transfer = await this.transferService.createTokenTransfer({
+  //       userId: info.sender,
+  //       merchant: info.merchant,
+  //       chainId: 97,
+  //       toAddress: info.receiver,
+  //       amount: info.byAmount,
+  //       asset: info.byToken,
+  //     });
+  //     if (!transfer || !(transfer instanceof Transfer))
+  //       return ExceptionService.throwInternalServerError();
+  //     //increase for system wallet commission 2.5
 
-      //create transaction
-      return await this.transactionService.createOne({
-        type: TransactionType.WithdrawBlockchain,
-        from_: sender.address,
-        to_: info.receiver,
-        byToken: info.byToken,
-        byAmount: info.byAmount,
-        hash: transfer.transactionHash,
-        commission: fee.commission,
-        gas: fee.gas,
-      });
-    } catch (error) {
-      console.log(error);
-      return ExceptionService.throwBadRequest();
-    }
-  }
+  //     //create transaction
+  //     return await this.transactionService.createOne({
+  //       type: TransactionType.WithdrawBlockchain,
+  //       from_: sender.address,
+  //       to_: info.receiver,
+  //       byToken: info.byToken,
+  //       byAmount: info.byAmount,
+  //       hash: transfer.transactionHash,
+  //       commission: fee.commission,
+  //       gas: fee.gas,
+  //     });
+  //   } catch (error) {
+  //     console.log(error);
+  //     return ExceptionService.throwBadRequest();
+  //   }
+  // }
 
   // Helps users withdraw VND to user's banking account
   public async withdrawBanking(info: PurchaseDto) {
