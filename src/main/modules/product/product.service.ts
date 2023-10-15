@@ -178,12 +178,10 @@ export class ProductService {
     byToken,
     forToken,
     amount,
-    commission = 2.5,
   }: {
     byToken: string;
     forToken: string;
     amount: number;
-    commission?: number;
   }) {
     try {
       amount = Number(amount);
@@ -196,7 +194,7 @@ export class ProductService {
       if (transfer === undefined || transfer === null)
         return ExceptionService.throwInternalServerError();
 
-      return { transfer, commission: (amount * commission) / 100 };
+      return transfer;
     } catch (error) {
       console.log(error);
       return ExceptionService.throwBadRequest();
@@ -268,7 +266,7 @@ export class ProductService {
 
           item.amount -= Number(info.amount);
         } else if (item.token === info.forToken) {
-          item.amount += amountchange.transfer;
+          item.amount += amountchange;
         }
       });
 
@@ -281,7 +279,7 @@ export class ProductService {
         forToken: info.forToken,
         byToken: info.byToken,
         byAmount: info.amount,
-        forAmount: amountchange.transfer,
+        forAmount: amountchange,
       });
     } catch (error) {
       console.log(error);
@@ -327,7 +325,7 @@ export class ProductService {
 
             // item.amount -= Number(info.amountVND);
           } else if (item.token === info.forToken) {
-            item.amount += amountchange.transfer;
+            item.amount += amountchange;
           }
         });
 
@@ -340,7 +338,7 @@ export class ProductService {
           forToken: info.forToken,
           byToken: 'VND',
           byAmount: info.amountVND,
-          forAmount: amountchange.transfer,
+          forAmount: amountchange,
           bill: info.bill,
           commission: fee.commission,
           gas: fee.gas,

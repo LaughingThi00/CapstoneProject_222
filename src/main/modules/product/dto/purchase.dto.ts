@@ -5,5 +5,6 @@ export class PurchaseDto {
   byAmount: number;
   byToken?: string = 'VND';
   platformWithdraw?: string = null;
-  commission?: number = 2.5;
+  commission?: number;
+  gas?: number;
 }

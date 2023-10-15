@@ -5,5 +5,6 @@ export class BuyCryptoDto {
   forToken: string;
   bill: string;
   platform?: string = 'MOMO';
-  // commission?: number = 2.5;
+  commission?: number;
+  gas?: number;
 }

@@ -5,4 +5,6 @@ export class ChangeTokenDto {
   amount: number;
   byToken: string;
   forToken: string;
+  commission?: number;
+  gas?: number;
 }
