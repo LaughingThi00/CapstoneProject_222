@@ -8,7 +8,11 @@ import { Contract } from '../../utils/contract';
 import { TOKENS } from '../../constants/address';
 import { WalletService } from '../wallet/wallet.service';
 import { UserService } from 'src/main/modules/user/user.service';
-import { feeEstimate, getGasFee, getPriceTokenToVND } from 'src/blockchain/utils/marketdata';
+import {
+  feeEstimate,
+  getGasFee,
+  getPriceTokenToVND,
+} from 'src/blockchain/utils/marketdata';
 import { FEE_SYSTEM } from 'src/blockchain/constants/fee';
 
 @Injectable()
@@ -18,7 +22,7 @@ export class TransferService {
     private transferRep: Repository<Transfer>,
     private walletRep: WalletService,
     private userRep: UserService,
-  ) { }
+  ) {}
   public async findTransaction({
     transactionHash,
   }: {
@@ -96,8 +100,8 @@ export class TransferService {
         effectiveGasPrice: receipt.effectiveGasPrice,
         gasUsed: receipt.gasUsed,
       };
-      const feeEst = await feeEstimate(asset, amount);
-      console.log('feeEst:', feeEst)
+      // const feeEst = await feeEstimate(asset, amount);
+      // console.log('feeEst:', feeEst)
       const result = this.transferRep.create(txh);
       await this.transferRep.save(result);
       return result;
@@ -156,8 +160,8 @@ export class TransferService {
         gasUsed: receipt.gasUsed,
       };
 
-      const feeEst = await feeEstimate(asset, amount);
-      console.log('feeEst:', feeEst)
+      // const feeEst = await feeEstimate(asset, amount);
+      // console.log('feeEst:', feeEst)
 
       const result = this.transferRep.create(txh);
       await this.transferRep.save(result);

@@ -35,6 +35,9 @@ export class Transaction extends AbstractEntity {
   @Column()
   commission?: number = 0;
 
+  @Column()
+  gas?: number = 0;
+
   @Column({ nullable: true, unique: false })
   hash?: string = String(getCurrentInSeconds());
 
