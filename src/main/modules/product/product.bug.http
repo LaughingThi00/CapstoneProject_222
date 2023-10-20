@@ -1,0 +1,192 @@
+
+//--------------------------------------------------------------------
+//@Lỗi: "partner_code" chấp nhận kiểu số
+
+POST http://localhost:3000/api/v1/product/init-partner
+Content-Type: application/json
+
+{
+"partner_code":1,
+"name":"TIKI"
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: "name" chấp nhận kiểu số
+
+POST http://localhost:3000/api/v1/product/init-partner
+Content-Type: application/json
+
+{
+"partner_code":"M1",
+"name":1
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Vẫn có thể tạo user cho merchant không tồn tại trong hệ thống
+
+POST http://localhost:3000/api/v1/product/create-user/XXX/A
+
+###
+
+//--------------------------------------------------------------------
+//Lỗi: Báo lỗi không rõ ràng khi không kết nối được với phía server lấy giá
+
+GET http://localhost:3000/api/v1/product/price
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Vẫn báo thành công khi lấy danh sách user của merchant không tồn tại trong hệ thống
+
+GET http://localhost:3000/api/v1/product/user-list/XYZ
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Vẫn báo thành công khi lấy thông tin của 1 user không tồn tại trong hệ thống
+
+GET http://localhost:3000/api/v1/product/user-info/X
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Vẫn báo thành công khi merchant không tồn tại trong hệ thống
+GET http://localhost:3000/api/v1/product/transactions/XXX
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Trả về mọi transaction của merchant khi user không tồn tại trong hệ thống
+GET http://localhost:3000/api/v1/product/transactions/XXX/M1-A
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Input không khớp định dạng
+PUT http://localhost:3000/api/v1/product/deposit-vnd
+Content-Type: application/json
+
+{
+"userId":"M1001",
+"merchant":"M1", 
+"amountVND":"10000000000", 
+"bill":"B-M1001-MOMO", 
+"platform":"MOMO"
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: BAD REQUEST
+PUT http://localhost:3000/api/v1/product/change-token
+Content-Type: application/json
+
+{
+"userId":"M1001", 
+"merchant":"M1", 
+"amount":"1000000", 
+"byToken":"VND", 
+"forToken":"USDT"
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Báo lỗi không rõ ràng khi user không tồn tại trong hệ thống hoặc không thuộc về merchant
+
+PUT http://localhost:3000/api/v1/product/buy-crypto-direct
+Content-Type: application/json
+
+{
+"userId":"X",
+"merchant":"M1",
+"amountVND":"1000000",
+"forToken":"BNB",
+"bill":"B2-M1001-MOMO",
+"platform":"MOMO" 
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Báo lỗi không rõ ràng khi merchant không tồn tại trong hệ thống
+
+PUT http://localhost:3000/api/v1/product/buy-crypto-direct
+Content-Type: application/json
+
+{
+"userId":"M1001",
+"merchant":"QQ",
+"amountVND":"1000000",
+"forToken":"BNB",
+"bill":"B2-M1001-MOMO",
+"platform":"MOMO" 
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: BAD REQUEST (có thể do đang không có tiền, mà API nạp tiền bị lỗi nên không nạp được để test)
+
+PUT http://localhost:3000/api/v1/product/transfer-inbound
+Content-Type: application/json
+
+{ 
+"merchant":"M1",
+"sender":"M1001",
+"receiver":"M1002",
+"byAmount":"6969",
+"byToken":"VND" 
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: BAD REQUEST (có thể do đang không có tiền, mà API nạp tiền bị lỗi nên không nạp được để test)
+
+PUT http://localhost:3000/api/v1/product/transfer-outbound
+Content-Type: application/json
+
+{
+"merchant":"M1",
+"sender":"M1001",
+"receiver":"0x040372eb8b0b10246a0f371ce611b0a503057732",
+"byAmount":"1",
+"byToken":"USDT" 
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: Input không khớp định dạng
+
+PUT http://localhost:3000/api/v1/product/withdraw-blockchain
+Content-Type: application/json
+
+{
+"merchant":"M1",
+"sender":"M1001",
+"receiver":"0x040372eb8b0b10246a0f371ce611b0a503057732",
+"byAmount":"1",
+"byToken":"USDT" 
+}
+
+###
+
+//--------------------------------------------------------------------
+//@Lỗi: BAD REQUEST (có thể do đang không có tiền, mà API nạp tiền bị lỗi nên không nạp được để test)
+
+PUT http://localhost:3000/api/v1/product/withdraw-banking
+
+{
+"merchant":"M1",
+"sender":"",
+"receiver":"",
+"byAmount":"",
+"byToken":"VND",
+"platformWithdraw":"MOMO"
+}
