@@ -1,0 +1,8 @@
+GET http://localhost:3000/api/v1/user
+
+###
+
+DELETE http://localhost:3000/api/v1/user/delete-permanently-all
+
+###
+
