@@ -5,7 +5,7 @@ import { DepositService } from './deposit.service';
 @ApiTags('Deposit')
 @Controller('/deposit')
 export class DepositController {
-  constructor(private readonly depositService: DepositService) {}
+  constructor(private readonly depositService: DepositService) { }
   @Get('history')
   async findHistory(
     @Query('userId') userId: string,
