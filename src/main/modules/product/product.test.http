@@ -13,7 +13,6 @@ POST /api/v1/product/init-partner
 
 POST /api/v1/product/create-user/{merchant}/{userId}
 
-
 //--------------------------------------------------------------------
 //@Mục đích: Lấy giá các đồng token quy về VND gởi cho phía merchant
 

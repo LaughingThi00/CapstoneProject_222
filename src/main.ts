@@ -15,7 +15,6 @@ async function bootstrap() {
     // logger: true
     cors: true,
   });
-
   // Apply prefix for all routes
   app.setGlobalPrefix('api');
   app.useGlobalPipes(

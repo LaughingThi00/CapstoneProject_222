@@ -13,6 +13,7 @@ import { MerchantModule } from './main/modules/merchant/merchant.module';
 import { TransactionModule } from './main/modules/transaction/transaction.module';
 import { BillModule } from './main/modules/bill/bill.module';
 import { ProductModule } from './main/modules/product/product.module';
+import { TFAuthModule } from './blockchain/modules/tf-auth/tf-auth.module';
 
 @Module({
   imports: [
@@ -49,10 +50,11 @@ import { ProductModule } from './main/modules/product/product.module';
     TransactionModule,
     BillModule,
     ProductModule,
+    TFAuthModule
   ],
   controllers: [],
   providers: [],
 })
 export class AppModule {
-  constructor(private connection: Connection) {}
+  constructor(private connection: Connection) { }
 }
