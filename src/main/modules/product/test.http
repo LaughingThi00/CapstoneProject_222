@@ -6,7 +6,7 @@ POST /api/v1/product/init-partner
 {
 "partner_code":"M1",
 "name":"TIKI"
-}
+} 
 
 //--------------------------------------------------------------------
 //@Mục đích: Để khởi tạo một user cho một merchant
@@ -111,7 +111,7 @@ PUT /api/v1/product/withdraw-blockchain
 //--------------------------------------------------------------------
 //@Mục đích: Cho user rút tiền từ hệ thống về ngân hàng
  
-PUT /api/v1/product/withdraw-banking
+PUT /api/v1/product/transfer-banking
 
  {
       "merchant":"M1",

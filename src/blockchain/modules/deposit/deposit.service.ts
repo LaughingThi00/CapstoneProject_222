@@ -21,8 +21,8 @@ export class DepositService {
     private readonly walletService: WalletService,
     private readonly configurationService: ConfigurationsService,
     private readonly transactionService: TransactionService,
-    private userRep: UserService
-  ) { }
+    private userRep: UserService,
+  ) {}
 
   // Schedule every 1 minute at the 10th second
   @Cron('10 * * * * *')
@@ -106,14 +106,13 @@ export class DepositService {
       console.log(`${userInfo.userId} has 1 transaction native deposit! `);
       // Transfer native to Hot wallet
 
-
       // Update user balance
       const increaseBalance = {
         token: NATIVECOINS[chainId],
         amount: amount,
-        userId: userInfo.userId
-      }
-      await this.userRep.increaseToken(increaseBalance)
+        userId: userInfo.userId,
+      };
+      await this.userRep.increaseToken(increaseBalance);
 
       await this.transactionService.createOne({
         type: TransactionType.DepositBlockchain,
@@ -183,14 +182,13 @@ export class DepositService {
 
       // Transfer token to Hot wallet
 
-
       // Update user balance
       const increaseBalance = {
         token: transaction.tokenSymbol,
         amount: amount,
-        userId: userInfo.userId
-      }
-      await this.userRep.increaseToken(increaseBalance)
+        userId: userInfo.userId,
+      };
+      await this.userRep.increaseToken(increaseBalance);
 
       await this.transactionService.createOne({
         type: TransactionType.DepositBlockchain,

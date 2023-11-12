@@ -27,18 +27,21 @@ export class ProductController {
     return await this.productService.createUser(merchant, userId);
   }
 
-  @Get('/price')
-  async getPrice() {
+  @Get('/price/:merchant')
+  async getPrice(@Param('merchant') merchant: string) {
     return await this.productService.getPrice();
   }
 
-  @Get('/user-list/:partner_code')
-  async findUserList(@Param('partner_code') partner_code: string) {
-    return await this.productService.findUserList(partner_code);
+  @Get('/user-list/:merchant')
+  async findUserList(@Param('merchant') merchant: string) {
+    return await this.productService.findUserList(merchant);
   }
 
-  @Get('/user-info/:user')
-  async findUserWallet(@Param('user') userId: string) {
+  @Get('/user-info/:merchant/:user')
+  async findUserWallet(
+    @Param('merchant') merchant: string,
+    @Param('user') userId: string,
+  ) {
     return await this.productService.findUserInfo(userId);
   }
 
@@ -62,9 +65,10 @@ export class ProductController {
     });
   }
 
-  @Put('/deposit-vnd')
+  @Put('/deposit-vnd/:merchant')
   async depositVND(
-    @Body() { userId, merchant, amountVND, bill, platform }: DepositVNDDto,
+    @Param('merchant') merchant: string,
+    @Body() { userId, amountVND, bill, platform }: DepositVNDDto,
   ) {
     return await this.productService.depositVND({
       userId,
@@ -75,10 +79,11 @@ export class ProductController {
     });
   }
 
-  @Put('/change-token')
+  @Put('/change-token/:merchant')
   async changeTokenController(
+    @Param('merchant') merchant: string,
     @Body()
-    { userId, merchant, address, amount, byToken, forToken }: ChangeTokenDto,
+    { userId, address, amount, byToken, forToken }: ChangeTokenDto,
   ) {
     return await this.productService.changeToken({
       userId,
@@ -90,10 +95,11 @@ export class ProductController {
     });
   }
 
-  @Put('/buy-crypto-direct')
+  @Put('/buy-crypto-direct/:merchant')
   async buyCryptoDirectController(
+    @Param('merchant') merchant: string,
     @Body()
-    { userId, merchant, amountVND, forToken, bill, platform }: BuyCryptoDto,
+    { userId, amountVND, forToken, bill, platform }: BuyCryptoDto,
   ) {
     return await this.productService.buyCrypto({
       userId,
@@ -105,10 +111,11 @@ export class ProductController {
     });
   }
 
-  @Put('/transfer-inbound')
+  @Put('/transfer-inbound/:merchant')
   async transferInboundController(
+    @Param('merchant') merchant: string,
     @Body()
-    { merchant, sender, receiver, byAmount, byToken }: PurchaseDto,
+    { sender, receiver, byAmount, byToken }: PurchaseDto,
   ) {
     return await this.productService.transferInbound({
       merchant,
@@ -119,10 +126,11 @@ export class ProductController {
     });
   }
 
-  @Put('/transfer-outbound')
+  @Put('/transfer-outbound/:merchant')
   async transferOutboundController(
+    @Param('merchant') merchant: string,
     @Body()
-    { merchant, sender, receiver, byAmount, byToken }: PurchaseDto,
+    { sender, receiver, byAmount, byToken }: PurchaseDto,
   ) {
     return await this.productService.transferOutbound({
       merchant,
@@ -133,26 +141,13 @@ export class ProductController {
     });
   }
 
-  // @Put('/withdraw-blockchain')
-  // async withdrawBlockchainController(
-  //   @Body()
-  //   { merchant, sender, receiver, byAmount, byToken }: PurchaseDto,
-  // ) {
-  //   return await this.productService.withdrawBlockchain({
-  //     merchant,
-  //     sender,
-  //     receiver,
-  //     byAmount: Number(byAmount),
-  //     byToken,
-  //   });
-  // }
-
-  @Put('/withdraw-banking')
-  async withdrawBankingController(
+  @Put('/transfer-banking/:merchant')
+  async transferBankingController(
+    @Param('merchant') merchant: string,
     @Body()
-    { merchant, sender, receiver, byAmount, platformWithdraw }: PurchaseDto,
+    { sender, receiver, byAmount, platformWithdraw }: PurchaseDto,
   ) {
-    return await this.productService.withdrawBanking({
+    return await this.productService.transferBanking({
       merchant,
       sender,
       receiver,

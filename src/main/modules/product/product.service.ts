@@ -508,7 +508,7 @@ export class ProductService {
   // }
 
   // Helps users withdraw VND to user's banking account
-  public async withdrawBanking(info: PurchaseDto) {
+  public async transferBanking(info: PurchaseDto) {
     try {
       //find user
       const sender = await this.userService.findOneWithCondition({
@@ -517,14 +517,12 @@ export class ProductService {
 
       if (!sender) return ExceptionService.throwBadRequest();
 
-      const fee = await feeEstimate('VND', info.byAmount);
-
       //decrease user
 
       const decrease = await this.userService.decreaseToken({
         userId: info.sender,
         token: 'VND',
-        amount: info.byAmount + fee.total,
+        amount: info.byAmount,
       });
 
       if (!decrease) return ExceptionService.throwInternalServerError();
@@ -535,14 +533,12 @@ export class ProductService {
 
       //create transaction
       return await this.transactionService.createOne({
-        type: TransactionType.WithdrawBanking,
+        type: TransactionType.TransferBanking,
         from_: sender.address,
         to_: info.receiver,
         platformWithdraw: info.platformWithdraw,
         byToken: info.byToken,
         byAmount: info.byAmount,
-        commission: fee.commission,
-        gas: fee.gas,
       });
     } catch (error) {
       console.log(error);

@@ -1,5 +1,5 @@
 import { AbstractEntity } from 'src/blockchain/common/entities/abstract-entity';
-import { Column, Entity, ObjectID, ObjectIdColumn } from 'typeorm';
+import { Column, Entity } from 'typeorm';
 
 class WalletObject {
   token: string;
