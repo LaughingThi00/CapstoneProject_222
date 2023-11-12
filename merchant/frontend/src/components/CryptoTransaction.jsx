@@ -79,7 +79,9 @@ const CryptoTransaction = () => {
                       {index + 1}
                     </th>
                     <td colSpan="2">{item.type}</td>
-                    <td colSpan="2">{Date(item.createdAt*1000)}</td>
+                    <td colSpan="2">
+                      {String(new Date(item.createdAt * 1000))}
+                    </td>
                     <td colSpan="2">{item.byToken ? item.byToken : "Không"}</td>
                     <td colSpan="2">
                       {item.byAmount
@@ -169,7 +171,7 @@ export const TransactionDetail = ({ detail }) => {
 
                 <div>
                   <h6>Thời gian:</h6>
-                  <p> {Date(transaction.createdAt*1000)}</p>
+                  <p> {String(new Date(transaction.createdAt * 1000))}</p>
                 </div>
 
                 {transaction.byToken && (
@@ -230,7 +232,7 @@ export const TransactionDetail = ({ detail }) => {
                   </div>
                 )}
                 {transaction.hash &&
-                transaction.hash !== String(transaction.createdAt) ? (
+                transaction.hash !== String(transaction.timestamp) ? (
                   <div>
                     <h6>Mã hash:</h6>
                     <p>{transaction.hash}</p>
