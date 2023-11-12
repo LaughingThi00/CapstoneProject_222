@@ -19,6 +19,7 @@ import Policy from './pages/Policy'
 import Complete from './pages/Complete'
 import CryptoPayment from './pages/CryptoPayment'
 import CryptoWallet from './pages/CryptoWallet'
+import CryptoTransactionScreen from './components/CryptoTransactionScreen'
 
 function App () {
   return (
@@ -39,7 +40,7 @@ function App () {
           <Route path='/complete' element={<Complete />} />
           <Route path='/crypto-payment' element ={<CryptoPayment />} />
           <Route path='/crypto-wallet' element ={<CryptoWallet />} />
-
+          <Route path='/crypto-transaction' element ={<CryptoTransactionScreen />} />
         </Routes>
       </Router>
     </div>

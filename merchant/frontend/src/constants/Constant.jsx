@@ -1,6 +1,6 @@
 export const homeUrl =
   process.env.NODE_ENV !== "production"
-    ? "http://localhost:3000"
+    ? "http://localhost:3001"
     : "https://main--gentle-lolly-617c28.netlify.app";
 
 export const apiPayment =
@@ -20,5 +20,7 @@ export const urlBackend =
 
 export const endpointUrl =
   process.env.NODE_ENV !== "production"
-    ? "http://localhost:5001/endpoint"
+    ? "http://localhost:3000/api/v1/product"
     : "someDeployedUrlBackEnd";
+
+export const MerchantId= 'M001';

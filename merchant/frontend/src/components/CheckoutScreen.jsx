@@ -3,19 +3,20 @@ import axios from "axios";
 // import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { Navigate } from "react-router-dom";
-import { apiPayment, endpointUrl } from "../constants/Constant";
+import { apiPayment, endpointUrl, MerchantId } from "../constants/Constant";
 import { useContext } from "react";
 import { AuthContext } from "./../contexts/AuthContext";
 
 export const transformCryptoUserData = (user) => {
   let res = {
-    id: user.id,
+    id: user.userId,
     BTC: user.asset.find((item) => item.token === "BTC").amount,
     ETH: user.asset.find((item) => item.token === "ETH").amount,
     USDT: user.asset.find((item) => item.token === "USDT").amount,
     BNB: user.asset.find((item) => item.token === "BNB").amount,
+    VND: user.asset.find((item) => item.token === "VND").amount,
+
   };
-  console.log(res);
   return res;
 };
 
@@ -29,7 +30,6 @@ export const calculateOrder = () => {
   const cart = localStorage.getItem("cart")
     ? JSON.parse(localStorage.getItem("cart"))
     : [];
-
   const toNum = (str) => {
     return Number(str.split(" ")[0].replace(/\./g, ""));
   };
@@ -53,46 +53,40 @@ function CheckoutScreen() {
       });
 
       if (payment.data.code === 200) {
-        console.log(payment.data.data);
         window.location.replace(payment.data.data);
       }
     } catch (error) {
-      console.log("Xay ra loi");
       console.log(error);
     }
   };
 
   const takePrice = async () => {
     try {
-      const response = await axios.get(`${endpointUrl}/price`);
-      if (response.data.success) {
-        console.log("Data from Price API:", response.data);
-        localStorage.setItem("price", JSON.stringify(response.data.price));
+      const response = await axios.get(`${endpointUrl}/price/${MerchantId}`);
+      if (response.data.statusCode === 200) {
+        response.data.data.push({
+          name: "VND",
+          price: 1,
+        });
+        localStorage.setItem("price", JSON.stringify(response.data.data));
       } else {
-        console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
         localStorage.setItem("price", null);
       }
     } catch (error) {
-      console.log("!!!!!!!!!!!!!!!!!!!!!!!!");
+      console.log("Eror axios takePrice!");
       localStorage.setItem("price", null);
     }
   };
 
   const FindInfoCrypto = async () => {
-
     try {
-      const response = await axios.post(
-        `${endpointUrl}/find-user-wallet`,
-        {
-          merchant: "111111",
-          id: user.id,
-        }
+      const response = await axios.get(
+        `${endpointUrl}/user-info/${MerchantId}/${user.id}`
       );
-      if (response.data.success) {
-        console.log("call FindInfoCrypto ", response.data.user)
+      if (response.data.statusCode === 200) {
         localStorage.setItem(
           "wallet",
-          JSON.stringify(transformCryptoUserData(response.data.user))
+          JSON.stringify(transformCryptoUserData(response.data.data))
         );
         window.location.replace("/crypto-payment");
       } else {
@@ -104,18 +98,13 @@ function CheckoutScreen() {
       window.location.replace("/crypto-payment");
     }
   };
-  // const [CryptoUser,setCryptoUser]=useState(null);
-  // var CryptoUser
-  // const CryptoUser= await FindInfoCrypto();
-  // useEffect(()=>{
 
-  //   console.log("CryptoUser in useEffect:",CryptoUser)
-  // },[])
   const sum = calculateOrder();
   const handleCryptoPayment = async () => {
-    await FindInfoCrypto();
     await takePrice();
+    await FindInfoCrypto();
   };
+
   return (
     <div className="container">
       <div className="form">

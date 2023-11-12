@@ -12,7 +12,8 @@ require("dotenv").config();
 const connectDB = async () => {
   try {
     await mongoose.connect(
-      `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.CLUSTER}.9h96apl.mongodb.net/?retryWrites=true&w=majority`,
+      `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@${process.env.CLUSTER}.9h96apl.mongodb.net/`,
+
       {
         useCreateIndex: true,
         useNewUrlParser: true,

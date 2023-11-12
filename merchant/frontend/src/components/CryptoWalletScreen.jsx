@@ -1,26 +1,23 @@
 import React, { useContext, useState } from "react";
 import { transformCryptoUserData } from "./CheckoutScreen";
-// import { getPriceByToken } from "./CryptoPaymentScreen";
 import Accordion from "react-bootstrap/Accordion";
 import { Button, Form, Modal, Toast, ToastContainer } from "react-bootstrap";
-// import { useNavigate } from "react-router-dom";
 import "../css/cryptowallet.css";
 import axios from "axios";
-import { endpointUrl } from "../constants/Constant";
+import { MerchantId, endpointUrl } from "../constants/Constant";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export const UpdateCryptoInfo = async (id) => {
   try {
-    const response = await axios.post(`${endpointUrl}/find-user-wallet`, {
-      merchant: "111111",
-      id,
-    });
-    if (response.data.success) {
-      // console.log("call FindInfoCrypto ", response.data.user);
+    const response = await axios.get(
+      `${endpointUrl}/user-info/${MerchantId}/${id}`
+    );
+
+    if (response.data.statusCode === 200) {
       localStorage.setItem(
         "wallet",
-        JSON.stringify(transformCryptoUserData(response.data.user))
+        JSON.stringify(transformCryptoUserData(response.data.data))
       );
     } else {
       localStorage.setItem("wallet", null);
@@ -35,7 +32,6 @@ const BuyCryptoModal = () => {
   const Price = JSON.parse(localStorage.getItem("price")) ?? null;
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
-  // const handleShow = () => setShow(true);
   const [One, setOne] = useState({ token: "", amount_VND: 0, slippage: 1 });
   const [amount_token, setAmount_Token] = useState(0);
   const [toast, setToast] = useState({
@@ -76,26 +72,32 @@ const BuyCryptoModal = () => {
       return;
     }
     try {
-      const response = await axios.post(`${endpointUrl}/buy-crypto`, {
-        id: CryptoUser.id,
-        merchant: "111111",
-        amount_VND: One.amount_VND,
-        for_token: One.token,
-        network: "",
-        bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
-        platform: "MOMO",
-        slippage: 1,
-      });
+      const response =
+        One.token === "VND"
+          ? await axios.put(`${endpointUrl}/deposit-vnd/${MerchantId}`, {
+              userId: CryptoUser.id,
+              merchant: MerchantId,
+              amountVND: One.amount_VND,
+              bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
+              platform: "MOMO",
+            })
+          : await axios.put(`${endpointUrl}/buy-crypto-direct/${MerchantId}`, {
+              userId: CryptoUser.id,
+              merchant: MerchantId,
+              amountVND: One.amount_VND,
+              forToken: One.token,
+              bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
+              platform: "MOMO",
+            });
 
-      if (response.data.success) {
-        console.log("Buying Hash:", response.data.hash);
+      if (response.data.statusCode === 200) {
         await UpdateCryptoInfo(CryptoUser.id);
         setToast({
           show: true,
           bg: "success",
           header: `Thanh toán thành công.`,
           content: "Giao dịch đã thành công, bạn đã được cộng token.",
-          hash:response.data.hash
+          hash: response.data.data.hash,
         });
       } else {
         setToast({
@@ -142,9 +144,14 @@ const BuyCryptoModal = () => {
             được, chúng tôi sẽ kiểm tra hóa đơn, ghi nhận tính hợp lệ trước khi
             chuyển vào ví điện tử của bạn lượng token tương ứng.
           </div>
+          <br />
           <Form onSubmit={handleSubmit}>
             <Form.Group className="mb-3">
-              <Form.Label>Số tiền muốn nạp (VND)</Form.Label>
+              <Form.Label>
+                <div className="bold-text-no-margin">
+                  Số tiền muốn nạp (VND)
+                </div>
+              </Form.Label>
               <Form.Control
                 name="amount_VND"
                 type="number"
@@ -163,6 +170,7 @@ const BuyCryptoModal = () => {
                 onChange={handleChange}
                 aria-label="Hãy chọn loại token bạn muốn giao dịch"
               >
+                <option value="VND"> VND (Đồng Việt Nam)</option>
                 <option value="BTC"> BTC (Bitcoin)</option>
                 <option value="USDT"> USDT (Đồng USDT)</option>
                 <option value="ETH"> ETH (Ethereum)</option>
@@ -180,7 +188,7 @@ const BuyCryptoModal = () => {
                 disabled
                 aria-label="Hãy chọn loại token bạn muốn giao dịch"
               >
-                <option>Mặc định từ người bán</option>
+                <option disabled>Mặc định từ người bán</option>
               </Form.Select>
             </Form.Group>
 
@@ -191,18 +199,25 @@ const BuyCryptoModal = () => {
 
             <div>
               <div className="bold-text">Phí gas (1%): </div>{" "}
-              {(amount_token / 100).toFixed(5)} {One ? One.token : "???"}
+              {One.token === "VND" ? 0 : (amount_token / 100).toFixed(5)}{" "}
+              {One ? One.token : "???"}
             </div>
 
             <div>
               <div className="bold-text">Phí hoa hồng (0.5%): </div>{" "}
-              {((amount_token * 0.5) / 100).toFixed(5)}{" "}
+              {One.token === "VND"
+                ? 0
+                : ((amount_token * 0.5) / 100).toFixed(5)}{" "}
               {One ? One.token : "???"}
             </div>
 
             <div>
               <div className="bold-text"> Tổng token nhận được: </div>{" "}
-              {One ? ((amount_token * 98.5) / 100).toFixed(5) : 0}{" "}
+              {One
+                ? One.token === "VND"
+                  ? amount_token
+                  : ((amount_token * 98.5) / 100).toFixed(5)
+                : 0}{" "}
               {One ? One.token : "?"}
             </div>
 
@@ -262,10 +277,18 @@ const BuyCryptoModal = () => {
               <strong className="me-auto">{toast.header}</strong>
               <small>0 seconds ago</small>
             </Toast.Header>
-            <Toast.Body>{toast.content}
-            {toast.hash&&<div>
-          Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống blockchain tại <a href={'https://testnet.bscscan.com/tx/'+toast.hash} > đây </a>
-          </div>}
+            <Toast.Body>
+              {toast.content}
+              {toast.hash && (
+                <div>
+                  Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống
+                  blockchain tại{" "}
+                  <a href={"https://testnet.bscscan.com/tx/" + toast.hash}>
+                    {" "}
+                    đây{" "}
+                  </a>
+                </div>
+              )}
             </Toast.Body>
           </Toast>
         </ToastContainer>
@@ -274,9 +297,308 @@ const BuyCryptoModal = () => {
   );
 };
 
+const ChangeCryptoModal = () => {
+  const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
+  const Price = JSON.parse(localStorage.getItem("price")) ?? null;
+  const [show, setShow] = useState(false);
+  const handleClose = () => setShow(false);
+  const [One, setOne] = useState({
+    byToken: "",
+    forToken: "",
+    amount: 0,
+    slippage: 1,
+  });
+  const [amount_token, setAmount_Token] = useState(0);
+  const [toast, setToast] = useState({
+    show: false,
+    bg: null,
+    header: null,
+    content: null,
+  });
+
+  const handleChange = (e) => {
+    if (!e.target.name || !e.target.value) return;
+    if (One && Price) {
+      if (One.byToken && One.forToken && One.amount) {
+        console.log("Price:", Price);
+        if (["amount", "byToken", "forToken"].includes(e.target.name)) {
+          switch (e.target.name) {
+            case "amount":
+              setAmount_Token(
+                Number(
+                  (e.target.value *
+                    Price.find((x) => x.name === One.byToken).price) /
+                    Price.find((x) => x.name === One.forToken).price
+                ).toFixed(5)
+              );
+
+              break;
+            case "byToken":
+              setAmount_Token(
+                Number(
+                  (One.amount *
+                    Price.find((x) => x.name === e.target.value).price) /
+                    Price.find((x) => x.name === One.forToken).price
+                ).toFixed(5)
+              );
+
+              break;
+            case "forToken":
+              setAmount_Token(
+                Number(
+                  (One.amount *
+                    Price.find((x) => x.name === One.byToken).price) /
+                    Price.find((x) => x.name === e.target.value).price
+                ).toFixed(5)
+              );
+
+              break;
+            default:
+              break;
+          }
+        }
+      }
+      setOne({ ...One, [e.target.name]: e.target.value });
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (
+      !CryptoUser.id ||
+      !One.amount ||
+      !One.forToken ||
+      One.byToken === One.forToken
+    ) {
+      return;
+    }
+    try {
+      if (CryptoUser[One.byToken] < One.amount) {
+        setToast({
+          show: true,
+          bg: "danger",
+          header: "Đổi token thất bại",
+          content: `Số dư token nguồn của bạn không đủ. Vui lòng nạp thêm vào tài khoản!`,
+        });
+        return;
+      }
+      const response = await axios.put(
+        `${endpointUrl}/change-token/${MerchantId}`,
+        {
+          userId: CryptoUser.id,
+          merchant: MerchantId,
+          amount: One.amount,
+          byToken: One.byToken,
+          forToken: One.forToken,
+        }
+      );
+
+      if (response.data.statusCode === 200) {
+        await UpdateCryptoInfo(CryptoUser.id);
+        setToast({
+          show: true,
+          bg: "success",
+          header: "Đổi token thành công",
+          content: `${One.amount} ${One.byToken} đã được đổi thành ${amount_token} ${One.forToken}. Hãy tiếp tục sử dụng`,
+          hash: response.data.data.hash,
+        });
+      } else {
+        setToast({
+          show: true,
+          bg: "danger",
+          header: "Đổi token thất bại",
+          content:
+            "Giao dịch đã thất bại. Tài khoản của bạn được đảm bảo giữ nguyên hiện trạng.",
+        });
+      }
+    } catch (error) {
+      setToast({
+        show: true,
+        bg: "danger",
+        header: "Đổi token thất bại",
+        content:
+          "Giao dịch đã thất bại. Tài khoản của bạn được đảm bảo giữ nguyên hiện trạng.",
+      });
+    }
+  };
+
+  return (
+    <>
+      <Button
+        variant="warning"
+        style={{ marginLeft: "20px" }}
+        onClick={() => setShow(true)}
+      >
+        {" "}
+        Đổi token{" "}
+      </Button>
+      <Modal
+        size="lg"
+        aria-labelledby="contained-modal-title-vcenter"
+        centered
+        show={show}
+        onHide={handleClose}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Thông tin chuyển đổi tiền điện tử</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            Đây là giao dịch hợp pháp. Khi các bạn bấm nút "Chuyển đổi",{" "}
+            <strong>hệ thống nội bộ</strong> sẽ chuyển đổi các đồng token trong
+            ví theo yêu cầu của bạn và theo thời giá thị trường.
+          </div>
+          <br />
+          <Form onSubmit={handleSubmit}>
+            <Form.Group className="mb-3">
+              <Form.Label>
+                <div className="bold-text-no-margin">
+                  Số token muốn chuyển đổi ({One.byToken})
+                </div>
+              </Form.Label>
+              <Form.Control
+                name="amount"
+                type="number"
+                onChange={handleChange}
+                onClick={handleChange}
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>
+                <div className="bold-text-no-margin">Token nguồn</div>
+              </Form.Label>
+              <Form.Select
+                name="byToken"
+                onClick={handleChange}
+                onChange={handleChange}
+                aria-label="Hãy chọn loại token bạn muốn giao dịch"
+              >
+                <option value="VND"> VND (Đồng Việt Nam)</option>
+                <option value="BTC"> BTC (Bitcoin)</option>
+                <option value="USDT"> USDT (Đồng USDT)</option>
+                <option value="ETH"> ETH (Ethereum)</option>
+                <option value="BNB"> BNB (Đồng BNB)</option>
+              </Form.Select>
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>
+                <div className="bold-text-no-margin">Token đích</div>
+              </Form.Label>
+              <Form.Select
+                name="forToken"
+                onClick={handleChange}
+                onChange={handleChange}
+                aria-label="Hãy chọn loại token bạn muốn giao dịch"
+              >
+                <option value="VND"> VND (Đồng Việt Nam)</option>
+                <option value="BTC"> BTC (Bitcoin)</option>
+                <option value="USDT"> USDT (Đồng USDT)</option>
+                <option value="ETH"> ETH (Ethereum)</option>
+                <option value="BNB"> BNB (Đồng BNB)</option>
+              </Form.Select>
+            </Form.Group>
+
+            <div>
+              <div className="bold-text">Token nguồn: </div> {amount_token}{" "}
+              {One ? One.forToken : "???"}
+            </div>
+
+            <div>
+              <div className="bold-text">Phí gas (0.01%): </div>{" "}
+              {((amount_token * 0.01) / 100).toFixed(5)}{" "}
+              {One ? One.forToken : "???"}
+            </div>
+
+            <div>
+              <div className="bold-text">Phí hoa hồng (0.05%): </div>{" "}
+              {((amount_token * 0.05) / 100).toFixed(5)}{" "}
+              {One ? One.forToken : "???"}
+            </div>
+
+            <div>
+              <div className="bold-text"> Tổng token nhận được: </div>{" "}
+              {((amount_token * 99.4) / 100).toFixed(5)}{" "}
+              {One ? One.forToken : "?"}
+            </div>
+
+            <Form.Group className="mb-3">
+              <Form.Check
+                type="checkbox"
+                label={
+                  <>
+                    {" "}
+                    Tôi đồng ý với các{" "}
+                    <a className="normal-a" href="/policy">
+                      điều khoản qui định
+                    </a>{" "}
+                    và chấp nhận mọi rủi ro.
+                  </>
+                }
+              />
+            </Form.Group>
+
+            <Form.Group className="mb-3">
+              <Form.Label>
+                Slippage-Tỉ lệ trượt giá chấp nhận được (%)
+              </Form.Label>
+              <Form.Control
+                name="slippage"
+                type="number"
+                onChange={handleChange}
+                defaultValue={1}
+                disabled
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit">
+              Thanh toán
+            </Button>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleClose}>
+            Thoát
+          </Button>
+        </Modal.Footer>
+
+        <ToastContainer className="p-3" position="top-end">
+          <Toast
+            onClose={() => setToast({ ...toast, show: false })}
+            show={toast.show}
+            delay={10000}
+            autohide
+            bg={toast.bg}
+          >
+            <Toast.Header>
+              <img
+                src="holder.js/20x20?text=%20"
+                className="rounded me-2"
+                alt=""
+              />
+              <strong className="me-auto">{toast.header}</strong>
+              <small>0 seconds ago</small>
+            </Toast.Header>
+            <Toast.Body>
+              {toast.content}
+              {toast.hash && (
+                <div>
+                  Hệ thống nội bộ vừa ghi nhận giao dịch của bạn. Cảm ơn đã tin
+                  dùng!
+                </div>
+              )}
+            </Toast.Body>
+          </Toast>
+        </ToastContainer>
+      </Modal>
+    </>
+  );
+};
+
+
 const CryptoWalletScreen = () => {
   const { user } = useContext(AuthContext);
-  const navigate=useNavigate();
+  const navigate = useNavigate();
   const price_token = JSON.parse(localStorage.getItem("price")) ?? null;
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
   const [toast, setToast] = useState({
@@ -286,18 +608,17 @@ const CryptoWalletScreen = () => {
     content: null,
   });
 
-  const   handleReturn =()=>{
-      navigate("/crypto-payment");
-  }
+  const handleReturn = () => {
+    navigate("/crypto-payment");
+  };
 
   const handleCreateWallet = async () => {
     try {
-      const response = await axios.post(`${endpointUrl}/create-wallet`, {
-        id: user.id,
-        merchant: "111111",
-      });
+      const response = await axios.post(
+        `${endpointUrl}/create-user/${MerchantId}/${user.id}`
+      );
 
-      if (response.data.success) {
+      if (response.data.statusCode === 200) {
         await UpdateCryptoInfo(user.id);
         setToast({
           show: true,
@@ -365,6 +686,11 @@ const CryptoWalletScreen = () => {
                   <div className="bold-text"> Tether: </div> {CryptoUser.USDT}{" "}
                   (USDT)
                 </div>
+                <div>
+                  {" "}
+                  <div className="bold-text"> VND: </div>{" "}
+                  {formatter.format(CryptoUser.VND)} (VND)
+                </div>
               </>
             )}
           </Accordion.Body>
@@ -373,7 +699,8 @@ const CryptoWalletScreen = () => {
         <Accordion.Item eventKey="1">
           <Accordion.Header>Tra cứu tỉ giá Token/VND </Accordion.Header>
           <Accordion.Body>
-            Chúng tôi cập nhật tỉ giá các đồng token theo realtime <br></br>
+            Chúng tôi cập nhật tỉ giá các đồng token theo thời giá hiện tại{" "}
+            <br></br>
             <br></br>
             {price_token &&
               price_token.map((item, index) => {
@@ -388,7 +715,23 @@ const CryptoWalletScreen = () => {
         </Accordion.Item>
       </Accordion>
       <BuyCryptoModal />
-      <Button onClick={handleReturn } variant="primary">Trở về thanh toán</Button>
+      <ChangeCryptoModal />
+      <Button
+        style={{ marginLeft: "20px" }}
+        onClick={() => {
+          navigate("/crypto-transaction");
+        }}
+        variant="secondary"
+      >
+        Xem lịch sử giao dịch
+      </Button>
+      <Button
+        style={{ marginLeft: "20px" }}
+        onClick={handleReturn}
+        variant="primary"
+      >
+        Trở về thanh toán
+      </Button>
       <ToastContainer className="p-3" position="top-end">
         <Toast
           onClose={() => setToast({ ...toast, show: false })}
