@@ -7,13 +7,13 @@ import axios from "axios";
 const CryptoTransaction = () => {
   const [transactionList, setTransactionList] = useState([]);
 
-  const sortByTimeLastest = () => {
+  const sortByTimeOldest = () => {
     setTransactionList(
       [...transactionList.sort((a, b) => a.createdAt - b.createdAt)].reverse()
     );
   };
 
-  const sortByTimeOldest = () => {
+  const sortByTimeLastest = () => {
     setTransactionList(
       [...transactionList.sort((a, b) => b.createdAt - a.createdAt)].reverse()
     );
