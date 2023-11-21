@@ -25,30 +25,36 @@ export class MerchantService {
       isDeleted: isDead,
     });
 
-    return merchant ? merchant : ExceptionService.throwNotFound();
+    return merchant
+      ? merchant
+      : ExceptionService.throwNotFound('Không tìm thấy Merchant này!');
   }
 
   public async findAll() {
     const merchants = await this.MerchantRep.find({ isDeleted: false });
 
-    return merchants.length ? merchants : ExceptionService.throwNotFound();
+    return merchants;
   }
 
   public async findDead() {
     const merchants = await this.MerchantRep.find({ isDeleted: true });
 
-    return merchants.length ? merchants : ExceptionService.throwNotFound();
+    return merchants.length
+      ? merchants
+      : ExceptionService.throwNotFound('Không tìm thấy Merchant này!');
   }
 
   public async findAllAndDead() {
     const merchants = await this.MerchantRep.find();
 
-    return merchants.length ? merchants : ExceptionService.throwNotFound();
+    return merchants.length
+      ? merchants
+      : ExceptionService.throwNotFound('Không tìm thấy Merchant này!');
   }
 
   public async createOne(info: MerchantCustomDto) {
     if (await this.MerchantRep.findOne({ partner_code: info.partner_code })) {
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest('Không tìm thấy Merchant này!');
     } else {
       const { privateKey, publicKey } = genKey();
 
@@ -70,7 +76,8 @@ export class MerchantService {
       isDeleted: false,
     });
 
-    if (!merchant) return ExceptionService.throwBadRequest();
+    if (!merchant)
+      return ExceptionService.throwNotFound('Không tìm thấy Merchant này!');
 
     return await this.MerchantRep.save({ ...merchant, info });
   }
@@ -83,7 +90,8 @@ export class MerchantService {
       isDeleted: false,
     });
 
-    if (!merchant) return ExceptionService.throwBadRequest();
+    if (!merchant)
+      return ExceptionService.throwNotFound('Không tìm thấy Merchant này!');
     const { privateKey, publicKey } = genKey();
 
     return await this.MerchantRep.save({ ...merchant, privateKey, publicKey });
@@ -97,7 +105,7 @@ export class MerchantService {
     });
 
     if (!merchant || merchant.isDeleted === true)
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwNotFound('Không tìm thấy Merchant này!');
 
     merchant.isDeleted = true;
 
@@ -112,7 +120,7 @@ export class MerchantService {
     });
 
     if (!merchant || merchant.isDeleted === false)
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwNotFound('Không tìm thấy Merchant này!');
 
     merchant.isDeleted = true;
 
@@ -126,7 +134,8 @@ export class MerchantService {
       partner_code,
     });
 
-    if (!merchant) return ExceptionService.throwBadRequest();
+    if (!merchant)
+      return ExceptionService.throwNotFound('Không tìm thấy Merchant này!');
 
     return await this.MerchantRep.remove(merchant);
   }

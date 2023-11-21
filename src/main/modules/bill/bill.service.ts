@@ -41,7 +41,7 @@ export class BillService {
 
   public async createOne(info: BillDto) {
     if (await this.BillRep.findOne({ id_: info.id_ }))
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest('Hóa đơn đã được sử dụng!');
 
     const bill = this.BillRep.create({
       ...info,
@@ -58,7 +58,7 @@ export class BillService {
     });
 
     if (!bill || bill.isDeleted === true)
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest('Hóa đơn không tồn tại!');
 
     bill.isDeleted = true;
 
@@ -73,7 +73,7 @@ export class BillService {
     });
 
     if (!bill || bill.isDeleted === false)
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest('Hóa đơn không tồn tại!');
 
     bill.isDeleted = true;
 
@@ -87,7 +87,8 @@ export class BillService {
       id_,
     });
 
-    if (!bill) return ExceptionService.throwBadRequest();
+    if (!bill)
+      return ExceptionService.throwBadRequest('Hóa đơn không tồn tại!');
 
     return await this.BillRep.remove(bill);
   }

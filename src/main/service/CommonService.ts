@@ -52,7 +52,7 @@ export class CommonService {
       }
       return check;
     } catch (error) {
-      return ExceptionService.throwInternalServerError();
+      return ExceptionService.throwInternalServerError(error?.message);
     }
   }
 

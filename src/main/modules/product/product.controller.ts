@@ -6,6 +6,7 @@ import { PurchaseDto } from './dto/purchase.dto';
 import { MerchantCustomDto } from '../merchant/dto/merchantCustom.dto';
 import { DepositVNDDto } from './dto/depositVND.dto';
 import { ChangeTokenDto } from './dto/changeToken.dto';
+import { ExceptionService } from 'src/common/service/exception.service';
 
 @ApiTags('(Main)-Product')
 @Controller('/product')
@@ -23,41 +24,115 @@ export class ProductController {
   async createUser(
     @Param('merchant') merchant: string,
     @Param('userId') userId: string,
+    @Body()
+    { merchantEncrypt }: { merchantEncrypt: string },
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
     return await this.productService.createUser(merchant, userId);
   }
 
-  @Get('/price/:merchant')
-  async getPrice(@Param('merchant') merchant: string) {
+  @Post('/price/:merchant')
+  async getPrice(
+    @Param('merchant') merchant: string,
+    @Body()
+    { merchantEncrypt }: { merchantEncrypt: string },
+  ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
     return await this.productService.getPrice();
   }
 
-  @Get('/user-list/:merchant')
-  async findUserList(@Param('merchant') merchant: string) {
+  @Post('/user-list/:merchant')
+  async findUserList(
+    @Param('merchant') merchant: string,
+    @Body()
+    { merchantEncrypt }: { merchantEncrypt: string },
+  ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
     return await this.productService.findUserList(merchant);
   }
 
-  @Get('/user-info/:merchant/:user')
+  @Post('/user-info/:merchant/:user')
   async findUserWallet(
     @Param('merchant') merchant: string,
     @Param('user') userId: string,
+    @Body()
+    { merchantEncrypt }: { merchantEncrypt: string },
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
+
     return await this.productService.findUserInfo(userId);
   }
 
-  @Get('/transactions/:merchant')
-  async findTransaction(@Param('merchant') merchant: string) {
+  @Post('/transactions/:merchant')
+  async findTransaction(
+    @Param('merchant') merchant: string,
+    @Body()
+    { merchantEncrypt }: { merchantEncrypt: string },
+  ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
+
     return await this.productService.findTransaction({
       by: 'merchant',
       merchant,
     });
   }
 
-  @Get('/transactions/:merchant/:userId')
+  @Post('/transactions/:merchant/:userId')
   async findTransactionByUserId(
     @Param('merchant') merchant: string,
     @Param('userId') userId: string,
+    @Body()
+    { merchantEncrypt }: { merchantEncrypt: string },
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
     return await this.productService.findTransaction({
       by: 'userId',
       merchant,
@@ -68,8 +143,18 @@ export class ProductController {
   @Put('/deposit-vnd/:merchant')
   async depositVND(
     @Param('merchant') merchant: string,
-    @Body() { userId, amountVND, bill, platform }: DepositVNDDto,
+    @Body()
+    { merchantEncrypt, userId, amountVND, bill, platform }: DepositVNDDto,
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
     return await this.productService.depositVND({
       userId,
       merchant,
@@ -83,8 +168,25 @@ export class ProductController {
   async changeTokenController(
     @Param('merchant') merchant: string,
     @Body()
-    { userId, address, amount, byToken, forToken }: ChangeTokenDto,
+    {
+      merchantEncrypt,
+      userId,
+      address,
+      amount,
+      byToken,
+      forToken,
+    }: ChangeTokenDto,
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
+
     return await this.productService.changeToken({
       userId,
       merchant,
@@ -99,8 +201,25 @@ export class ProductController {
   async buyCryptoDirectController(
     @Param('merchant') merchant: string,
     @Body()
-    { userId, amountVND, forToken, bill, platform }: BuyCryptoDto,
+    {
+      merchantEncrypt,
+      userId,
+      amountVND,
+      forToken,
+      bill,
+      platform,
+    }: BuyCryptoDto,
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
+
     return await this.productService.buyCrypto({
       userId,
       merchant,
@@ -115,8 +234,18 @@ export class ProductController {
   async transferInboundController(
     @Param('merchant') merchant: string,
     @Body()
-    { sender, receiver, byAmount, byToken }: PurchaseDto,
+    { merchantEncrypt, sender, receiver, byAmount, byToken }: PurchaseDto,
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
+
     return await this.productService.transferInbound({
       merchant,
       sender,
@@ -130,8 +259,18 @@ export class ProductController {
   async transferOutboundController(
     @Param('merchant') merchant: string,
     @Body()
-    { sender, receiver, byAmount, byToken }: PurchaseDto,
+    { merchantEncrypt, sender, receiver, byAmount, byToken }: PurchaseDto,
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
+
     return await this.productService.transferOutbound({
       merchant,
       sender,
@@ -145,8 +284,23 @@ export class ProductController {
   async transferBankingController(
     @Param('merchant') merchant: string,
     @Body()
-    { sender, receiver, byAmount, platformWithdraw }: PurchaseDto,
+    {
+      merchantEncrypt,
+      sender,
+      receiver,
+      byAmount,
+      platformWithdraw,
+    }: PurchaseDto,
   ) {
+    if (!merchantEncrypt)
+      return ExceptionService.throwBadRequest(
+        'API bắt buộc có Encrypted data để xác thực merchant!',
+      );
+    if (!(await this.productService.checkRSA(merchant, merchantEncrypt))) {
+      return ExceptionService.throwBadRequest(
+        'Encrypted data từ phía merchant không đúng',
+      );
+    }
     return await this.productService.transferBanking({
       merchant,
       sender,

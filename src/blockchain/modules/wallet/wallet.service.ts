@@ -91,8 +91,10 @@ export class WalletService {
       const res = userId
         ? await this.walletRep.delete({ userId })
         : await this.walletRep.delete({ address });
-      return res ?? ExceptionService.throwInternalServerError();
-    } else return ExceptionService.throwInternalServerError();
+      return (
+        res ?? ExceptionService.throwInternalServerError('Lỗi khi xóa ví!')
+      );
+    } else return ExceptionService.throwNotFound('Không tìm thấy User!');
   }
 
   public async deleteAll() {

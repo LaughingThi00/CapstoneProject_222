@@ -39,11 +39,10 @@ export class Transaction extends AbstractEntity {
   gas?: number = 0;
 
   @Column({ nullable: true, unique: false })
-  hash?: string;
+  hash?: string = String(getCurrentInSeconds());
 
   @BeforeInsert()
   insertDefault2() {
-    this.hash = String(getCurrentInSeconds());
     this.timestamp = getCurrentInSeconds();
   }
 }

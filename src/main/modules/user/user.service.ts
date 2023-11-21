@@ -21,7 +21,11 @@ export class UserService {
   public async findAll() {
     const users = await this.UserRep.find({ isDeleted: false });
 
-    return users.length ? users : ExceptionService.throwNotFound();
+    return users
+      ? users
+      : ExceptionService.throwInternalServerError(
+          'Lỗi khi tìm danh sách User!',
+        );
   }
 
   public async findDeadWithCondition(conditionUser: ConditionUserDto) {
@@ -30,13 +34,21 @@ export class UserService {
       isDeleted: true,
     });
 
-    return users.length ? users : ExceptionService.throwNotFound();
+    return users
+      ? users
+      : ExceptionService.throwInternalServerError(
+          'Lỗi khi tìm danh sách User!',
+        );
   }
 
   public async findAllAndDead() {
     const users = await this.UserRep.find();
 
-    return users.length ? users : ExceptionService.throwNotFound();
+    return users
+      ? users
+      : ExceptionService.throwInternalServerError(
+          'Lỗi khi tìm danh sách User!',
+        );
   }
 
   public async findOneWithCondition({
@@ -72,7 +84,7 @@ export class UserService {
 
   public async createOne(createUser: CreateUserDto) {
     if (await this.UserRep.findOne({ ...createUser, isDeleted: false }))
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest('Không tìm thất user này!');
 
     const wallet = await this.walletService.createWallet(createUser);
     if (wallet instanceof Wallet) {
@@ -89,7 +101,9 @@ export class UserService {
       });
       return await this.UserRep.save(user);
     } else {
-      return ExceptionService.throwInternalServerError();
+      return ExceptionService.throwInternalServerError(
+        'Lỗi trong quá trình tạo User!',
+      );
     }
   }
 
@@ -102,9 +116,10 @@ export class UserService {
           ? { userId: info.userId, isDeleted: false }
           : { address: info.address, isDeleted: false },
       });
-    } else return ExceptionService.throwBadRequest();
+    } else return ExceptionService.throwBadRequest('Thiếu thông tin!');
 
-    if (!user) return ExceptionService.throwBadRequest();
+    if (!user)
+      return ExceptionService.throwNotFound('Không tìm thấy User này!');
 
     let isUpdated = false;
     user.asset.forEach((item) => {
@@ -115,7 +130,8 @@ export class UserService {
       }
     });
 
-    if (!isUpdated) return ExceptionService.throwInternalServerError();
+    if (!isUpdated)
+      return ExceptionService.throwInternalServerError('Update user thất bại!');
     return await this.UserRep.save(user);
   }
 
@@ -128,9 +144,9 @@ export class UserService {
           ? { userId: info.userId, isDeleted: false }
           : { address: info.address, isDeleted: false },
       });
-    } else return ExceptionService.throwBadRequest();
+    } else return ExceptionService.throwBadRequest('Thiếu thông tin!');
 
-    if (!user) return ExceptionService.throwBadRequest();
+    if (!user) return ExceptionService.throwNotFound('Không tìm thấy User');
 
     let isUpdated = false;
     user.asset.forEach((item) => {
@@ -140,34 +156,11 @@ export class UserService {
       }
     });
 
-    if (!isUpdated) return ExceptionService.throwInternalServerError();
+    if (!isUpdated)
+      return ExceptionService.throwInternalServerError('Update thất bại!');
 
     return await this.UserRep.save(user);
   }
-
-  // public async systemReceiveToken({
-  //   token,
-  //   amount,
-  // }: {
-  //   token: string;
-  //   amount: number;
-  // }) {
-  //   if (!(await this.findOneWithCondition({ userId: 'SYSTEM' })))
-  //     await this.createOne({ userId: 'SYSTEM', merchant: 'SYSTEM' });
-  //   return await this.increaseToken({ userId: 'SYSTEM', token, amount });
-  // }
-
-  // public async systemSendToken({
-  //   token,
-  //   amount,
-  // }: {
-  //   token: string;
-  //   amount: number;
-  // }) {
-  //   if (!(await this.findOneWithCondition({ userId: 'SYSTEM' })))
-  //     await this.createOne({ userId: 'SYSTEM', merchant: 'SYSTEM' });
-  //   return await this.decreaseToken({ userId: 'SYSTEM', token, amount });
-  // }
 
   public async changeInfo(info: ChangeInfoDto) {
     let user: User = null;
@@ -194,7 +187,7 @@ export class UserService {
         : { userId: info.userId, merchant: info.merchant, isDeleted: false },
     });
 
-    if (!user) return ExceptionService.throwBadRequest();
+    if (!user) return ExceptionService.throwNotFound('Không tìm thất User!');
 
     user.isDeleted = true;
 
@@ -211,7 +204,7 @@ export class UserService {
     });
 
     if (!user || user.isDeleted === false)
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwNotFound('Không tìm thất User!');
 
     user.isDeleted = false;
 

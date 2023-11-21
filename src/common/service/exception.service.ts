@@ -2,18 +2,24 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ExceptionService {
-  public static throwBadRequest() {
-    throw new HttpException('BAD REQUEST!', HttpStatus.BAD_REQUEST);
+  public static throwBadRequest(message?: string) {
+    throw new HttpException(
+      message ? message : 'BAD REQUEST!',
+      HttpStatus.BAD_REQUEST,
+    );
   }
 
-  public static throwInternalServerError() {
+  public static throwInternalServerError(message?: string) {
     throw new HttpException(
-      'INTERNAL SERVER ERROR!',
+      message ? message : 'INTERNAL SERVER ERROR!',
       HttpStatus.INTERNAL_SERVER_ERROR,
     );
   }
 
-  public static throwNotFound() {
-    throw new HttpException('NOT FOUND!', HttpStatus.NOT_FOUND);
+  public static throwNotFound(message?: string) {
+    throw new HttpException(
+      message ? message : 'NOT FOUND!',
+      HttpStatus.NOT_FOUND,
+    );
   }
 }

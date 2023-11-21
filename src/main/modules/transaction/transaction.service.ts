@@ -45,23 +45,15 @@ export class TransactionService {
   public async createOne(info: TransactionDto) {
     if (info?.hash) {
       if (await this.TransactionRep.findOne({ hash: info?.hash }))
-        return ExceptionService.throwBadRequest();
+        return ExceptionService.throwBadRequest(
+          'Thất bại khi tìm transaction!',
+        );
     }
 
     const transaction = this.TransactionRep.create(info);
 
     return await this.TransactionRep.save(transaction);
   }
-
-  // public async deleteForever(hash: string) {
-  //   let transaction: Transaction = null;
-
-  //   transaction = await this.TransactionRep.findOne(hash);
-
-  //   if (!transaction) return ExceptionService.throwBadRequest();
-
-  //   return await this.TransactionRep.remove(transaction);
-  // }
 
   public async deleteForeverAll() {
     return await this.TransactionRep.delete({});

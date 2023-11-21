@@ -18,7 +18,9 @@ import { ExchangeAssetService } from 'src/blockchain/modules/exchange-asset/exch
 import { TransferService } from 'src/blockchain/modules/transfer/transfer.service';
 import { Transfer } from 'src/blockchain/modules/transfer/entities/transfer.entity';
 import { feeEstimate } from 'src/blockchain/utils/marketdata';
-import { FEE_SYSTEM } from 'src/blockchain/constants/fee';
+// import { FEE_SYSTEM } from 'src/blockchain/constants/fee';
+import { decryptData } from 'src/main/service/RSA';
+// import { iif } from 'rxjs';
 
 @Injectable()
 export class ProductService {
@@ -44,7 +46,7 @@ export class ProductService {
         'https://api.apilayer.com/fixer/latest?base=USD&symbols=VND',
         {
           headers: {
-            apiKey: 'IKZ11s36ZMp1fbYqP1M4tgv2ROIQGDHj',
+            apiKey: 'AnQGQlYWcIPeNzvvJxrcoV6jqpS8kp7g',
           },
         },
       );
@@ -69,11 +71,13 @@ export class ProductService {
 
         return price;
       } else {
-        return ExceptionService.throwInternalServerError();
+        return ExceptionService.throwInternalServerError(
+          'Không thể lấy dữ liệu API về giá',
+        );
       }
     } catch (error) {
       console.log('Error');
-      return ExceptionService.throwInternalServerError();
+      return ExceptionService.throwInternalServerError(error?.message);
     }
   }
 
@@ -82,7 +86,7 @@ export class ProductService {
       return await this.merchantService.createOne({ partner_code, name });
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -92,7 +96,7 @@ export class ProductService {
       return onlyAddress ? list.map((user) => user.address) : list;
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -101,7 +105,7 @@ export class ProductService {
       return await this.userService.findOneWithCondition({ userId });
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -110,7 +114,7 @@ export class ProductService {
       return await this.userService.createOne({ merchant, userId });
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -120,7 +124,10 @@ export class ProductService {
 
       switch (info.by) {
         case 'merchant':
-          if (!info.merchant) return ExceptionService.throwBadRequest();
+          if (!info.merchant)
+            return ExceptionService.throwNotFound(
+              'Không tìm thấy Merchant này!',
+            );
           const listAddr = (await this.findUserList(
             info.merchant,
             true,
@@ -134,12 +141,13 @@ export class ProductService {
           });
 
         case 'userId':
-          if (!info.userId) return ExceptionService.throwBadRequest();
+          if (!info.userId)
+            return ExceptionService.throwBadRequest('Thiếu thông tin UserID');
           const user = await this.userService.findOneWithCondition({
             userId: info.userId,
           });
           if (!(user instanceof User))
-            return ExceptionService.throwBadRequest();
+            return ExceptionService.throwNotFound('Không tìm thấy User này!');
           return transactions.filter((transaction) => {
             return (
               user.address === transaction.from_ ||
@@ -148,19 +156,26 @@ export class ProductService {
           });
 
         case 'receiver':
-          if (!info.receiver) return ExceptionService.throwBadRequest();
+          if (!info.receiver)
+            return ExceptionService.throwBadRequest(
+              'Thiếu thông tin người nhận',
+            );
           return transactions.filter((transaction) => {
             return transaction.from_ === info.sender;
           });
 
         case 'sender':
-          if (!info.sender) return ExceptionService.throwBadRequest();
+          if (!info.sender)
+            return ExceptionService.throwBadRequest(
+              'Thiếu thông tin người gửi',
+            );
           return transactions.filter((transaction) => {
             return transaction.to_ === info.receiver;
           });
 
         case 'hash':
-          if (!info.hash) return ExceptionService.throwBadRequest();
+          if (!info.hash)
+            return ExceptionService.throwBadRequest('Thiếu thông tin mã hash!');
           return transactions.filter((transaction) => {
             return transaction.hash === info.hash;
           });
@@ -170,7 +185,7 @@ export class ProductService {
       }
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -192,12 +207,14 @@ export class ProductService {
         amountIn: amount,
       });
       if (transfer === undefined || transfer === null)
-        return ExceptionService.throwInternalServerError();
+        return ExceptionService.throwInternalServerError(
+          'Lỗi khi thực hiện transfer!',
+        );
 
       return transfer;
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -238,7 +255,7 @@ export class ProductService {
       } else return ExceptionService.throwInternalServerError();
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -249,20 +266,25 @@ export class ProductService {
         userId: info.userId,
       });
 
-      if (!user) return ExceptionService.throwBadRequest();
+      if (!user)
+        return ExceptionService.throwNotFound('Không tìm thấy User này!');
 
       const amountchange = await this.calculateToken({
         byToken: info.byToken,
         amount: info.amount,
         forToken: info.forToken,
       });
-      // if (typeof amountchange === void) return ExceptionService.throwInternalServerError();
-      if (!amountchange) return ExceptionService.throwInternalServerError();
+      if (!amountchange)
+        return ExceptionService.throwInternalServerError(
+          'Lỗi khi tính toán lượng token!',
+        );
 
       user.asset.forEach((item) => {
         if (item.token === info.byToken) {
           if (item.amount < Number(info.amount))
-            return ExceptionService.throwBadRequest();
+            return ExceptionService.throwBadRequest(
+              `Số dư ${item.token} không đủ`,
+            );
 
           item.amount -= Number(info.amount);
         } else if (item.token === info.forToken) {
@@ -283,7 +305,7 @@ export class ProductService {
       });
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -295,14 +317,15 @@ export class ProductService {
         info.amountVND,
         info.platform,
       );
-      if (!checkBillResult) return ExceptionService.throwBadRequest();
+      if (!checkBillResult)
+        return ExceptionService.throwBadRequest('Check bill thất bại');
       else {
         const responseBill = await this.billService.createOne({
           id_: info.bill,
           platform: info.platform,
         });
         if (!(responseBill instanceof Bill))
-          ExceptionService.throwInternalServerError();
+          ExceptionService.throwInternalServerError('Check bill thất bại');
 
         const user = await this.userService.findOneWithCondition({
           userId: info.userId,
@@ -316,12 +339,17 @@ export class ProductService {
           forToken: info.forToken,
         });
 
-        if (!amountchange) return ExceptionService.throwInternalServerError();
+        if (!amountchange)
+          return ExceptionService.throwInternalServerError(
+            'Tính toán lượng token thất bại',
+          );
 
         user.asset.forEach((item) => {
           if (item.token === 'VND') {
             if (item.amount + Number(info.amountVND) < fee.total)
-              return ExceptionService.throwBadRequest();
+              return ExceptionService.throwBadRequest(
+                `Số dư ${item.token} không đủ!`,
+              );
 
             // item.amount -= Number(info.amountVND);
           } else if (item.token === info.forToken) {
@@ -346,7 +374,7 @@ export class ProductService {
       }
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -389,7 +417,7 @@ export class ProductService {
       });
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
 
@@ -401,7 +429,8 @@ export class ProductService {
         userId: info.sender,
       });
 
-      if (!sender) return ExceptionService.throwBadRequest();
+      if (!sender)
+        return ExceptionService.throwNotFound('Thiếu thông tin người gửi!');
 
       // calculate gas fee, commission
       //increase, decrease user
@@ -430,7 +459,9 @@ export class ProductService {
         asset: info.byToken,
       });
       if (!transfer || !(transfer instanceof Transfer))
-        return ExceptionService.throwInternalServerError();
+        return ExceptionService.throwInternalServerError(
+          'Lỗi khi transfer giao dịch này!',
+        );
       //increase for system wallet commission 2.5
 
       //create transaction
@@ -445,67 +476,9 @@ export class ProductService {
         gas: fee.gas,
       });
     } catch (error) {
-      console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
   }
-
-  // Helps users withdraw tokens to user's blockchain account
-  // public async withdrawBlockchain(info: PurchaseDto) {
-  //   try {
-  //     //find  user
-  //     const sender = await this.userService.findOneWithCondition({
-  //       userId: info.sender,
-  //     });
-
-  //     if (!sender) return ExceptionService.throwBadRequest();
-
-  //     // calculate gas fee, commission
-  //     //increase, decrease user
-
-  //     const fee = await feeEstimate('VND', info.byAmount);
-
-  //     await this.userService.decreaseToken({
-  //       userId: info.sender,
-  //       token: 'VND',
-  //       amount: fee.total,
-  //     });
-
-  //     await this.userService.decreaseToken({
-  //       userId: info.sender,
-  //       token: info.byToken,
-  //       amount: info.byAmount,
-  //     });
-
-  //     //call blockchain service to transfer tokens
-  //     const transfer = await this.transferService.createTokenTransfer({
-  //       userId: info.sender,
-  //       merchant: info.merchant,
-  //       chainId: 97,
-  //       toAddress: info.receiver,
-  //       amount: info.byAmount,
-  //       asset: info.byToken,
-  //     });
-  //     if (!transfer || !(transfer instanceof Transfer))
-  //       return ExceptionService.throwInternalServerError();
-  //     //increase for system wallet commission 2.5
-
-  //     //create transaction
-  //     return await this.transactionService.createOne({
-  //       type: TransactionType.WithdrawBlockchain,
-  //       from_: sender.address,
-  //       to_: info.receiver,
-  //       byToken: info.byToken,
-  //       byAmount: info.byAmount,
-  //       hash: transfer.transactionHash,
-  //       commission: fee.commission,
-  //       gas: fee.gas,
-  //     });
-  //   } catch (error) {
-  //     console.log(error);
-  //     return ExceptionService.throwBadRequest();
-  //   }
-  // }
 
   // Helps users withdraw VND to user's banking account
   public async transferBanking(info: PurchaseDto) {
@@ -515,7 +488,8 @@ export class ProductService {
         userId: info.sender,
       });
 
-      if (!sender) return ExceptionService.throwBadRequest();
+      if (!sender)
+        return ExceptionService.throwBadRequest('Thiếu thông tin người gửi!');
 
       //decrease user
 
@@ -525,7 +499,10 @@ export class ProductService {
         amount: info.byAmount,
       });
 
-      if (!decrease) return ExceptionService.throwInternalServerError();
+      if (!decrease)
+        return ExceptionService.throwInternalServerError(
+          'Thất bại khi trừ tiền!',
+        );
 
       //call banking service to transfer VND
 
@@ -542,7 +519,18 @@ export class ProductService {
       });
     } catch (error) {
       console.log(error);
-      return ExceptionService.throwBadRequest();
+      return ExceptionService.throwBadRequest(error?.message);
     }
+  }
+  public async checkRSA(box: string, key: any) {
+    const merchant = await this.merchantService.findOne({
+      partner_code: box,
+      isDead: false,
+    });
+
+    if (!merchant) return false;
+    const res = decryptData(key, merchant.publicKey);
+
+    return res === box;
   }
 }

@@ -1,5 +1,6 @@
 export class BuyCryptoDto {
   userId: string;
+  merchantEncrypt?: string;
   merchant: string;
   amountVND: number;
   forToken: string;
