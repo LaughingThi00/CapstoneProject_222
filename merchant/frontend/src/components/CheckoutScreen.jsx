@@ -3,7 +3,12 @@ import axios from "axios";
 // import { useState } from "react";
 import { Button } from "react-bootstrap";
 import { Navigate } from "react-router-dom";
-import { apiPayment, endpointUrl, MerchantId } from "../constants/Constant";
+import {
+  apiPayment,
+  endpointUrl,
+  MerchantId,
+  urlBackend,
+} from "../constants/Constant";
 import { useContext } from "react";
 import { AuthContext } from "./../contexts/AuthContext";
 
@@ -15,7 +20,6 @@ export const transformCryptoUserData = (user) => {
     USDT: user.asset.find((item) => item.token === "USDT").amount,
     BNB: user.asset.find((item) => item.token === "BNB").amount,
     VND: user.asset.find((item) => item.token === "VND").amount,
-
   };
   return res;
 };
@@ -62,7 +66,12 @@ function CheckoutScreen() {
 
   const takePrice = async () => {
     try {
-      const response = await axios.get(`${endpointUrl}/price/${MerchantId}`);
+      const merchantEncrypt = await axios.post(`${urlBackend}/rsa`, {
+        data: MerchantId,
+      });
+      const response = await axios.post(`${endpointUrl}/price/${MerchantId}`, {
+        merchantEncrypt: merchantEncrypt.data.EncyptData,
+      });
       if (response.data.statusCode === 200) {
         response.data.data.push({
           name: "VND",
@@ -80,8 +89,12 @@ function CheckoutScreen() {
 
   const FindInfoCrypto = async () => {
     try {
-      const response = await axios.get(
-        `${endpointUrl}/user-info/${MerchantId}/${user.id}`
+      const merchantEncrypt = await axios.post(`${urlBackend}/rsa`, {
+        data: MerchantId,
+      });
+      const response = await axios.post(
+        `${endpointUrl}/user-info/${MerchantId}/${user.id}`,
+        { merchantEncrypt: merchantEncrypt.data.EncyptData }
       );
       if (response.data.statusCode === 200) {
         localStorage.setItem(

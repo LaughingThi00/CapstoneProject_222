@@ -4,14 +4,18 @@ import Accordion from "react-bootstrap/Accordion";
 import { Button, Form, Modal, Toast, ToastContainer } from "react-bootstrap";
 import "../css/cryptowallet.css";
 import axios from "axios";
-import { MerchantId, endpointUrl } from "../constants/Constant";
+import { MerchantId, endpointUrl, urlBackend } from "../constants/Constant";
 import { AuthContext } from "../contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 
 export const UpdateCryptoInfo = async (id) => {
   try {
-    const response = await axios.get(
-      `${endpointUrl}/user-info/${MerchantId}/${id}`
+    const merchantEncrypt = await axios.post(`${urlBackend}/rsa`, {
+      data: MerchantId,
+    });
+    const response = await axios.post(
+      `${endpointUrl}/user-info/${MerchantId}/${id}`,
+      { merchantEncrypt: merchantEncrypt.data.EncyptData }
     );
 
     if (response.data.statusCode === 200) {
@@ -27,7 +31,7 @@ export const UpdateCryptoInfo = async (id) => {
   }
 };
 
-const BuyCryptoModal = () => {
+export const BuyCryptoModal = () => {
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
   const Price = JSON.parse(localStorage.getItem("price")) ?? null;
   const [show, setShow] = useState(false);
@@ -72,9 +76,13 @@ const BuyCryptoModal = () => {
       return;
     }
     try {
+      const merchantEncrypt = await axios.post(`${urlBackend}/rsa`, {
+        data: MerchantId,
+      });
       const response =
         One.token === "VND"
           ? await axios.put(`${endpointUrl}/deposit-vnd/${MerchantId}`, {
+              merchantEncrypt: merchantEncrypt.data.EncyptData,
               userId: CryptoUser.id,
               merchant: MerchantId,
               amountVND: One.amount_VND,
@@ -82,6 +90,7 @@ const BuyCryptoModal = () => {
               platform: "MOMO",
             })
           : await axios.put(`${endpointUrl}/buy-crypto-direct/${MerchantId}`, {
+              merchantEncrypt: merchantEncrypt.data.EncyptData,
               userId: CryptoUser.id,
               merchant: MerchantId,
               amountVND: One.amount_VND,
@@ -279,7 +288,7 @@ const BuyCryptoModal = () => {
             </Toast.Header>
             <Toast.Body>
               {toast.content}
-              {toast.hash && (
+              {/* {toast.hash && (
                 <div>
                   Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống
                   blockchain tại{" "}
@@ -288,7 +297,7 @@ const BuyCryptoModal = () => {
                     đây{" "}
                   </a>
                 </div>
-              )}
+              )} */}
             </Toast.Body>
           </Toast>
         </ToastContainer>
@@ -297,7 +306,7 @@ const BuyCryptoModal = () => {
   );
 };
 
-const ChangeCryptoModal = () => {
+export const ChangeCryptoModal = () => {
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
   const Price = JSON.parse(localStorage.getItem("price")) ?? null;
   const [show, setShow] = useState(false);
@@ -382,9 +391,13 @@ const ChangeCryptoModal = () => {
         });
         return;
       }
+      const merchantEncrypt = await axios.post(`${urlBackend}/rsa`, {
+        data: MerchantId,
+      });
       const response = await axios.put(
         `${endpointUrl}/change-token/${MerchantId}`,
         {
+          merchantEncrypt: merchantEncrypt.data.EncyptData,
           userId: CryptoUser.id,
           merchant: MerchantId,
           amount: One.amount,
@@ -595,7 +608,6 @@ const ChangeCryptoModal = () => {
   );
 };
 
-
 const CryptoWalletScreen = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -614,8 +626,12 @@ const CryptoWalletScreen = () => {
 
   const handleCreateWallet = async () => {
     try {
+      const merchantEncrypt = await axios.post(`${urlBackend}/rsa`, {
+        data: MerchantId,
+      });
       const response = await axios.post(
-        `${endpointUrl}/create-user/${MerchantId}/${user.id}`
+        `${endpointUrl}/create-user/${MerchantId}/${user.id}`,
+        { merchantEncrypt: merchantEncrypt.data.EncyptData }
       );
 
       if (response.data.statusCode === 200) {
@@ -647,7 +663,11 @@ const CryptoWalletScreen = () => {
     }
   };
 
-  const formatter = new Intl.NumberFormat();
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 5,
+  });
   return (
     <div>
       Đây là ví điện tử của bạn. Tại đây bạn có thể thực hiện giao dịch mua
@@ -669,26 +689,39 @@ const CryptoWalletScreen = () => {
               <>
                 <div>
                   {" "}
-                  <div className="bold-text"> Bitcoin: </div> {CryptoUser.BTC}{" "}
-                  (BTC)
+                  <div className="bold-text">
+                    {" "}
+                    <strong>Bitcoin: </strong>
+                  </div>{" "}
+                  {CryptoUser.BTC} (BTC)
                 </div>
                 <div>
                   {" "}
-                  <div className="bold-text"> Ethereum: </div> {CryptoUser.ETH}{" "}
-                  (ETH)
+                  <div className="bold-text">
+                    {" "}
+                    <strong>Ethereum: </strong>
+                  </div>{" "}
+                  {CryptoUser.ETH} (ETH)
                 </div>
                 <div>
                   {" "}
-                  <div className="bold-text"> BNB: </div> {CryptoUser.BNB} (BNB)
+                  <div className="bold-text">
+                    <strong>BNB: </strong>{" "}
+                  </div>{" "}
+                  {CryptoUser.BNB} (BNB)
                 </div>
                 <div>
                   {" "}
-                  <div className="bold-text"> Tether: </div> {CryptoUser.USDT}{" "}
-                  (USDT)
+                  <div className="bold-text">
+                    <strong>Tether: </strong>{" "}
+                  </div>{" "}
+                  {CryptoUser.USDT} (USDT)
                 </div>
                 <div>
                   {" "}
-                  <div className="bold-text"> VND: </div>{" "}
+                  <div className="bold-text">
+                    <strong>VND: </strong>{" "}
+                  </div>{" "}
                   {formatter.format(CryptoUser.VND)} (VND)
                 </div>
               </>

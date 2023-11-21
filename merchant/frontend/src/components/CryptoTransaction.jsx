@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from "react";
 import { Accordion, Button, Modal } from "react-bootstrap";
 import "../css/cryptopayment.css";
-import { MerchantId, endpointUrl } from "../constants/Constant";
+import { MerchantId, endpointUrl, urlBackend } from "../constants/Constant";
 import axios from "axios";
 
 const CryptoTransaction = () => {
   const [transactionList, setTransactionList] = useState([]);
 
-  const sortByTimeOldest = () => {
+  const sortByTimeLastest = () => {
     setTransactionList(
       [...transactionList.sort((a, b) => a.createdAt - b.createdAt)].reverse()
     );
   };
 
-  const sortByTimeLastest = () => {
+  const sortByTimeOldest = () => {
     setTransactionList(
       [...transactionList.sort((a, b) => b.createdAt - a.createdAt)].reverse()
     );
@@ -22,9 +22,12 @@ const CryptoTransaction = () => {
   useEffect(() => {
     const browseTransaction = async () => {
       const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
-
-      const res = await axios.get(
-        `${endpointUrl}/transactions/${MerchantId}/${CryptoUser.id}`
+      const merchantEncrypt = await axios.post(`${urlBackend}/rsa`, {
+        data: MerchantId,
+      });
+      const res = await axios.post(
+        `${endpointUrl}/transactions/${MerchantId}/${CryptoUser.id}`,
+        { merchantEncrypt: merchantEncrypt.data.EncyptData }
       );
       if (res.data.statusCode === 200) {
         localStorage.setItem("transactions", JSON.stringify(res.data.data));
@@ -34,15 +37,21 @@ const CryptoTransaction = () => {
 
     browseTransaction().catch(console.error);
   }, []);
-  const formatter = new Intl.NumberFormat();
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 5,
+  });
 
   return (
     <div>
-      Đây là nơi bạn xem lại toàn bộ các lần thực hiện giao dịch của mình
-      (chuyển/nhận tiền, mua bán, ... ), ở cả
-      <strong>hệ thống nội bộ</strong> và <strong>hệ thống quốc tế</strong> Hãy
-      phản hồi cho chúng tôi về bất cứ giao dịch bất thường nào bạn nhận thấy.
-      <br />
+      <div style={{ margin: "20px" }}>
+        Đây là nơi bạn xem lại toàn bộ các lần thực hiện giao dịch của mình
+        (chuyển/nhận tiền, mua bán, ... ), ở cả <strong>hệ thống nội bộ</strong>{" "}
+        và <strong>hệ thống quốc tế</strong>. Hãy phản hồi cho chúng tôi về bất
+        cứ giao dịch bất thường nào bạn nhận thấy.
+      </div>
+
       <>
         <div className="table-fixed table-container">
           <table className="table table-striped">
@@ -97,7 +106,7 @@ const CryptoTransaction = () => {
             </tbody>
           </table>
         </div>
-        <div style={{ textAlign: "center" }}>
+        <div style={{ textAlign: "center", margin: "20px" }}>
           <Button variant="warning" onClick={sortByTimeLastest}>
             Sắp xếp (tạo gần nhất){" "}
           </Button>
@@ -116,7 +125,11 @@ const CryptoTransaction = () => {
 };
 
 export const TransactionDetail = ({ detail }) => {
-  const formatter = new Intl.NumberFormat();
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 5,
+  });
 
   const [transactionList, setTransactionList] = useState(
     localStorage.getItem("transactions")

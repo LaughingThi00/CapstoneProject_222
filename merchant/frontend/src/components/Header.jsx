@@ -35,56 +35,59 @@ export const LoginButton = () => {
     e.preventDefault();
     const LoginResult = await loginUser(One);
   };
-  if(user) return ;
-  else return (
-    <>
-      <Button variant="success" onClick={handleShow}>Đăng nhập</Button>
+  if (user) return;
+  else
+    return (
+      <>
+        <Button variant="success" onClick={handleShow}>
+          Đăng nhập
+        </Button>
 
-      <Modal
-        size="lg"
-        aria-labelledby="contained-modal-title-vcenter"
-        centered
-        show={show}
-        onHide={handleClose}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Đăng nhập</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {/* =========================== GENERAL FORM ========================= */}
+        <Modal
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+          show={show}
+          onHide={handleClose}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Đăng nhập</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {/* =========================== GENERAL FORM ========================= */}
 
-          <Form onSubmit={handleLogin}>
-            <Form.Group className="mb-3">
-              <Form.Label>Username</Form.Label>
-              <Form.Control
-                name="username"
-                type="text"
-                onChange={handleChange}
-              />
-            </Form.Group>
+            <Form onSubmit={handleLogin}>
+              <Form.Group className="mb-3">
+                <Form.Label>Username</Form.Label>
+                <Form.Control
+                  name="username"
+                  type="text"
+                  onChange={handleChange}
+                />
+              </Form.Group>
 
-            <Form.Group className="mb-3">
-              <Form.Label>Mật khẩu </Form.Label>
-              <Form.Control
-                name="password"
-                type="password"
-                onChange={handleChange}
-              />
-            </Form.Group>
+              <Form.Group className="mb-3">
+                <Form.Label>Mật khẩu </Form.Label>
+                <Form.Control
+                  name="password"
+                  type="password"
+                  onChange={handleChange}
+                />
+              </Form.Group>
 
-            <Button variant="primary" type="submit">
-              Đăng nhập
+              <Button variant="primary" type="submit">
+                Đăng nhập
+              </Button>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Thoát
             </Button>
-          </Form>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Thoát
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </>
-  );
+          </Modal.Footer>
+        </Modal>
+      </>
+    );
 };
 
 export const LogOutButton = () => {
@@ -92,8 +95,7 @@ export const LogOutButton = () => {
 
   return (
     <Button
-    variant ="danger"
-
+      variant="danger"
       onClick={() => {
         logoutUser();
       }}
@@ -104,9 +106,7 @@ export const LogOutButton = () => {
 };
 
 function Header() {
-
   const { user } = useContext(AuthContext);
-
 
   const [item, setItem] = useState(
     JSON.parse(localStorage.getItem("cart"))
@@ -200,6 +200,17 @@ function Header() {
             Chính sách
           </li>
         </LinkItem>
+        <LinkItem to="/crypto-payment">
+          <li
+            className={
+              window.location.pathname === "/crypto-payment"
+                ? "header-slider-item tab-header-now"
+                : "header-slider-item"
+            }
+          >
+            <strong> Ví điện tử </strong>
+          </li>
+        </LinkItem>
       </ul>
       <div className="header-icon">
         <img
@@ -208,19 +219,21 @@ function Header() {
           name="call-outline"
           alt=""
         />
-        {user&&<Link to="/cart" className="relative-div">
-          <img
-            src={cart}
-            className={
-              item === 0
-                ? "header-icon-item button-hover"
-                : "header-icon-item button-hover cart-something"
-            }
-            name="cart-outline"
-            alt=""
-          />
-          <div className="cart-num">{item}</div>
-        </Link>}
+        {user && (
+          <Link to="/cart" className="relative-div">
+            <img
+              src={cart}
+              className={
+                item === 0
+                  ? "header-icon-item button-hover"
+                  : "header-icon-item button-hover cart-something"
+              }
+              name="cart-outline"
+              alt=""
+            />
+            <div className="cart-num">{item}</div>
+          </Link>
+        )}
         <i className="fa-solid fa-user" />
 
         <img
@@ -229,10 +242,8 @@ function Header() {
           name="search-outline"
           alt=""
         />
-        {!user?<LoginButton />: <LogOutButton /> }
-       
+        {!user ? <LoginButton /> : <LogOutButton />}
       </div>
-
     </div>
   );
 }
