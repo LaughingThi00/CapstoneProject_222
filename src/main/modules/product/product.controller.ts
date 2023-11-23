@@ -1,4 +1,4 @@
-import { Param, Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Param, Body, Controller, Post, Put } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ProductService } from './product.service';
 import { BuyCryptoDto } from './dto/buyCrypto.dto';
