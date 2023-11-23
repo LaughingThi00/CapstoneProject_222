@@ -994,7 +994,7 @@ const WithdrawBankingModal = () => {
 const CryptoPaymentScreen = () => {
   const { user } = useContext(AuthContext);
   const navigate = useNavigate();
-  const cash = calculateOrder();
+  // const cash = calculateOrder();
   const [price, setPrice] = useState(getPrice());
   const [CryptoUser, setCryptoUser] = useState(
     JSON.parse(localStorage.getItem("wallet"))
