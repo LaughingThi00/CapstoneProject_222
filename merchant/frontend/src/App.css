@@ -37,16 +37,14 @@
   }
 }
 
-
-.accordion *{
-  background-color: white!important;
-  color: black!important;
+.accordion * {
+  background-color: white !important;
+  color: black !important;
 }
 
-.table-fixed.table-container tbody{
-  height: 80vh!important;
+.table-fixed.table-container tbody {
+  height: 80vh !important;
 }
-
 
 .table-container td,
 th {
@@ -69,5 +67,3 @@ th {
 .table * {
   vertical-align: middle;
 }
-
-

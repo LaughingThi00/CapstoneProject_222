@@ -45,24 +45,33 @@ export const BuyCryptoModal = () => {
     content: null,
   });
 
+  const calFinalToken = () => {
+    if (!Price) return;
+    return Number(
+      (
+        (One?.amount_VND * 0.995 - 500) /
+        Price.find((x) => x.name === One?.token)?.price
+      ).toFixed(8)
+    );
+  };
   const handleChange = (e) => {
     if (!e.target.name || !e.target.value) return;
     if (One && Price) {
-      if (Price.find((x) => x.name === One.token)) {
+      if (Price.find((x) => x.name === One?.token)) {
         if (e.target.name === "amount_VND")
           setAmount_Token(
             Number(
               (
-                e.target.value / Price.find((x) => x.name === One.token).price
-              ).toFixed(5)
+                e.target.value / Price.find((x) => x.name === One?.token).price
+              ).toFixed(8)
             )
           );
         else
           setAmount_Token(
             Number(
               (
-                One.amount_VND / Price.find((x) => x.name === One.token).price
-              ).toFixed(5)
+                One?.amount_VND / Price.find((x) => x.name === One?.token).price
+              ).toFixed(8)
             )
           );
       } else setAmount_Token(-1);
@@ -72,7 +81,7 @@ export const BuyCryptoModal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!CryptoUser.id || !One.amount_VND || !One.token) {
+    if (!CryptoUser.id || !One?.amount_VND || !One?.token) {
       return;
     }
     try {
@@ -80,12 +89,12 @@ export const BuyCryptoModal = () => {
         data: MerchantId,
       });
       const response =
-        One.token === "VND"
+        One?.token === "VND"
           ? await axios.put(`${endpointUrl}/deposit-vnd/${MerchantId}`, {
               merchantEncrypt: merchantEncrypt.data.EncyptData,
               userId: CryptoUser.id,
               merchant: MerchantId,
-              amountVND: One.amount_VND,
+              amountVND: One?.amount_VND,
               bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
               platform: "MOMO",
             })
@@ -93,8 +102,8 @@ export const BuyCryptoModal = () => {
               merchantEncrypt: merchantEncrypt.data.EncyptData,
               userId: CryptoUser.id,
               merchant: MerchantId,
-              amountVND: One.amount_VND,
-              forToken: One.token,
+              amountVND: One?.amount_VND,
+              forToken: One?.token,
               bill: `MOMO${Math.floor(Math.random() * 1000000)}`,
               platform: "MOMO",
             });
@@ -127,6 +136,12 @@ export const BuyCryptoModal = () => {
       });
     }
   };
+
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 5,
+  });
 
   return (
     <>
@@ -203,31 +218,33 @@ export const BuyCryptoModal = () => {
 
             <div>
               <div className="bold-text">Token cơ bản: </div> {amount_token}{" "}
-              {One ? One.token : "???"}
+              {One ? One?.token : "???"}
             </div>
 
             <div>
-              <div className="bold-text">Phí gas (1%): </div>{" "}
-              {One.token === "VND" ? 0 : (amount_token / 100).toFixed(5)}{" "}
-              {One ? One.token : "???"}
+              <div className="bold-text">Phí gas : </div>{" "}
+              <div className="number-negative">500</div>
+              VND
             </div>
 
             <div>
               <div className="bold-text">Phí hoa hồng (0.5%): </div>{" "}
-              {One.token === "VND"
-                ? 0
-                : ((amount_token * 0.5) / 100).toFixed(5)}{" "}
-              {One ? One.token : "???"}
+              <div className="number-negative">
+                {formatter.format(One?.amount_VND * 0.005)}
+              </div>
             </div>
-
+            <div>
+              <div className="bold-text"> Tổng phí: </div>{" "}
+              <div className="number-negative">
+                {One ? formatter.format(One?.amount * 0.995 + 500) : 0} VND
+              </div>
+            </div>
             <div>
               <div className="bold-text"> Tổng token nhận được: </div>{" "}
-              {One
-                ? One.token === "VND"
-                  ? amount_token
-                  : ((amount_token * 98.5) / 100).toFixed(5)
-                : 0}{" "}
-              {One ? One.token : "?"}
+              <div className="number-positive">
+                {One ? formatter.format(calFinalToken()) : 0}{" "}
+              </div>
+              {One ? One?.token : "?"}
             </div>
 
             <Form.Group className="mb-3">
@@ -328,16 +345,15 @@ export const ChangeCryptoModal = () => {
   const handleChange = (e) => {
     if (!e.target.name || !e.target.value) return;
     if (One && Price) {
-      if (One.byToken && One.forToken && One.amount) {
-        console.log("Price:", Price);
+      if (One?.byToken && One?.forToken && One?.amount) {
         if (["amount", "byToken", "forToken"].includes(e.target.name)) {
           switch (e.target.name) {
             case "amount":
               setAmount_Token(
                 Number(
                   (e.target.value *
-                    Price.find((x) => x.name === One.byToken).price) /
-                    Price.find((x) => x.name === One.forToken).price
+                    Price.find((x) => x.name === One?.byToken).price) /
+                    Price.find((x) => x.name === One?.forToken).price
                 ).toFixed(5)
               );
 
@@ -345,9 +361,9 @@ export const ChangeCryptoModal = () => {
             case "byToken":
               setAmount_Token(
                 Number(
-                  (One.amount *
+                  (One?.amount *
                     Price.find((x) => x.name === e.target.value).price) /
-                    Price.find((x) => x.name === One.forToken).price
+                    Price.find((x) => x.name === One?.forToken).price
                 ).toFixed(5)
               );
 
@@ -355,8 +371,8 @@ export const ChangeCryptoModal = () => {
             case "forToken":
               setAmount_Token(
                 Number(
-                  (One.amount *
-                    Price.find((x) => x.name === One.byToken).price) /
+                  (One?.amount *
+                    Price.find((x) => x.name === One?.byToken).price) /
                     Price.find((x) => x.name === e.target.value).price
                 ).toFixed(5)
               );
@@ -375,14 +391,14 @@ export const ChangeCryptoModal = () => {
     e.preventDefault();
     if (
       !CryptoUser.id ||
-      !One.amount ||
-      !One.forToken ||
-      One.byToken === One.forToken
+      !One?.amount ||
+      !One?.forToken ||
+      One?.byToken === One?.forToken
     ) {
       return;
     }
     try {
-      if (CryptoUser[One.byToken] < One.amount) {
+      if (CryptoUser[One?.byToken] < One?.amount) {
         setToast({
           show: true,
           bg: "danger",
@@ -400,9 +416,9 @@ export const ChangeCryptoModal = () => {
           merchantEncrypt: merchantEncrypt.data.EncyptData,
           userId: CryptoUser.id,
           merchant: MerchantId,
-          amount: One.amount,
-          byToken: One.byToken,
-          forToken: One.forToken,
+          amount: One?.amount,
+          byToken: One?.byToken,
+          forToken: One?.forToken,
         }
       );
 
@@ -412,7 +428,7 @@ export const ChangeCryptoModal = () => {
           show: true,
           bg: "success",
           header: "Đổi token thành công",
-          content: `${One.amount} ${One.byToken} đã được đổi thành ${amount_token} ${One.forToken}. Hãy tiếp tục sử dụng`,
+          content: `${One?.amount} ${One?.byToken} đã được đổi thành ${amount_token} ${One?.forToken}. Hãy tiếp tục sử dụng`,
           hash: response.data.data.hash,
         });
       } else {
@@ -434,6 +450,12 @@ export const ChangeCryptoModal = () => {
       });
     }
   };
+
+  const formatter = new Intl.NumberFormat("en-US", {
+    style: "decimal",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 5,
+  });
 
   return (
     <>
@@ -466,7 +488,7 @@ export const ChangeCryptoModal = () => {
             <Form.Group className="mb-3">
               <Form.Label>
                 <div className="bold-text-no-margin">
-                  Số token muốn chuyển đổi ({One.byToken})
+                  Số token muốn chuyển đổi ({One?.byToken})
                 </div>
               </Form.Label>
               <Form.Control
@@ -515,25 +537,32 @@ export const ChangeCryptoModal = () => {
 
             <div>
               <div className="bold-text">Token nguồn: </div> {amount_token}{" "}
-              {One ? One.forToken : "???"}
+              {One ? One?.forToken : "???"}
             </div>
 
             <div>
-              <div className="bold-text">Phí gas (0.01%): </div>{" "}
-              {((amount_token * 0.01) / 100).toFixed(5)}{" "}
-              {One ? One.forToken : "???"}
+              <div className="bold-text">Phí gas: </div>{" "}
+              <div className="number-negative">0</div>
+              VND
             </div>
 
             <div>
-              <div className="bold-text">Phí hoa hồng (0.05%): </div>{" "}
-              {((amount_token * 0.05) / 100).toFixed(5)}{" "}
-              {One ? One.forToken : "???"}
+              <div className="bold-text">Phí hoa hồng (0%): </div>{" "}
+              <div className="number-negative">0</div>
+              VND
+            </div>
+
+            <div>
+              <div className="bold-text"> Tổng phí: </div>
+              <div className="number-negative">0</div>
+              VND{" "}
             </div>
 
             <div>
               <div className="bold-text"> Tổng token nhận được: </div>{" "}
-              {((amount_token * 99.4) / 100).toFixed(5)}{" "}
-              {One ? One.forToken : "?"}
+              <div className="number-positive">
+                {formatter.format(amount_token)} {One ? One?.forToken : "?"}
+              </div>
             </div>
 
             <Form.Group className="mb-3">

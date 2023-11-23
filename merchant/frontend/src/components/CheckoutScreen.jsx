@@ -14,7 +14,7 @@ import { AuthContext } from "./../contexts/AuthContext";
 
 export const transformCryptoUserData = (user) => {
   let res = {
-    id: user.userId,
+    id: user.userId ?? user.id ,
     BTC: user.asset.find((item) => item.token === "BTC").amount,
     ETH: user.asset.find((item) => item.token === "ETH").amount,
     USDT: user.asset.find((item) => item.token === "USDT").amount,
@@ -82,7 +82,6 @@ function CheckoutScreen() {
         localStorage.setItem("price", null);
       }
     } catch (error) {
-      console.log("Eror axios takePrice!");
       localStorage.setItem("price", null);
     }
   };
@@ -237,7 +236,11 @@ function CheckoutScreen() {
 
           <div className="end-form">
             <p>Tổng cộng</p>
+            <div className="number-positive">
             <p>{formatter.format(sum + 30000)}</p>
+                  
+                  </div>
+                  
           </div>
 
           <div className="separation" />

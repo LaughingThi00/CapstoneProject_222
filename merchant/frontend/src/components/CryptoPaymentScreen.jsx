@@ -83,7 +83,8 @@ export const getPrice = (data) => {
 
 const CryptoPaymentModal = () => {
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
-  let price = getPriceByToken();
+  const marketPrice = getPrice();
+  const price = getPriceByToken();
   const navigate = useNavigate();
   const [ShowToast, setShowToast] = useState(false);
   const [show, setShow] = useState(false);
@@ -110,15 +111,15 @@ const CryptoPaymentModal = () => {
       setOne({
         ...One,
         [e.target.name]: e.target.value,
-        amount: Number((price[e.target.value] * 1.015).toFixed(5)),
+        amount: Number(price[e.target.value]),
       });
     else setOne({ ...One, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!One || !One.token || !One.kind || !CryptoUser) return;
-    if (One.amount >= CryptoUser[One.token]) {
+    if (!One || !One?.token || !One?.kind || !CryptoUser) return;
+    if (One?.amount >= CryptoUser[One?.token]) {
       setShowToast(true);
     } else {
       try {
@@ -126,7 +127,7 @@ const CryptoPaymentModal = () => {
           data: MerchantId,
         });
         const response =
-          One.kind === "outbound"
+          One?.kind === "outbound"
             ? await axios.put(
                 `${endpointUrl}/transfer-outbound/${MerchantId}`,
                 {
@@ -134,8 +135,8 @@ const CryptoPaymentModal = () => {
                   merchant: MerchantId,
                   sender: CryptoUser.id,
                   receiver: "0xcd3f68850ef63f079becb302870245dcb461dc1b",
-                  byAmount: One.amount,
-                  byToken: One.token,
+                  byAmount: One?.amount,
+                  byToken: One?.token,
                 }
               )
             : await axios.put(`${endpointUrl}/transfer-inbound/${MerchantId}`, {
@@ -143,8 +144,8 @@ const CryptoPaymentModal = () => {
                 merchant: MerchantId,
                 sender: CryptoUser.id,
                 receiver: "TEST_INBOUND_USER1",
-                byAmount: One.amount,
-                byToken: One.token,
+                byAmount: One?.amount,
+                byToken: One?.token,
               });
         if (response.data.statusCode === 200) {
           await UpdateCryptoInfo(CryptoUser.id);
@@ -184,6 +185,7 @@ const CryptoPaymentModal = () => {
     maximumFractionDigits: 5,
   });
 
+  if (!price.VND) return <></>;
   return (
     <>
       <Button
@@ -208,7 +210,15 @@ const CryptoPaymentModal = () => {
           </Modal.Header>
           <Modal.Body>
             {/* =========================== GENERAL FORM ========================= */}
-
+            <div>
+              Lượng token cơ bản bạn cần thanh toán tương đương với:{" "}
+              <strong>{formatter.format(price?.VND)} VND</strong>. Hãy chọn loại
+              token, chọn network, đồng ý điều khoản và mức phí (hoa hồng, gas),
+              slippage, bấm <strong>OK</strong>. Nếu thiếu token hãy nạp thêm
+              (Các bạn chuyển VND qua cho chúng tôi thông qua các nền tảng tài
+              chính trung gian, chúng tôi gửi token về cho bạn với một ít phí
+              hoa hồng)
+            </div>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
                 <Form.Label>
@@ -249,30 +259,42 @@ const CryptoPaymentModal = () => {
               </Form.Group>
               <div>
                 <div className="bold-text">Phí gas: </div>{" "}
-                {One && One?.kind === "outbound"
-                  ? formatter.format((price[One?.token] * 1) / 100)
-                  : 0}{" "}
-                {One.token} ({One?.kind === "outbound" ? 1 : 0} %)
+                <div className="number-negative">
+                  {One && One?.kind === "outbound" ? 500 : 0}
+                </div>
+                VND
               </div>
 
               <div>
                 <div className="bold-text">Phí hoa hồng: </div>{" "}
-                {One && One?.kind === "outbound"
-                  ? formatter.format((price[One?.token] * 0.5) / 100)
-                  : 0}{" "}
-                {One.token} ({One?.kind === "outbound" ? 0.5 : 0} %)
+                <div className="number-negative">
+                  {One && One?.kind === "outbound"
+                    ? formatter.format(
+                        (price[One?.token] * marketPrice[One?.token] * 0.5) /
+                          100
+                      )
+                    : 0}{" "}
+                </div>
+                VND ({One?.kind === "outbound" ? 0.5 : 0} %)
               </div>
-
               <div>
-                <div className="bold-text"> Tổng: </div>{" "}
-                {One
-                  ? formatter.format(
-                      (price[One.token] *
-                        (One?.kind === "outbound" ? 101.5 : 100)) /
-                        100
-                    )
-                  : 0}{" "}
-                {One ? One.token : "?"}
+                <div className="bold-text"> Tổng phí: </div>{" "}
+                <div className="number-negative">
+                  {One && One?.kind === "outbound"
+                    ? formatter.format(
+                        (One?.amount * marketPrice[One?.token] * 0.5) / 100 +
+                          500
+                      )
+                    : 0}{" "}
+                </div>
+                VND
+              </div>
+              <div>
+                <div className="bold-text"> Tổng token thanh toán: </div>{" "}
+                <div className="number-positive">
+                  {One ? formatter.format(price[One?.token]) : 0}{" "}
+                </div>
+                {One ? One?.token : "?"}
               </div>
 
               <Form.Group className="mb-3">
@@ -335,20 +357,20 @@ const CryptoPaymentModal = () => {
                 <small>0 seconds ago</small>
               </Toast.Header>
               <Toast.Body>
-                Số dư đồng {One ? One.token : "???"} của bạn hiện không đủ, vui
+                Số dư đồng {One ? One?.token : "???"} của bạn hiện không đủ, vui
                 lòng chọn token khác hoặc nạp thêm!
                 <div>
                   <div className="block-small-margin">
                     <div className="bold-text">Token: </div>{" "}
-                    {One ? One.token : "???"}
+                    {One ? One?.token : "???"}
                   </div>
                   <div className="block-small-margin">
                     <div className="bold-text">Cần thanh toán: </div>{" "}
-                    {One ? formatter.format(One.amount) : "???"}
+                    {One ? formatter.format(One?.amount) : "???"}
                   </div>
                   <div className="block-small-margin">
                     <div className="bold-text">Số dư: </div>{" "}
-                    {One ? formatter.format(CryptoUser[One.token]) : "??"}
+                    {One ? formatter.format(CryptoUser[One?.token]) : "??"}
                   </div>
                 </div>
               </Toast.Body>
@@ -374,7 +396,7 @@ const CryptoPaymentModal = () => {
               </Toast.Header>
               <Toast.Body>
                 {toast.content}
-                {toast.hash && One.kind === "outbound" && (
+                {toast.hash && One?.kind === "outbound" && (
                   <div>
                     Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống
                     blockchain tại{" "}
@@ -395,6 +417,7 @@ const CryptoPaymentModal = () => {
 
 const WithdrawCryptoModal = () => {
   const CryptoUser = JSON.parse(localStorage.getItem("wallet"));
+  const marketPrice = getPrice();
   const [ShowToast, setShowToast] = useState(false);
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
@@ -416,9 +439,9 @@ const WithdrawCryptoModal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!One || !One.token || !One.amount || !One.address || !CryptoUser)
+    if (!One || !One?.token || !One?.amount || !One?.address || !CryptoUser)
       return;
-    if (One.amount >= CryptoUser[One.token]) {
+    if (One?.amount >= CryptoUser[One?.token]) {
       setToast({
         show: true,
         bg: "danger",
@@ -438,9 +461,9 @@ const WithdrawCryptoModal = () => {
             merchantEncrypt: merchantEncrypt.data.EncyptData,
             merchant: MerchantId,
             sender: CryptoUser.id,
-            receiver: One.address,
-            byAmount: One.amount,
-            byToken: One.token,
+            receiver: One?.address,
+            byAmount: One?.amount,
+            byToken: One?.token,
           }
         );
         if (response.data.statusCode === 200) {
@@ -485,7 +508,7 @@ const WithdrawCryptoModal = () => {
         style={{ margin: "20px" }}
       >
         {" "}
-        Rút token
+        Chuyển token
       </Button>
 
       <div className="crypto-payment-modal">
@@ -534,7 +557,7 @@ const WithdrawCryptoModal = () => {
               <Form.Group className="mb-3">
                 <Form.Label>
                   <div className="bold-text-no-margin">
-                    Số token muốn rút ({One.token})
+                    Số token muốn rút ({One?.token})
                   </div>
                 </Form.Label>
                 <Form.Control
@@ -561,18 +584,37 @@ const WithdrawCryptoModal = () => {
 
               <div>
                 <div className="bold-text">Phí gas: </div>{" "}
-                {One ? formatter.format((One.amount * 1) / 100) : 0} (1%)
+                <div className="number-negative">500</div>
+                VND
               </div>
 
               <div>
                 <div className="bold-text">Phí hoa hồng: </div>{" "}
-                {One ? formatter.format((One.amount * 0.5) / 100) : 0} (0.5%)
+                <div className="number-negative">
+                  {formatter.format(
+                    (One?.amount * marketPrice[One?.token] * 0.5) / 100
+                  )}
+                </div>
+                VND (0.5 %)
               </div>
-
               <div>
-                <div className="bold-text"> Tổng: </div>{" "}
-                {One ? formatter.format((One.amount * (100 - 1.5)) / 100) : 0}{" "}
-                {One ? One.token : "?"}
+                <div className="bold-text"> Tổng phí: </div>{" "}
+                <div className="number-negative">
+                  {One
+                    ? formatter.format(
+                        (One?.amount * marketPrice[One?.token] * 0.5) / 100 +
+                          500
+                      )
+                    : 0}{" "}
+                </div>
+                VND
+              </div>
+              <div>
+                <div className="bold-text"> Tổng token chuyển đi: </div>{" "}
+                <div className="number-positive">
+                  {One ? formatter.format(One?.amount) : 0}{" "}
+                </div>
+                {One ? One?.token : "?"}
               </div>
 
               <Form.Group className="mb-3">
@@ -620,20 +662,20 @@ const WithdrawCryptoModal = () => {
                 <small>0 seconds ago</small>
               </Toast.Header>
               <Toast.Body>
-                Số dư đồng {One ? One.token : "???"} của bạn hiện không đủ, vui
+                Số dư đồng {One ? One?.token : "???"} của bạn hiện không đủ, vui
                 lòng chọn token khác hoặc nạp thêm!
                 <div>
                   <div className="block-small-margin">
                     <div className="bold-text">Token: </div>{" "}
-                    {One ? One.token : "???"}
+                    {One ? One?.token : "???"}
                   </div>
                   <div className="block-small-margin">
                     <div className="bold-text">Cần thanh toán: </div>{" "}
-                    {One ? formatter.format(One.amount) : "???"}
+                    {One ? formatter.format(One?.amount) : "???"}
                   </div>
                   <div className="block-small-margin">
                     <div className="bold-text">Số dư: </div>{" "}
-                    {One ? formatter.format(CryptoUser[One.token]) : "??"}
+                    {One ? formatter.format(CryptoUser[One?.token]) : "??"}
                   </div>
                 </div>
               </Toast.Body>
@@ -705,9 +747,9 @@ const WithdrawBankingModal = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!One || !One.platform || !One.amount || !One.address || !CryptoUser)
+    if (!One || !One?.platform || !One?.amount || !One?.address || !CryptoUser)
       return;
-    if (One.amount >= CryptoUser["VND"]) {
+    if (One?.amount >= CryptoUser["VND"]) {
       setToast({
         show: true,
         bg: "danger",
@@ -728,9 +770,9 @@ const WithdrawBankingModal = () => {
             merchantEncrypt: merchantEncrypt.data.EncyptData,
             merchant: MerchantId,
             sender: CryptoUser.id,
-            receiver: One.address,
-            byAmount: One.amount,
-            platformWithdraw: One.platform,
+            receiver: One?.address,
+            byAmount: One?.amount,
+            platformWithdraw: One?.platform,
           }
         );
         if (response.data.statusCode === 200) {
@@ -766,7 +808,7 @@ const WithdrawBankingModal = () => {
     minimumFractionDigits: 0,
     maximumFractionDigits: 5,
   });
-
+  if (!CryptoUser) return <></>;
   return (
     <>
       <Button
@@ -775,7 +817,7 @@ const WithdrawBankingModal = () => {
         style={{ margin: "20px" }}
       >
         {" "}
-        Rút tiền
+        Chuyển tiền
       </Button>
 
       <div className="crypto-payment-modal">
@@ -842,17 +884,25 @@ const WithdrawBankingModal = () => {
 
               <div>
                 <div className="bold-text">Phí gas: </div>{" "}
-                {One ? formatter.format((One.amount * 1) / 100) : 0} (1%)
+                <div className="number-negative">0</div>
+                VND (0%)
               </div>
 
               <div>
                 <div className="bold-text">Phí hoa hồng: </div>{" "}
-                {One ? formatter.format((One.amount * 0.5) / 100) : 0} (0.5%)
+                <div className="number-negative">0</div>
+                VND (0%)
               </div>
-
               <div>
-                <div className="bold-text"> Tổng: </div>{" "}
-                {One ? formatter.format(One.amount / 100) : 0} VND{" "}
+                <div className="bold-text"> Tổng phí: </div>
+                <div className="number-negative">0</div>
+                VND{" "}
+              </div>
+              <div>
+                <div className="bold-text"> Tổng lượng tiền chuyển đi: </div>{" "}
+                <div className="number-positive">
+                  {One ? formatter.format(One?.amount / 100) : 0} VND{" "}
+                </div>
               </div>
 
               <Form.Group className="mb-3">
@@ -904,7 +954,7 @@ const WithdrawBankingModal = () => {
                 <div>
                   <div className="block-small-margin">
                     <div className="bold-text">Cần thanh toán: </div>{" "}
-                    {One ? One.amount : "???"} VND
+                    {One ? One?.amount : "???"} VND
                   </div>
                   <div className="block-small-margin">
                     <div className="bold-text">Số dư: </div>{" "}
@@ -942,6 +992,13 @@ const WithdrawBankingModal = () => {
 };
 
 const CryptoPaymentScreen = () => {
+  const { user } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const cash = calculateOrder();
+  const [price, setPrice] = useState(getPrice());
+  const [CryptoUser, setCryptoUser] = useState(
+    JSON.parse(localStorage.getItem("wallet"))
+  );
   useEffect(() => {
     const takePrice = async () => {
       try {
@@ -954,7 +1011,6 @@ const CryptoPaymentScreen = () => {
             merchantEncrypt: merchantEncrypt.data.EncyptData,
           }
         );
-        console.log("HANDLE THIS DATA:", response.data);
         if (response.data.statusCode === 200) {
           response.data.data.push({
             name: "VND",
@@ -962,9 +1018,7 @@ const CryptoPaymentScreen = () => {
           });
           localStorage.setItem("price", JSON.stringify(response.data.data));
           setPrice(getPrice(response.data.data));
-          console.log("RIGHT TAKEPRICE 964" + response.data.data);
         } else {
-          console.log("Wrong response 966");
           localStorage.setItem("price", null);
         }
       } catch (error) {
@@ -974,13 +1028,18 @@ const CryptoPaymentScreen = () => {
 
     const FindInfoCrypto = async () => {
       try {
+        const userId = user?.id ?? CryptoUser?.id ?? null;
+        // if (!userId) {
+        //   throw new Error("User not found!!!!!!!!!");
+        // }
         const merchantEncrypt = await axios.post(`${urlBackend}/rsa`, {
           data: MerchantId,
         });
         const response = await axios.post(
-          `${endpointUrl}/user-info/${MerchantId}/${user.id}`,
+          `${endpointUrl}/user-info/${MerchantId}/${userId}`,
           { merchantEncrypt: merchantEncrypt.data.EncyptData }
         );
+
         if (response.data.statusCode === 200) {
           localStorage.setItem(
             "wallet",
@@ -988,24 +1047,17 @@ const CryptoPaymentScreen = () => {
           );
           setCryptoUser(transformCryptoUserData(response.data.data));
         } else {
-          localStorage.setItem("wallet", null);
+          console.log("error 1013");
+          // localStorage.setItem("wallet", null);
         }
       } catch (error) {
-        localStorage.setItem("wallet", null);
+        console.log(error);
+        // localStorage.setItem("wallet", null);
       }
     };
     takePrice();
     FindInfoCrypto();
   }, []);
-
-  const { user } = useContext(AuthContext);
-  const navigate = useNavigate();
-  const cash = calculateOrder();
-  const [price, setPrice] = useState(getPrice());
-  const [CryptoUser, setCryptoUser] = useState(
-    JSON.parse(localStorage.getItem("wallet"))
-  );
-
   const [toast, setToast] = useState({
     show: false,
     bg: null,
@@ -1058,127 +1110,183 @@ const CryptoPaymentScreen = () => {
     maximumFractionDigits: 5,
   });
 
+  const features = [
+    { icon: "💼", text: "Tạo ví riêng" },
+    { icon: "💵", text: "Nạp VND vào ví" },
+    { icon: "💹", text: "Xem tỉ giá thị trường theo thời gian thực" },
+    { icon: "🔄", text: "Đổi VND thành token" },
+    { icon: "🔄", text: "Chuyển đổi giữa các đồng token" },
+    { icon: "🏦", text: "Thanh toán tập trung" },
+    { icon: "🌐", text: "Thanh toán phi tập trung" },
+    { icon: "🔗", text: "Chuyển tiền vào một hotwallet trên blockchain" },
+    { icon: "💳", text: "Chuyển tiền về một tài khoản ngân hàng bất kỳ" },
+    { icon: "📜", text: "Xem lịch sử giao dịch" },
+  ];
+
+  const ListItem = ({ icon, text, index }) => (
+    <li className="list-item">
+      <span className="icon">{icon}</span>
+      <span className="text">
+        {index + 1}. {text}
+      </span>
+    </li>
+  );
+
   return (
-    <div className="container">
-      Chào mừng bạn đến với thanh toán với ví điện tử. Lượng token cơ bản bạn
-      cần thanh toán tương đương với: {formatter.format(cash)}. Hãy chọn loại
-      token, chọn network, đồng ý điều khoản và mức phí (hoa hồng, gas),
-      slippage, bấm OK. Nếu thiếu token hãy nạp thêm (Các bạn chuyển VND qua cho
-      chúng tôi thông qua các nền tảng tài chính trung gian, chúng tôi gửi token
-      về cho bạn với một ít phí hoa hồng)
-      <Accordion defaultActiveKey={["0", "1"]} alwaysOpen flush>
-        <Accordion.Item eventKey="0">
-          <Accordion.Header>Ví của bạn</Accordion.Header>
-          <Accordion.Body>
-            {!CryptoUser ? (
-              <Button onClick={handleCreateWallet}>
-                Bạn chưa có ví điện tử, tạo ngay!
-              </Button>
-            ) : (
+    <div className="crypto">
+      <div className="container">
+        Chào mừng bạn đến với thanh toán với ví điện tử. Các bạn có thể thực
+        hiện các dịch vụ sau. Hệ thống Merchant chúng tôi đã được tích hợp với
+        BK-BLOCKCHAIN-PAYMENT để cung cấp cho bạn những dịch vụ sau:
+        <ul className="feature-list">
+          {features.map((feature, index) => (
+            <ListItem
+              key={index}
+              icon={feature.icon}
+              text={feature.text}
+              index={index}
+            />
+          ))}
+        </ul>
+        <Accordion defaultActiveKey={["0", "1"]} alwaysOpen flush>
+          <Accordion.Item eventKey="0">
+            <Accordion.Header>Ví của bạn</Accordion.Header>
+            <Accordion.Body>
+              {!CryptoUser ? (
+                <Button onClick={handleCreateWallet}>
+                  Bạn chưa có ví điện tử, tạo ngay!
+                </Button>
+              ) : (
+                <>
+                  <div className="crypto-item">
+                    <strong> 🅱️ Bitcoin: </strong>{" "}
+                    <div className="number-text">
+                      {formatter.format(CryptoUser.BTC)}
+                    </div>{" "}
+                    (BTC)
+                  </div>
+                  <div className="crypto-item">
+                    <strong> Ξ Ethereum: </strong>{" "}
+                    <div className="number-text">
+                      {formatter.format(CryptoUser.ETH)}
+                    </div>
+                    (ETH)
+                  </div>
+                  <div className="crypto-item">
+                    <strong> ₿ BNB: </strong>
+                    <div className="number-text">
+                      {formatter.format(CryptoUser.BNB)}{" "}
+                    </div>
+                    (BNB)
+                  </div>
+                  <div className="crypto-item">
+                    <strong> 💵 Tether: </strong>{" "}
+                    <div className="number-text">
+                      {formatter.format(CryptoUser.USDT)}
+                    </div>
+                    (USDT)
+                  </div>
+                  <div className="crypto-item">
+                    <strong> ⛩️ VND: </strong>{" "}
+                    <div className="number-text">
+                      {formatter.format(CryptoUser.VND)}
+                    </div>
+                    (VND)
+                  </div>
+                </>
+              )}
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="1">
+            <Accordion.Header>Thời giá</Accordion.Header>
+            <Accordion.Body>
               <>
-                <div>
-                  <strong>Bitcoin: </strong> {formatter.format(CryptoUser.BTC)}{" "}
-                  (BTC)
+                <div className="crypto-item">
+                  <strong> 🅱️ Theo Bitcoin: </strong>{" "}
+                  <div className="number-text">
+                    {formatter.format(price.BTC)}
+                  </div>
+                  (VND/BTC)
                 </div>
-                <div>
-                  <strong>Ethereum: </strong> {formatter.format(CryptoUser.ETH)}{" "}
-                  (ETH)
+                <div className="crypto-item">
+                  <strong> Ξ Theo Ethereum: </strong>{" "}
+                  <div className="number-text">
+                    {formatter.format(price.ETH)}
+                  </div>
+                  (VND/ETH){" "}
                 </div>
-                <div>
-                  <strong>BNB: </strong> {formatter.format(CryptoUser.BNB)}{" "}
-                  (BNB)
+                <div className="crypto-item">
+                  <strong> ₿ Theo BNB: </strong>
+                  <div className="number-text">
+                    {formatter.format(price.BNB)}{" "}
+                  </div>
+                  (VND/BNB){" "}
                 </div>
-                <div>
-                  <strong>Tether: </strong> {formatter.format(CryptoUser.USDT)}{" "}
-                  (USDT)
-                </div>
-                <div>
-                  <strong>VND: </strong> {formatter.format(CryptoUser.VND)}{" "}
-                  (VND)
+                <div className="crypto-item">
+                  <strong> 💵 Theo Tether: </strong>{" "}
+                  <div className="number-text">
+                    {formatter.format(price.USDT)}
+                  </div>
+                  (VND/USDT){" "}
                 </div>
               </>
-            )}
-          </Accordion.Body>
-        </Accordion.Item>
-        <Accordion.Item eventKey="1">
-          <Accordion.Header>Thời giá</Accordion.Header>
-          <Accordion.Body>
-            Cập nhật thời giá các token theo VND
-            <br />
-            <>
-              <div>
-                <strong>Theo Bitcoin: </strong> {formatter.format(price.BTC)}{" "}
-                (VND/BTC)
-              </div>
-              <div>
-                <strong>Theo Ethereum: </strong> {formatter.format(price.ETH)}{" "}
-                (VND/ETH){" "}
-              </div>
-              <div>
-                <strong>Theo BNB: </strong> {formatter.format(price.BNB)}{" "}
-                (VND/BNB){" "}
-              </div>
-              <div>
-                <strong>Theo Tether: </strong> {formatter.format(price.USDT)}{" "}
-                (VND/USDT){" "}
-              </div>
-            </>
-          </Accordion.Body>
-        </Accordion.Item>
-      </Accordion>
-      {CryptoUser && (
-        <>
-          <CryptoPaymentModal />
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+        {CryptoUser && (
+          <>
+            <CryptoPaymentModal />
 
-          <BuyCryptoModal />
-          <ChangeCryptoModal />
-          <Button
-            style={{ marginLeft: "20px" }}
-            onClick={() => {
-              navigate("/crypto-transaction");
-            }}
-            variant="secondary"
+            <BuyCryptoModal />
+            <ChangeCryptoModal />
+            <Button
+              style={{ marginLeft: "20px" }}
+              onClick={() => {
+                navigate("/crypto-transaction");
+              }}
+              variant="secondary"
+            >
+              Xem lịch sử giao dịch
+            </Button>
+            <div style={{ display: "flex", margin: "0px" }}>
+              <WithdrawCryptoModal />
+              <WithdrawBankingModal />
+            </div>
+          </>
+        )}
+        <ToastContainer className="p-3" position="top-end">
+          <Toast
+            onClose={() => setToast({ ...toast, show: false })}
+            show={toast.show}
+            delay={10000}
+            autohide
+            bg={toast.bg}
           >
-            Xem lịch sử giao dịch
-          </Button>
-          <div style={{ display: "flex", margin: "0px" }}>
-            <WithdrawCryptoModal />
-            <WithdrawBankingModal />
-          </div>
-        </>
-      )}
-      <ToastContainer className="p-3" position="top-end">
-        <Toast
-          onClose={() => setToast({ ...toast, show: false })}
-          show={toast.show}
-          delay={10000}
-          autohide
-          bg={toast.bg}
-        >
-          <Toast.Header>
-            <img
-              src="holder.js/20x20?text=%20"
-              className="rounded me-2"
-              alt=""
-            />
-            <strong className="me-auto">{toast.header}</strong>
-            <small>0 seconds ago</small>
-          </Toast.Header>
-          <Toast.Body>
-            {toast.content}
-            {toast.hash && (
-              <div>
-                Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống
-                blockchain tại{" "}
-                <a href={"https://testnet.bscscan.com/tx/" + toast.hash}>
-                  {" "}
-                  đây{" "}
-                </a>
-              </div>
-            )}
-          </Toast.Body>
-        </Toast>
-      </ToastContainer>
+            <Toast.Header>
+              <img
+                src="holder.js/20x20?text=%20"
+                className="rounded me-2"
+                alt=""
+              />
+              <strong className="me-auto">{toast.header}</strong>
+              <small>0 seconds ago</small>
+            </Toast.Header>
+            <Toast.Body>
+              {toast.content}
+              {toast.hash && (
+                <div>
+                  Bạn có thể kiểm tra giao dịch vừa thực hiện trên hệ thống
+                  blockchain tại{" "}
+                  <a href={"https://testnet.bscscan.com/tx/" + toast.hash}>
+                    {" "}
+                    đây{" "}
+                  </a>
+                </div>
+              )}
+            </Toast.Body>
+          </Toast>
+        </ToastContainer>
+      </div>
     </div>
   );
 };

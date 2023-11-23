@@ -228,20 +228,24 @@ export const TransactionDetail = ({ detail }) => {
                 {transaction.gas && (
                   <div>
                     <h6>Phí gas:</h6>
-                    <p>
-                      {formatter.format(transaction.gas)} ({" "}
-                      {transaction.byToken} )
-                    </p>
+                    <div className="number-negative">
+                      <p>
+                        {formatter.format(transaction.gas)} ({" "}
+                        {transaction.byToken} )
+                      </p>
+                    </div>
                   </div>
                 )}
 
                 {transaction.commission && (
                   <div>
                     <h6>Phí commission:</h6>
-                    <p>
-                      {formatter.format(transaction.commission)} ({" "}
-                      {transaction.byToken} )
-                    </p>
+                    <div className="number-negative">
+                      <p>
+                        {formatter.format(transaction.commission)} ({" "}
+                        {transaction.byToken} )
+                      </p>
+                    </div>
                   </div>
                 )}
                 {transaction.hash &&
