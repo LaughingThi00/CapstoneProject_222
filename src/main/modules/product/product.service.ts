@@ -46,7 +46,7 @@ export class ProductService {
         'https://api.apilayer.com/fixer/latest?base=USD&symbols=VND',
         {
           headers: {
-            apiKey: 'AnQGQlYWcIPeNzvvJxrcoV6jqpS8kp7g',
+            apiKey: 'bwkEKMPqWI8lZ1S45Uh8BGFbIALTen69',
           },
         },
       );
@@ -76,7 +76,7 @@ export class ProductService {
         );
       }
     } catch (error) {
-      console.log('Error');
+      console.log('Error Price');
       return ExceptionService.throwInternalServerError(error?.message);
     }
   }
@@ -346,7 +346,7 @@ export class ProductService {
 
         user.asset.forEach((item) => {
           if (item.token === 'VND') {
-            if (item.amount + Number(info.amountVND) < fee.total)
+            if (item.amount + info.amountVND < fee.total)
               return ExceptionService.throwBadRequest(
                 `Số dư ${item.token} không đủ!`,
               );
@@ -435,7 +435,7 @@ export class ProductService {
       // calculate gas fee, commission
       //increase, decrease user
 
-      const fee = await feeEstimate('VND', info.byAmount);
+      const fee = await feeEstimate(info.byToken, info.byAmount);
 
       await this.userService.decreaseToken({
         userId: info.sender,
