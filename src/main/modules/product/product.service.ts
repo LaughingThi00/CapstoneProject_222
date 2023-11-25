@@ -514,7 +514,7 @@ export class ProductService {
         from_: sender.address,
         to_: info.receiver,
         platformWithdraw: info.platformWithdraw,
-        byToken: info.byToken,
+        byToken: info?.byToken ?? 'VND',
         byAmount: info.byAmount,
       });
     } catch (error) {

@@ -1,8 +1,8 @@
-import path from 'path';
+// import path from 'path';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+// import { InjectRepository } from '@nestjs/typeorm';
 import { ExceptionService } from '../../../common/service/exception.service';
-import { Repository } from 'typeorm';
+// import { Repository } from 'typeorm';
 import {
   generateUniqueSecret,
   verifyOTPToken,
@@ -19,7 +19,9 @@ const MOCK_USER = {
 };
 @Injectable()
 export class TFAuthService {
-  constructor() {}
+  constructor() {
+    //
+  }
 
   public async test() {
     return 0;
