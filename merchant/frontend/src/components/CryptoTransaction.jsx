@@ -199,6 +199,7 @@ export const TransactionDetail = ({ detail }) => {
                     <p>
                       {formatter.format(transaction.byAmount)} ({" "}
                       {transaction.byToken} )
+                      {console.log(transaction)}
                     </p>
                   </div>
                 )}

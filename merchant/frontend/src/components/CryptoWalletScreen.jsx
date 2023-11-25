@@ -209,10 +209,10 @@ export const BuyCryptoModal = () => {
               </Form.Label>
 
               <Form.Select
-                disabled
                 aria-label="Hãy chọn loại token bạn muốn giao dịch"
+                disabled
               >
-                <option disabled>Mặc định từ người bán</option>
+                <option>Mặc định từ người bán</option>
               </Form.Select>
             </Form.Group>
 
@@ -236,7 +236,7 @@ export const BuyCryptoModal = () => {
             <div>
               <div className="bold-text"> Tổng phí: </div>{" "}
               <div className="number-negative">
-                {One ? formatter.format(One?.amount * 0.995 + 500) : 0} VND
+                {One ? formatter.format(One?.amount_VND * 0.995 + 500) : 0} VND
               </div>
             </div>
             <div>

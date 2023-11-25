@@ -724,3 +724,10 @@ background-color: rgb(243, 243, 243);
 .relative-div{
   position: relative;
 }
+
+.QRImage{
+  margin:auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

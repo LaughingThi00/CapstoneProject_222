@@ -4,6 +4,10 @@
   cursor: pointer;
 }
 
+.crypto .container{
+  background-color: rgb(248, 244, 237);
+}
+
 .bold-text {
   font-weight: bolder;
   display: inline-block;

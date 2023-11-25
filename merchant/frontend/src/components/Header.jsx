@@ -4,19 +4,102 @@ import styled from "styled-components";
 import call from "../icon-font/call-outline.svg";
 import cart from "../icon-font/cart-outline.svg";
 import search from "../icon-font/search-outline.svg";
-import { Button, Form, Modal } from "react-bootstrap";
+import { Button, Form, Modal, Toast, ToastContainer } from "react-bootstrap";
 import { AuthContext } from "../contexts/AuthContext";
+import { endpointUrl } from "../constants/Constant";
+import DOMPurify from "dompurify";
+
+import axios from "axios";
 
 const LinkItem = styled(Link)`
   color: black;
   text-decoration: none;
 `;
+// export const LoginButton = () => {
+//   const [show, setShow] = useState(false);
+//   const handleClose = () => setShow(false);
+//   const handleShow = () => setShow(true);
+//   const { loginUser, user } = useContext(AuthContext);
+
+//   //=========================== OBJECT =========================
+
+//   const [One, setOne] = useState({
+//     username: null,
+//     password: null,
+//   });
+
+//   //=========================== HANDLE CHANGE FUNCTION =========================
+
+//   const handleChange = (e) => {
+//     setOne({ ...One, [e.target.name]: e.target.value });
+//   };
+
+//   //=========================== HANDLE SUBMIT FUNCTION =========================
+//   const handleLogin = async (e) => {
+//     e.preventDefault();
+//     const LoginResult = await loginUser(One);
+//   };
+//   if (user) return;
+//   else
+//     return (
+//       <>
+//         <Button variant="success" onClick={handleShow}>
+//           Đăng nhập
+//         </Button>
+
+//         <Modal
+//           size="lg"
+//           aria-labelledby="contained-modal-title-vcenter"
+//           centered
+//           show={show}
+//           onHide={handleClose}
+//         >
+//           <Modal.Header closeButton>
+//             <Modal.Title>Đăng nhập</Modal.Title>
+//           </Modal.Header>
+//           <Modal.Body>
+//             {/* =========================== GENERAL FORM ========================= */}
+
+//             <Form onSubmit={handleLogin}>
+//               <Form.Group className="mb-3">
+//                 <Form.Label>Username</Form.Label>
+//                 <Form.Control
+//                   name="username"
+//                   type="text"
+//                   onChange={handleChange}
+//                 />
+//               </Form.Group>
+
+//               <Form.Group className="mb-3">
+//                 <Form.Label>Mật khẩu </Form.Label>
+//                 <Form.Control
+//                   name="password"
+//                   type="password"
+//                   onChange={handleChange}
+//                 />
+//               </Form.Group>
+
+//               <Button variant="primary" type="submit">
+//                 Đăng nhập
+//               </Button>
+//             </Form>
+//           </Modal.Body>
+//           <Modal.Footer>
+//             <Button variant="secondary" onClick={handleClose}>
+//               Thoát
+//             </Button>
+//           </Modal.Footer>
+//         </Modal>
+//       </>
+//     );
+// };
+
 export const LoginButton = () => {
   const [show, setShow] = useState(false);
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
   const { loginUser, user } = useContext(AuthContext);
-
+  const [sanitizedHtml, setSanitizedHtml] = useState(null);
   //=========================== OBJECT =========================
 
   const [One, setOne] = useState({
@@ -33,7 +116,65 @@ export const LoginButton = () => {
   //=========================== HANDLE SUBMIT FUNCTION =========================
   const handleLogin = async (e) => {
     e.preventDefault();
-    const LoginResult = await loginUser(One);
+    try {
+      const QRData = await axios.post(
+        `http://localhost:3000/api/v1/2fa/enable-2fa`
+      );
+      if (QRData.data.statusCode === 200) {
+        setSanitizedHtml(DOMPurify.sanitize(QRData.data.data.QRCodeImage));
+        handleShow2FA();
+      } else {
+        console.log("ERROR QR");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const [toast, setToast] = useState({
+    show: false,
+    bg: null,
+    header: null,
+    content: null,
+    hash: null,
+  });
+
+  const [Data2FA, setData2FA] = useState({
+    otpToken: null,
+  });
+  const [show2FA, setShow2FA] = useState(false);
+  const handleClose2FA = () => setShow2FA(false);
+  const handleShow2FA = () => setShow2FA(true);
+  const handleChange2FA = (e) => {
+    setData2FA({ ...Data2FA, [e.target.name]: e.target.value });
+  };
+  const handleLogin2FA = async (e) => {
+    e.preventDefault();
+    try {
+      const resQRVerify = await axios.post(
+        `http://localhost:3000/api/v1/2fa/verify-2fa`,
+        {
+          otpToken: Data2FA.otpToken,
+        }
+      );
+      if (resQRVerify.data.data.isValid) {
+        await loginUser(One);
+      } else {
+        setToast({
+          show: true,
+          bg: "danger",
+          header: "Xác thực 2 bước thất bại",
+          content: `Bạn đã nhập sai mã xác thực Google hoặc Server xảy ra sự cố, vui lòng thử lại. \nSERVER: ${resQRVerify?.data?.message} `,
+        });
+      }
+    } catch (error) {
+      setToast({
+        show: true,
+        bg: "danger",
+        header: "Xác thực 2 bước thất bại",
+        content: `Bạn đã nhập sai tài khoản, mật khẩu, hoặc Server xảy ra sự cố, vui lòng thử lại. \nSERVER: ${error?.message} `,
+      });
+    }
   };
   if (user) return;
   else
@@ -82,6 +223,64 @@ export const LoginButton = () => {
           </Modal.Body>
           <Modal.Footer>
             <Button variant="secondary" onClick={handleClose}>
+              Thoát
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+          show={show2FA}
+          onHide={handleClose2FA}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Xác thực Google Authenticator</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            {/* =========================== GENERAL FORM ========================= */}
+            <div
+              className="QRImage"
+              dangerouslySetInnerHTML={{ __html: sanitizedHtml }}
+            />
+            <ToastContainer className="p-3" position="top-end">
+              <Toast
+                onClose={() => setToast({ ...toast, show: false })}
+                show={toast.show}
+                delay={5000}
+                autohide
+                bg={toast.bg}
+              >
+                <Toast.Header>
+                  <img
+                    src="holder.js/20x20?text=%20"
+                    className="rounded me-2"
+                    alt=""
+                  />
+                  <strong className="me-auto">{toast.header}</strong>
+                  <small>0 seconds ago</small>
+                </Toast.Header>
+                <Toast.Body>{toast.content}</Toast.Body>
+              </Toast>
+            </ToastContainer>
+            <Form onSubmit={handleLogin2FA}>
+              <Form.Group className="mb-3">
+                <Form.Label>Nhập OTP</Form.Label>
+                <Form.Control
+                  name="otpToken"
+                  type="text"
+                  onChange={handleChange2FA}
+                />
+              </Form.Group>
+
+              <Button variant="primary" type="submit">
+                Xác thực
+              </Button>
+            </Form>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose2FA}>
               Thoát
             </Button>
           </Modal.Footer>

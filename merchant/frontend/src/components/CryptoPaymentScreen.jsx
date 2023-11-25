@@ -901,7 +901,7 @@ const WithdrawBankingModal = () => {
               <div>
                 <div className="bold-text"> Tổng lượng tiền chuyển đi: </div>{" "}
                 <div className="number-positive">
-                  {One ? formatter.format(One?.amount / 100) : 0} VND{" "}
+                  {One ? formatter.format(One?.amount) : 0} VND{" "}
                 </div>
               </div>
 
