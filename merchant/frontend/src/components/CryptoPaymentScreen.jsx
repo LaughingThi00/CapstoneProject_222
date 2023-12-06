@@ -18,6 +18,7 @@ import {
   ChangeCryptoModal,
   UpdateCryptoInfo,
 } from "./CryptoWalletScreen";
+import btcIcon from "../img/coinIcon/btc.png";
 
 export const getPriceByToken = () => {
   const cash = calculateOrder();
@@ -1228,6 +1229,62 @@ const CryptoPaymentScreen = () => {
                     {formatter.format(price.USDT)}
                   </div>
                   (VND/USDT){" "}
+                </div>
+              </>
+            </Accordion.Body>
+          </Accordion.Item>
+          <Accordion.Item eventKey="2">
+            <Accordion.Header>Thời giá</Accordion.Header>
+            <Accordion.Body>
+              <>
+                <div className="table-fixed table-container">
+                  <table className="table table-striped">
+                    <thead>
+                        <tr>
+                            <th colSpan="1" scope="col">
+                              #
+                            </th>
+                            <th colSpan="2" scope="col" >Token</th>
+                            <th colSpan="2" scope="col" >Giá(VND)</th>
+                            <th colSpan="2" scope="col" >Giá(USDT)</th>
+                            <th colSpan="2" scope="col">Biến động 24H</th>
+                            <th colSpan="2" scope="col">Khối lượng 24H</th>
+                            <th colSpan="2" scope="col">Biểu đồ</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                      <tr>
+                        <th colSpan="1" scope="row">1</th>
+
+                        <th colSpan="2" scope="row">
+                          <div className="" style={{ display: 'flex'}}>
+                              <img src={btcIcon}  alt='' style={{ width: '30px', height: '30px' }}/>
+                              Bitcoin
+                          </div>
+                        </th>
+
+                        <th colSpan="2" scope="row">
+                          <p>{formatter.format(price.BTC)}</p>
+                        </th>
+                        <th colSpan="2">
+                          44,000
+                        </th>
+                        <th colSpan="2">
+                          3.5%
+                        </th>
+
+                        <th colSpan="2">
+                          $1000000
+                        </th>
+
+
+                        <th colSpan="2">
+                          <img src="https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/52.svg" alt='' style={{ width: '140px', height: '80px' }}/>
+                        </th>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </>
             </Accordion.Body>
