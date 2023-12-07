@@ -198,8 +198,7 @@ export const TransactionDetail = ({ detail }) => {
                     <h6>Lượng token giao dịch:</h6>
                     <p>
                       {formatter.format(transaction.byAmount)} ({" "}
-                      {transaction.byToken} )
-                      {console.log(transaction)}
+                      {transaction.byToken} ){console.log(transaction)}
                     </p>
                   </div>
                 )}
@@ -230,10 +229,7 @@ export const TransactionDetail = ({ detail }) => {
                   <div>
                     <h6>Phí gas:</h6>
                     <div className="number-negative">
-                      <p>
-                        {formatter.format(transaction.gas)} ({" "}
-                        {transaction.byToken} )
-                      </p>
+                      <p>{formatter.format(transaction.gas)} ( VND )</p>
                     </div>
                   </div>
                 )}
@@ -242,10 +238,7 @@ export const TransactionDetail = ({ detail }) => {
                   <div>
                     <h6>Phí commission:</h6>
                     <div className="number-negative">
-                      <p>
-                        {formatter.format(transaction.commission)} ({" "}
-                        {transaction.byToken} )
-                      </p>
+                      <p>{formatter.format(transaction.commission)} ( VND )</p>
                     </div>
                   </div>
                 )}

@@ -3,6 +3,8 @@ import { transformCryptoUserData } from "./CheckoutScreen";
 import Accordion from "react-bootstrap/Accordion";
 import { Button, Form, Modal, Toast, ToastContainer } from "react-bootstrap";
 import "../css/cryptowallet.css";
+import "../css/cryptopayment.css";
+
 import axios from "axios";
 import { MerchantId, endpointUrl, urlBackend } from "../constants/Constant";
 import { AuthContext } from "../contexts/AuthContext";
@@ -508,6 +510,7 @@ export const ChangeCryptoModal = () => {
                 onClick={handleChange}
                 onChange={handleChange}
                 aria-label="Hãy chọn loại token bạn muốn giao dịch"
+                defaultValue={"VND"}
               >
                 <option value="VND"> VND (Đồng Việt Nam)</option>
                 <option value="BTC"> BTC (Bitcoin)</option>
@@ -526,6 +529,7 @@ export const ChangeCryptoModal = () => {
                 onClick={handleChange}
                 onChange={handleChange}
                 aria-label="Hãy chọn loại token bạn muốn giao dịch"
+                defaultValue={"VND"}
               >
                 <option value="VND"> VND (Đồng Việt Nam)</option>
                 <option value="BTC"> BTC (Bitcoin)</option>
@@ -536,8 +540,9 @@ export const ChangeCryptoModal = () => {
             </Form.Group>
 
             <div>
-              <div className="bold-text">Token nguồn: </div> {amount_token}{" "}
-              {One ? One?.forToken : "???"}
+              <div className="bold-text">Token khả dụng: </div>
+              <div className="number-positive">{formatter.format(CryptoUser[One.byToken])} </div>
+              {One ? One?.byToken : "???"}
             </div>
 
             <div>

@@ -13,12 +13,24 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import { MerchantId, endpointUrl, urlBackend } from "../constants/Constant";
 import axios from "axios";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
+
 import {
   BuyCryptoModal,
   ChangeCryptoModal,
   UpdateCryptoInfo,
 } from "./CryptoWalletScreen";
-import btcIcon from "../img/coinIcon/btc.png";
+
+import btc from "../img/coinIcon/btc.png";
+import eth from "../img/coinIcon/eth.png";
+import usdt from "../img/coinIcon/usdt.png";
+import bnb from "../img/coinIcon/bnb.png";
+
+import btcChart from "../img/coinChart/btcChart.png";
+import ethChart from "../img/coinChart/ethChart.png";
+import usdtChart from "../img/coinChart/tetherChart.png";
+import bnbChart from "../img/coinChart/bnbChart.png";
 
 export const getPriceByToken = () => {
   const cash = calculateOrder();
@@ -1111,6 +1123,49 @@ const CryptoPaymentScreen = () => {
     maximumFractionDigits: 5,
   });
 
+  const coin = [
+    {
+      icon: btc,
+      signal: "BTC",
+      name: "Bitcoin",
+      isUp: false,
+      change24: "1.048%",
+      weight24: "$1.078B",
+      value: "$0.851T",
+      chart: btcChart,
+    },
+    {
+      icon: eth,
+      signal: "ETH",
+      name: "Ethereum",
+      isUp: true,
+      change24: "0.781%",
+      weight24: "$0.503B",
+      value: "$274.318B",
+      chart: ethChart,
+    },
+    {
+      icon: usdt,
+      signal: "USDT",
+      name: "Tether",
+      isUp: true,
+      change24: "0.283%",
+      weight24: "$0.918M",
+      value: "$90.068B",
+      chart: usdtChart,
+    },
+    {
+      icon: bnb,
+      signal: "BNB",
+      name: "Binance Coin",
+      isUp: true,
+      change24: "0.893%",
+      weight24: "$93.812M",
+      value: "$35.108B",
+      chart: bnbChart,
+    },
+  ];
+
   const features = [
     { icon: "💼", text: "Tạo ví riêng" },
     { icon: "💵", text: "Nạp VND vào ví" },
@@ -1198,7 +1253,7 @@ const CryptoPaymentScreen = () => {
               )}
             </Accordion.Body>
           </Accordion.Item>
-          <Accordion.Item eventKey="1">
+          {/* <Accordion.Item eventKey="1">
             <Accordion.Header>Thời giá</Accordion.Header>
             <Accordion.Body>
               <>
@@ -1232,57 +1287,119 @@ const CryptoPaymentScreen = () => {
                 </div>
               </>
             </Accordion.Body>
-          </Accordion.Item>
-          <Accordion.Item eventKey="2">
+          </Accordion.Item> */}
+          <Accordion.Item eventKey="1">
             <Accordion.Header>Thời giá</Accordion.Header>
             <Accordion.Body>
               <>
                 <div className="table-fixed table-container">
                   <table className="table table-striped">
                     <thead>
-                        <tr>
-                            <th colSpan="1" scope="col">
-                              #
-                            </th>
-                            <th colSpan="2" scope="col" >Token</th>
-                            <th colSpan="2" scope="col" >Giá(VND)</th>
-                            <th colSpan="2" scope="col" >Giá(USDT)</th>
-                            <th colSpan="2" scope="col">Biến động 24H</th>
-                            <th colSpan="2" scope="col">Khối lượng 24H</th>
-                            <th colSpan="2" scope="col">Biểu đồ</th>
-                        </tr>
+                      <tr>
+                        <th colSpan="1" scope="col">
+                          #
+                        </th>
+                        <th colSpan="2" scope="col">
+                          Token
+                        </th>
+                        <th colSpan="2" scope="col">
+                          Giá (VND)
+                        </th>
+                        <th colSpan="2" scope="col">
+                          Giá (USDT)
+                        </th>
+                        <th colSpan="2" scope="col">
+                          Biến động 24H
+                        </th>
+                        <th colSpan="2" scope="col">
+                          Khối lượng 24H
+                        </th>
+                        <th colSpan="2" scope="col">
+                          Tổng vốn hóa
+                        </th>
+                        <th colSpan="2" scope="col">
+                          Biểu đồ
+                        </th>
+                      </tr>
                     </thead>
 
                     <tbody>
-                      <tr>
-                        <th colSpan="1" scope="row">1</th>
+                      {coin.map((item, index) => {
+                        return (
+                          <tr className="trCoin">
+                            <th colSpan="1" scope="row">
+                              {index + 1}
+                            </th>
 
-                        <th colSpan="2" scope="row">
-                          <div className="" style={{ display: 'flex'}}>
-                              <img src={btcIcon}  alt='' style={{ width: '30px', height: '30px' }}/>
-                              Bitcoin
-                          </div>
-                        </th>
+                            <th colSpan="2" scope="row">
+                              <div
+                                className=""
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                <img
+                                  src={item.icon}
+                                  alt=""
+                                  style={{
+                                    width: "30px",
+                                    height: "30px",
+                                    marginRight: "5px",
+                                  }}
+                                />
+                                {item.name} ({item.signal})
+                              </div>
+                            </th>
 
-                        <th colSpan="2" scope="row">
-                          <p>{formatter.format(price.BTC)}</p>
-                        </th>
-                        <th colSpan="2">
-                          44,000
-                        </th>
-                        <th colSpan="2">
-                          3.5%
-                        </th>
+                            <th colSpan="2" scope="row">
+                              <p>{formatter.format(price[item.signal])}</p>
+                            </th>
+                            <th colSpan="2">
+                              {formatter.format(
+                                price[item.signal] / price.USDT
+                              )}
+                            </th>
+                            <th
+                              colSpan="2"
+                              className={item.isUp ? "text-green" : "text-red"}
+                            >
+                              {item.isUp ? (
+                                <FontAwesomeIcon
+                                  className="text-green"
+                                  icon={faAngleUp}
+                                  style={{ paddingRight: "7px" }}
+                                />
+                              ) : (
+                                <FontAwesomeIcon
+                                  style={{ paddingRight: "7px" }}
+                                  className="text-red"
+                                  icon={faAngleDown}
+                                />
+                              )}
 
-                        <th colSpan="2">
-                          $1000000
-                        </th>
+                              {item.change24}
+                            </th>
 
-
-                        <th colSpan="2">
-                          <img src="https://s3.coinmarketcap.com/generated/sparklines/web/7d/2781/52.svg" alt='' style={{ width: '140px', height: '80px' }}/>
-                        </th>
-                      </tr>
+                            <th colSpan="2">{item.weight24}</th>
+                            <th colSpan="2">{item.value}</th>
+                            <th colSpan="2">
+                              <a
+                                href={`https://goonus.io/markets/${item.signal}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                style={{ all: "unset" }}
+                              >
+                                <img
+                                  src={item.chart}
+                                  alt={`https://goonus.io/markets/${item.signal}`}
+                                  style={{ width: "93px", height: "28px" }}
+                                />
+                              </a>
+                            </th>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>

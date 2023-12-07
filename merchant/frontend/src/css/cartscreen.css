@@ -108,7 +108,11 @@
   }
 
 
-
+  .trCoin:hover * {
+    opacity: 0.9; 
+    color: #0068ff!important;
+    cursor: pointer; 
+  }
   .table * {
     vertical-align: middle;
   }
@@ -116,10 +120,11 @@
   .table-container {
     margin: auto;
     padding: 10px;
-    width: 90%;
+    width: 100%;
     border: lightgray solid 1.5px;
     border-radius: 5px;
     margin: auto;
+    overflow-x: hidden;
   }
 
   
@@ -129,11 +134,12 @@
     padding: 8px !important;
   }
   .table-container tbody {
-    display: block;
+    /* display: block; */
     width: 100%;
     min-height: 30vh;
     max-height: 50vh;
     overflow-y: scroll;
+    padding: 5px;
 
   }
   
@@ -146,6 +152,10 @@
 
   .table-container thead {
   width: calc(100% - 1em) !important;
+}
+
+.table-container thead * {
+  color: #8492a7 !important;
 }
   th{
     text-align: center!important;
@@ -186,3 +196,11 @@
   h5{
     margin: 20px 0 20px 100px;
   }
+
+.text-red{
+  color: rgb(204, 46, 46)!important;
+}
+
+.text-green{
+  color: #2ecc71!important;
+}
